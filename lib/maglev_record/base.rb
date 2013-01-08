@@ -1,4 +1,6 @@
 require "maglev_record/persistence"
+require "rubygems"
+require "active_support"
 
 module Maglev
   module Base
@@ -8,7 +10,7 @@ module Maglev
       include ActiveModel::MassAssignmentSecurity
       include ActiveModel::Validations
       include ActiveModel::AttributeMethods
-      include ::MaglevRecord::Persistence
+      include MaglevRecord::Persistence
 
       Maglev::PERSISTENT_ROOT[self] ||= Hash.new
     end
