@@ -1,6 +1,7 @@
 require "maglev_record/persistence"
 require "rubygems"
 require "active_support"
+require "active_model"
 
 module Maglev
   module Base
