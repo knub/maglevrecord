@@ -6,11 +6,14 @@ require "active_model"
 module Maglev
   module Base
     extend ActiveSupport::Concern
+    extend ActiveModel::Naming
 
     included do
+      include ActiveModel::AttributeMethods
+      include ActiveModel::Conversion
+      include ActiveModel::Dirty
       include ActiveModel::MassAssignmentSecurity
       include ActiveModel::Validations
-      include ActiveModel::AttributeMethods
       include MaglevRecord::Persistence
 
       Maglev::PERSISTENT_ROOT[self] ||= Hash.new
