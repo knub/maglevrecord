@@ -7,7 +7,7 @@ module MaglevRecord
     module InstanceMethods
 
     end
-
+attr_writer :attr_names
     module ClassMethods
       def find(id)
         Maglev::PERSISTENT_ROOT[self][id]

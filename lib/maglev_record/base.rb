@@ -22,6 +22,10 @@ module Maglev
     end
 
     module InstanceMethods
+      def save
+        changed_attributes.each do |k, v|
+        end
+      end
     end
 
     module ClassMethods
