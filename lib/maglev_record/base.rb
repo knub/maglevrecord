@@ -1,4 +1,5 @@
 require "maglev_record/persistence"
+require "maglev_record/query_methods"
 require "rubygems"
 require "active_support"
 require "active_model"
@@ -15,6 +16,7 @@ module Maglev
       include ActiveModel::MassAssignmentSecurity
       include ActiveModel::Validations
       include MaglevRecord::Persistence
+      include MaglevRecord::QueryMethods
 
       Maglev::PERSISTENT_ROOT[self] ||= Hash.new
     end
@@ -23,14 +25,6 @@ module Maglev
     end
 
     module ClassMethods
-      def find(id)
-        Maglev::PERSISTENT_ROOT[self][id]
-      end
-
-      def all
-        Maglev::PERSISTENT_ROOT[self].values
-      end
-
       def create(*args)
         x = self.new(*args)
         x

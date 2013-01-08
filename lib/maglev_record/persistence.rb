@@ -2,7 +2,7 @@ require "active_support"
 
 module MaglevRecord
   module Persistence
-    extend ::ActiveSupport::Concern
+    extend ActiveSupport::Concern
 
     module InstanceMethods
       def persisted?
