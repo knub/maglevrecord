@@ -42,7 +42,7 @@ module MaglevRecord
         x = self.new(*args)
         x
       end
-      
+
       def clear
         Maglev::PERSISTENT_ROOT[self.name.to_sym].clear
       end
@@ -50,7 +50,7 @@ module MaglevRecord
       def dirty_attr_accessor(*attr_names)
         attr_names.each do |attr_name|
           define_attribute_method(attr_name)
-         
+
           generated_attribute_methods.module_eval <<-STR, __FILE__, __LINE__ + 1
             def #{attr_name}=(new_value)
               #{attr_name}_will_change! unless new_value == attributes[:#{attr_name}]

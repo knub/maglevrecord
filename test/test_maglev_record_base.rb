@@ -1,5 +1,5 @@
-require 'bacon'
-require 'maglev_record'
+#require 'bacon'
+#require 'maglev_record'
 
 #class ExampleStudent
 #  include Maglev::Base
