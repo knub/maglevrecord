@@ -24,7 +24,11 @@ module Maglev
     module InstanceMethods
       def save
         changed_attributes.each do |k, v|
+          @attributes[k] = v
         end
+        changed_attributes.clear
+        @dirty = nil
+        Maglev::PERSISTENT_ROOT[self.class.to_s.to_sym][self.object_id] = self
       end
     end
 
