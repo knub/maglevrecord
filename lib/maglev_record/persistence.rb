@@ -8,10 +8,24 @@ module MaglevRecord
       self.class.delete(self)
     end
 
-    def save
-      @previously_changed = changes
-      @changed_attributes.clear
-      self.class.object_pool[self.object_id] = self
+    def save!(options = {})
+      if options[:validate] == false or self.valid?
+        @previously_changed = changes
+        @changed_attributes.clear
+        self.instance_variable_set(:@errors, nil)
+        self.class.object_pool[self.object_id] = self
+        true
+      else
+        raise StandardError, "Model validation failed"
+      end
+    end
+
+    def save(options = {})
+      begin
+        self.save!(options)
+      rescue StandardError
+        false
+      end
     end
 
     def persisted?
