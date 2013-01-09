@@ -2,8 +2,9 @@ require "maglev_record"
 
 class Book
   include MaglevRecord::Base
+  
   dirty_attr_accessor :author, :title, :comments
-
+  
   validates :author, :presence => true
   validates :title,  :presence => true,
                      :length => { :minimum => 5 }
