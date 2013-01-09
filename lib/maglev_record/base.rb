@@ -24,17 +24,15 @@ module MaglevRecord
       self.maglev_persistable
     end
 
-    module InstanceMethods
-      def save
-        @previously_changed = changes
-        @changed_attributes.clear
-        Maglev::PERSISTENT_ROOT[self.class.name.to_sym][self.object_id] = self
-      end
+    def save
+      @previously_changed = changes
+      @changed_attributes.clear
+      Maglev::PERSISTENT_ROOT[self.class.name.to_sym][self.object_id] = self
+    end
 
-      private
-      def attributes
-        @attributes ||= {}
-      end
+    private
+    def attributes
+      @attributes ||= {}
     end
 
     module ClassMethods
