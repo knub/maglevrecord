@@ -1,30 +1,39 @@
 require "maglev_record/persistence"
-require "maglev_record/query_methods"
+require "maglev_record/enumerable"
 require "rubygems"
 require "active_support"
 require "active_model"
 
-module Maglev
+module MaglevRecord
   module Base
     extend ActiveSupport::Concern
     extend ActiveModel::Naming
 
+    @attributes = {}
     included do
+      include ActiveModel
       include ActiveModel::AttributeMethods
       include ActiveModel::Conversion
       include ActiveModel::Dirty
       include ActiveModel::MassAssignmentSecurity
       include ActiveModel::Validations
       include MaglevRecord::Persistence
-      include MaglevRecord::QueryMethods
+      include MaglevRecord::Enumerable
 
-      Maglev::PERSISTENT_ROOT[self] ||= Hash.new
+      Maglev::PERSISTENT_ROOT[self.name.to_sym] ||= Hash.new
+      self.maglev_persistable
     end
 
     module InstanceMethods
       def save
-        changed_attributes.each do |k, v|
-        end
+        @previously_changed = changes
+        @changed_attributes.clear
+        Maglev::PERSISTENT_ROOT[self.class.name.to_sym][self.object_id] = self
+      end
+
+      private
+      def attributes
+        @attributes ||= {}
       end
     end
 
@@ -33,37 +42,27 @@ module Maglev
         x = self.new(*args)
         x
       end
-
-      def initialize_attributes(attributes)
-        #super
-        ## ...
-
-        attributes
+      
+      def clear
+        Maglev::PERSISTENT_ROOT[self.name.to_sym].clear
       end
 
-      def default_attributes
-        Hash.new
-      end
+      def dirty_attr_accessor(*attr_names)
+        attr_names.each do |attr_name|
+          define_attribute_method(attr_name)
+         
+          generated_attribute_methods.module_eval <<-STR, __FILE__, __LINE__ + 1
+            def #{attr_name}=(new_value)
+              #{attr_name}_will_change! unless new_value == attributes[:#{attr_name}]
+              attributes[:#{attr_name}] = new_value
+            end
 
-      ## Copied from .rbenv/verions/maglev/lib/maglev/gems/1.8/gems/activerecord-3.2.3/lib/active_record/attribute_methods/read.rb
-      def define_method_attribute(attr_name)
-        generated_attribute_methods.module_eval(
-          "def #{attr_name}; read_attribute('#{attr_name}'); end",
-           __FILE__, __LINE__)
-
-      end
-
-      ## Copied from .rbenv/verions/maglev/lib/maglev/gems/1.8/gems/activerecord-3.2.3/lib/active_record/attribute_methods/write.rb
-      def define_method_attribute=(attr_name)
-        if attr_name =~ ActiveModel::AttributeMethods::NAME_COMPILABLE_REGEXP
-          generated_attribute_methods.module_eval("def #{attr_name}=(new_value); write_attribute('#{attr_name}', new_value); end", __FILE__, __LINE__)
-        else
-          generated_attribute_methods.send(:define_method, "#{attr_name}=") do |new_value|
-            write_attribute(attr_name, new_value)
-          end
+            def #{attr_name}
+              attributes[:#{attr_name}]
+            end
+          STR
         end
       end
-
     end
 
     def to_key
@@ -71,35 +70,5 @@ module Maglev
       [key] if key
     end
 
-    def initialize(attributes = nil, options = {})
-      @attributes = self.class.initialize_attributes(self.class.default_attributes.dup)
-      @attributes_cache = {}
-
-      self._accessible_attributes[:default].each do |attr_name|
-        self.class.define_method_attribute(attr_name)
-        self.class.define_method_attribute=(attr_name)
-        @attributes[attr_name] = nil
-      end
-
-    end
-
-
-    ## Copied from .rbenv/verions/maglev/lib/maglev/gems/1.8/gems/activerecord-3.2.3/lib/active_record/attribute_methods/{write.rb, read.rb}
-    def read_attribute(attr_name)
-      @attributes[attr_name]
-    end
-
-    def write_attribute(attr_name, value)
-      @attributes[attr_name] = value
-    end
-
-    private
-      def attribute(attribute_name)
-        read_attribute(attribute_name)
-      end
-
-      def attribute=(attribute_name, value)
-        write_attribute(attribute_name, value)
-      end
   end
 end

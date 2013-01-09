@@ -23,10 +23,6 @@ class QueryInterfaceTest < Test::Unit::TestCase
     Book.clear
   end
 
-  def test_assert_the_truth
-    assert false
-  end
-
   def test_size_returns_correct_amount_of_books
     assert_equal Book.size, 8
   end
@@ -38,6 +34,7 @@ class QueryInterfaceTest < Test::Unit::TestCase
   end
 
   def test_first_returns_the_first_book
+    puts Book.first
     assert Book.first.title.include? "Philosopher"
   end
 
@@ -53,14 +50,6 @@ class QueryInterfaceTest < Test::Unit::TestCase
 
   def test_reset_works
     book = Book.first
-
-
-  end
-
-  end
-
-  def test_find
-    assert_equals Book.find(3).author, "Joanne K. Rowling"
   end
 
 end
