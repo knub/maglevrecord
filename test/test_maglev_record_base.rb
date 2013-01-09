@@ -11,12 +11,12 @@ class ExampleStudent
   end
 end
 
-descibe 'ExampleStudent' do
-  subject { ExampleStudent.new('Ferdinand') }
-
-  it "should know its name" do
-    subject.name.should equal('Ferdinand')
-  end
-
-end
+#describe 'ExampleStudent' do
+#  let(:student) { ExampleStudent.new('Ferdinand') }
+#
+#  it "should know its name" do
+#    subject.name.should equal('Ferdinand')
+#  end
+#
+#end
 

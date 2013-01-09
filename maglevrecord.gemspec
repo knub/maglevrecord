@@ -8,4 +8,6 @@ Gem::Specification.new do |s|
   s.files       = Dir["{bin,lib,man,test,spec}/**/*"]
   s.email       = "stefan.bunk@studentx.hpi.uni-potsdam.de"
   s.homepage    = 'https://github.com/knub/maglevrecord'
+
+  s.add_development_dependency('bacon')
 end
