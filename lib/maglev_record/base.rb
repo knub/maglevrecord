@@ -30,6 +30,14 @@ module MaglevRecord
       Maglev::PERSISTENT_ROOT[self.class.name.to_sym][self.object_id] = self
     end
 
+    def initialize(*args)
+      if args.size == 1
+        args[0].each do |k, v|
+          self.send("#{k.to_s}=".to_sym, v)
+        end
+      end
+    end
+
     private
     def attributes
       @attributes ||= {}
