@@ -30,14 +30,14 @@ class QueryInterfaceTest < Test::Unit::TestCase
   def test_clear_clears_the_database
     assert Book.size > 0
     Book.clear
-    #assert Book.size == 0
+    assert Book.size == 0
   end
 
   def test_first_returns_the_first_book
     assert Book.first.title.include? "Philosopher"
   end
 
-  def test_normal_collection_methods_work
+  def test_normal_enumerable_methods_work
     assert_equal 7, Book.count { |b| b.author == "Joanne K. Rowling" }
   end
 
@@ -49,6 +49,9 @@ class QueryInterfaceTest < Test::Unit::TestCase
 
   def test_reset_works
     book = Book.first
+    book.author = "J. R. R. Tolkien"
+    book.reset_author!
+    assert_equal book.author, "Joanne K. Rowling"
   end
 
 end
