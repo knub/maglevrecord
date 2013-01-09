@@ -25,21 +25,17 @@ module MaglevRecord
       ActiveSupport::HashWithIndifferentAccess.maglev_persistable
     end
    
-    def delete
-      self.class.delete(self)
-    end
-     
-    def save
-      @previously_changed = changes
-      @changed_attributes.clear
-      self.class.object_pool[self.object_id] = self
-    end
-
     def initialize(*args)
       if args.size == 1
         args[0].each do |k, v|
           self.send("#{k.to_s}=".to_sym, v)
         end
+      end
+    end
+
+    def reset!
+      changed.each do |attr|
+        self.send "reset_#{attr}!".to_sym
       end
     end
 
@@ -52,24 +48,6 @@ module MaglevRecord
       def create(*args)
         x = self.new(*args)
         x
-      end
-
-      def clear
-        self.object_pool.clear
-      end
-
-      def delete(*args)
-        if block_given? and args.size == 0
-          self.all.each do |m|
-            self.object_pool.delete(m.object_id) if yield(m)
-          end
-        elsif !block_given? and args.size > 0
-          args.each do |m|
-            self.object_pool.delete(m.object_id)
-          end
-        else
-          raise ArgumentError, "only block or arguments allowed"
-        end
       end
 
       def dirty_attr_accessor(*attr_names)
@@ -88,12 +66,8 @@ module MaglevRecord
           STR
         end
       end
-
-      def object_pool
-        Maglev::PERSISTENT_ROOT[self.name.to_sym] ||= {}
-      end
     end
-  
+     
     def to_key
       key = self.__id__
       [key] if key

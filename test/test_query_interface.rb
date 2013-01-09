@@ -47,11 +47,4 @@ class QueryInterfaceTest < Test::Unit::TestCase
     assert_equal Book.first.author, "William Shakespeare"
   end
 
-  def test_reset_works
-    book = Book.first
-    book.author = "J. R. R. Tolkien"
-    book.reset_author!
-    assert_equal book.author, "Joanne K. Rowling"
-  end
-
 end
