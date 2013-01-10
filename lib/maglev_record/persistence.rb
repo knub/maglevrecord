@@ -14,6 +14,7 @@ module MaglevRecord
         @changed_attributes.clear
         self.instance_variable_set(:@errors, nil)
         self.class.object_pool[self.object_id] = self
+        @dirty = nil
         true
       else
         raise StandardError, "Model validation failed"
