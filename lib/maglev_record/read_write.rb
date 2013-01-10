@@ -4,16 +4,6 @@ module MaglevRecord
   module ReadWrite
     extend ActiveSupport::Concern
 
-    included do
-      # puts self
-      # puts self.class
-      # self.class.define_method(:attr_accessor_with_maglev_persistence) do |*args|
-      #   puts "in attr_reader"
-      #   puts args
-      #   self.class.attr_reader_without_maglev_persistence
-      # end
-    end
-
     module ClassMethods
       def attr_reader(*attr_names)
         attr_names.each do |attr_name|

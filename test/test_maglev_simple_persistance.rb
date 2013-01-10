@@ -3,7 +3,7 @@ require "maglev_record"
 require "example_model"
 
 class MaglevSimplePersistanceTest < Test::Unit::TestCase
-  
+
   def run_with_new_transaction
     Maglev.abort_transaction
     yield
