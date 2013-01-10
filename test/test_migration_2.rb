@@ -138,7 +138,7 @@ class TestMigration_Timestamp < Test::Unit::TestCase
     puts "1"
     t1 = Time.gm(2003, 1, 23, 23, 23, 23.23)
     puts "2"
-    t2 = Time.new(2003, 1, 23, 23, 17, 23.23, (-60 * 60 * 6))
+    t2 = Time.new(2003, 1, 23, 23, 17, 23.23, "-06:00")
     puts "3"
     assert_equal t1, t2
     assert t1 <= t2
