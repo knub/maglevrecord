@@ -2,15 +2,12 @@
 module MaglevRecord
   Maglev::persistent do
 
-    #
-    # Subclass Migration
-    #
     class Migration
 
       @@migrations = Hash.new
 
       def self.first
-        @@first = self.with_timestamp('')
+        @@first = self.with_timestamp("init")
       end
 
       def self.now
@@ -18,9 +15,13 @@ module MaglevRecord
       end
       
       def self.with_timestamp(timestamp)
-        migration = self.new(timestamp)
-        @@migrations[timestamp] = migration
-        migration
+        if @@migrations[timestamp] == nil
+          migration = self.new(timestamp)
+          @@migrations[timestamp] = migration
+          return migration
+        end
+
+        @@migrations[timestamp]        
       end
 
       def self.clear
@@ -41,8 +42,13 @@ module MaglevRecord
         @children
       end
 
+      def _add_child(a_migration)
+        @children << a_migration
+      end
+
       def follows(a_migration)
         @parent = a_migration
+        a_migration._add_child(self) unless a_migration.nil?
         self
       end
 

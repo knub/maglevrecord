@@ -1,6 +1,7 @@
 require "test/unit"
 require "maglev_record"
 
+require 'time'
 
 class TestBook
   def author
@@ -110,7 +111,7 @@ class TestMigration_list < Test::Unit::TestCase
   def test_can_not_follow_myself
     m = M.with_timestamp("2")
     assert_raise(ArgumentError){
-      m.follow(m)
+      m.follows(m)
     }
   end
 
@@ -135,16 +136,16 @@ class TestMigration_Timestamp < Test::Unit::TestCase
     # check if we can use timestamps as migration ids
     # therefore we need a order (>, <, <=, >=, ==)
     #
-    puts "1"
-    t1 = Time.gm(2003, 1, 23, 23, 23, 23.23)
-    puts "2"
-    t2 = Time.new(2003, 1, 23, 23, 17, 23.23, "-06:00")
-    puts "3"
+    t1_str = "2003-01-23 23:23:23 +01:00"
+    t2_str = "2003-01-23 17:23:23 -05:00"
+
+    t1 = Time.parse(t1_str)
+    t2 = Time.parse(t2_str)
     assert_equal t1, t2
     assert t1 <= t2
     assert t1 >= t2
-    assert_not t1 > t2
-    assert_not t1 < t2
+    assert_equal false, t1 > t2     # assert_not does not exist
+    assert_equal false, t1 < t2
   end
 end
 
