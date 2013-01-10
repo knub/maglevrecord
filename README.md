@@ -53,15 +53,13 @@ class Book
   validates :title,  :presence => true,
                      :length => { :minimum => 5 }
 
-  dirty_attr_accessor :author, :title, :comments
+  attr_accessor :author, :title, :comments
 end
 ```
 
 With ```book.valid?``` you can determine if a model is valid. Models are automatically validated before ```save``` and have to be valid. Validation can be skipped with ```save(:validate => false)```.
 
-Attributes with ```dirty_attr_accessor``` can be reset if they were changed with the standard setter (```attribute=(value)```). Attributes with ```attr_accessor``` do not store value changes. Therefore, these models can be validated, but not reset.
-
-To reset a single attribute call ```attribute_reset!```, to reset the whole model call ```reset!```. ```reset!``` only resets ```dirty_attr_accessor``` attributes and ignores the other attributes.
+Attributes with ```attr_accessor``` can be reset if they were changed with the standard setter (```attribute=(value)```). To reset a single attribute call ```attribute_reset!```, to reset the whole model call ```reset!```. 
 ```ruby
 book = Book.find { |b| b.author == "The writer" }
 book.author = "Another author"
