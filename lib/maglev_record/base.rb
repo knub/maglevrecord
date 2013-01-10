@@ -35,13 +35,16 @@ module MaglevRecord
       end
     end
 
+    def clear_dirty
+      @dirty = nil
+    end
     def reset!
       changed.each do |attr|
         self.send "reset_#{attr}!".to_sym
       end
+      clear_dirty
     end
 
-    private
     def attributes
       @attributes ||= {}
     end

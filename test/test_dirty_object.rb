@@ -16,35 +16,35 @@ require 'test/unit'
 
 class DirtyObjectTest < Test::Unit::TestCase
 
-  def new_model
-    Book.dummy
+  def setup
+    Maglev.abort_transaction
+    @book = Book.dummy
+    @book.save
+    Maglev.commit_transaction
   end
 
   def test_no_save_or_reset_throws_error
-    m = new_model
-    m.author = "Shakespeare"
-    assert_raise Exception do
+    @book.author = "Shakespeare"
+    assert_raise TransactionError do
       Maglev.commit_transaction
     end
   end
 
   def test_reset_throws_no_error
-    m = new_model
-    m.author = "Shakespeare"
-    m.reset
+    @book.author = "Shakespeare"
+    @book.reset!
     assert_nothing_raised Exception do
       Maglev.commit_transaction
     end
-    assert_equal m.author, "Joanne K. Rowling"
+    assert_equal "Joanne K. Rowling", @book.author
   end
 
   def test_save_throws_no_error
-    m = new_model
-    m.author = "Shakespeare"
-    m.save
+    @book.author = "Shakespeare"
+    @book.save
     assert_nothing_raised Exception do
       Maglev.commit_transaction
     end
-    assert_equal m.author, "Shakespeare"
+    assert_equal @book.author, "Shakespeare"
   end
 end
