@@ -23,11 +23,22 @@ class DirtyObjectTest < Test::Unit::TestCase
     Maglev.commit_transaction
   end
 
+  def teardown
+    Maglev.abort_transaction
+    Book.clear
+    Maglev.commit_transaction
+  end
+
   def test_no_save_or_reset_throws_error
     @book.author = "Shakespeare"
-    assert_raise TransactionError do
+    exception = false
+    begin
       Maglev.commit_transaction
+    rescue Exception
+      exception = true
     end
+
+    assert exception
   end
 
   def test_reset_throws_no_error
