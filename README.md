@@ -104,6 +104,10 @@ Attributes with ```attr_accessor``` can be reset if they were changed with the s
  # => "The writer"
 ```
 
+### Migrations
+
+![Migration Model](https://raw.github.com/niccokunzmann/maglev-wiki-pictures/master/Migration%200.png)
+
 ## Further questions, improvements?
 
 Feel free to fork, pull-request or ask via email at bp2012h1 [at] hpi.uni-potsdam.de.
