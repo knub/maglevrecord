@@ -104,3 +104,7 @@ Attributes with ```attr_accessor``` can be reset if they were changed with the s
  # => "The writer"
 ```
 
+## Further questions, improvements?
+
+Feel free to fork, pull-request or ask via email at bp2012h1 [at] hpi.uni-potsdam.de.
+We are actively developing this and hope for feedback.
