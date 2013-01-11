@@ -120,7 +120,7 @@ Migrations "a" and "b" are used here and already applied to "EBook" whereas "c" 
 "e" and "f" have been applied to "EBook" but are not used here.
 
 We imagine rolling back "e" and "f" and applying "c" and "d" automatically, because
-maglevrecord stores the algorithms of "e" and "f" in the Stone during creation.
+maglevrecord stores the algorithms of "e" and "f" in the Stone.
 
 
 ## Further questions, improvements?
