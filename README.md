@@ -118,6 +118,7 @@ An object diagram of an example migration scenario can be seen below:
 "Wish" is the List of migrations found in the program.
 Migrations "a" and "b" are used by the program and are already applied to "EBook" whereas "c" and "d" are new migrations yet unknown to "EBook".
 "e" and "f" were applied to "EBook" but not used in this program.
+
 Since we can save the source code of all migrations we can imagine rolling back "e" and "f" and applying "c" and "d" instead.
 
 
