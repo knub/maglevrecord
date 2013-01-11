@@ -104,26 +104,3 @@ Attributes with ```attr_accessor``` can be reset if they were changed with the s
  # => "The writer"
 ```
 
-### Migrations
-
-Migrations are still in Progress in the branch feature/migration. Here are some thoughts:
-
-An object diagram of an example migration scenario can be seen below:
-
-![Migration Model](https://raw.github.com/niccokunzmann/maglev-wiki-pictures/master/Migration%200.png)
-
-"EBook" is the class that shall be migrated. 
-"e1" and "e2" are two objects of EBook. 
-"EBook" has a list "Done" of already applied migrations.
-"Wish" is the List of migrations required here.
-Migrations "a" and "b" are used here and already applied to "EBook" whereas "c" and "d" as new migrations are yet unknown to "EBook".
-"e" and "f" have been applied to "EBook" but are not used here.
-
-We imagine rolling back "e" and "f" and applying "c" and "d" automatically, because
-maglevrecord stores the algorithms of "e" and "f" in the Stone.
-
-
-## Further questions, improvements?
-
-Feel free to fork, pull-request or ask via email at bp2012h1 [at] hpi.uni-potsdam.de.
-We are actively developing this and hope for feedback.
