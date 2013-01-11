@@ -106,7 +106,20 @@ Attributes with ```attr_accessor``` can be reset if they were changed with the s
 
 ### Migrations
 
+Migrations are still in Progress in the branch feature/migration. Here are some thoughts:
+
+An object diagram of an example migration scenario can be seen below:
+
 ![Migration Model](https://raw.github.com/niccokunzmann/maglev-wiki-pictures/master/Migration%200.png)
+
+"EBook" is the class that shall be migrated. 
+"e1" and "e2" are two objects of EBook. 
+"EBook" has a list "Done" of already applied migrations.
+"Wish" is the List of migrations found in the program.
+Migrations "a" and "b" are used by the program and are already applied to "EBook" whereas "c" and "d" are new migrations yet unknown to "EBook".
+"e" and "f" were applied to "EBook" but not used in this program.
+Since we can save the source code of all migrations we can imagine rolling back "e" and "f" and applying "c" and "d" instead.
+
 
 ## Further questions, improvements?
 
