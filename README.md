@@ -119,8 +119,8 @@ An object diagram of an example migration scenario can be seen below:
 Migrations "a" and "b" are used here and already applied to "EBook" whereas "c" and "d" as new migrations are yet unknown to "EBook".
 "e" and "f" have been applied to "EBook" but are not used here.
 
-We imagine rolling back "e" and "f" and applying "c" and "d", automatically. 
-The algorithms of "e" and "f" can be stored in the Stone when the migrations are created.
+We imagine rolling back "e" and "f" and applying "c" and "d" automatically, because
+maglevrecord stores the algorithms of "e" and "f" in the Stone during creation.
 
 
 ## Further questions, improvements?
