@@ -19,6 +19,29 @@ module MaglevRecord
         end
       end
 
+      class Application
+        def initialize
+          @locked = false if @locked.nil?
+          @actions = []
+        end
+
+        def do
+          @actions << Proc.new unless locked?
+        end
+        def execute
+          lock
+          @actions.each { |action|
+            action.call
+          }
+        end
+        def lock
+          @locked = true
+        end
+        def locked?
+          @locked
+        end
+      end
+
       @@migrations = Hash.new
 
       def self.first
