@@ -4,6 +4,14 @@ module MaglevRecord
 
     class Migration
 
+      # nested classes 
+
+      class DownError < Exception
+      end
+
+      class UpError < Exception
+      end
+
       class FirstTimestamp
         include Comparable
 
@@ -19,37 +27,13 @@ module MaglevRecord
         end
       end
 
-      class Application
-        def initialize
-          @locked = false if @locked.nil?
-          @actions = []
-        end
-
-        def do
-          @actions << Proc.new unless locked?
-        end
-        def execute
-          lock
-          @actions.each { |action|
-            action.call
-          }
-        end
-        def lock
-          @locked = true
-        end
-        def locked?
-          @locked
-        end
-      end
+      # save instances
+      # replace with MaglevRecord::Model
 
       @@migrations = Hash.new
 
       def self.first
         @@first = self.with_timestamp(FirstTimestamp.new)
-      end
-
-      def self.now
-        Time.now
       end
 
       def self.with_timestamp(timestamp)
@@ -74,7 +58,12 @@ module MaglevRecord
         @timestamp = timestamp
         @children = []
         @parent = nil
+        @down = nil
+        @up = nil
+        @done = false
       end
+
+      # linked tree of migrations
 
       def children
         @children
@@ -96,12 +85,46 @@ module MaglevRecord
         @parent
       end
 
+      # timestamp 
+
       def timestamp
         @timestamp
       end
 
       def <=> (other_migration)
         timestamp <=> other_migration.timestamp
+      end
+      
+      def self.now
+        Time.now
+      end
+
+      # methods for code execution
+      
+      def up
+        raise ArgumentError, 'I can only have one block to execute' unless @up.nil?
+        @up = Proc.new
+      end
+
+      def down
+         raise ArgumentError, 'I can only have one block to execute' unless @down.nil?
+        @down = Proc.new
+      end
+
+      def done?
+        @done
+      end
+
+      def do
+        raise UpError, 'I am already up' if done?
+        @done = true
+        @up.call
+      end
+
+      def undo
+        raise DownError, 'I am already down' if not done?
+        @done = false
+        @down.call
       end
     end
 

@@ -37,6 +37,12 @@ class TestMigration_list < Test::Unit::TestCase
     M.clear
   end
 
+  def test_get_timestamp
+    o = Object.new
+    m1 = M.with_timestamp(o)
+    assert_equal m1.timestamp, o
+  end
+
   def test_first_is_always_first
     assert_equal(M.first, @first)
   end
@@ -160,17 +166,6 @@ class TestMigration_Timestamp < Test::Unit::TestCase
   end
 end
 
-class TestMigration_attributes < Test::Unit::TestCase
-
-  class M < MaglevRecord::Migration
-  end
-  
-  def test_get_timestamp
-    o = Object.new
-    m1 = M.with_timestamp(o)
-    assert_equal m1.timestamp, o
-  end
-end
 
 class TestMigration_comparism < Test::Unit::TestCase
 
@@ -220,6 +215,86 @@ class TestMigration_comparism < Test::Unit::TestCase
 
 end
 
+class TestMigration_application < Test::Unit::TestCase
+
+  class M < MaglevRecord::Migration
+  end
+
+  def setup
+    @l = []
+    @m = M.with_timestamp('test')
+    m.up{
+      l << 1
+    }
+    m.down{
+      l.delete(1)
+    }
+  end
+
+  def m
+    @m
+  end
+
+  def l
+    @l
+  end
+
+  def teardown
+    M.clear
+  end
+
+  def test_can_be_done
+    m.do
+    assert m.done?
+  end
+
+  def test_new_app_is_not_done
+    assert_equal m.done?, false
+  end
+
+  def test_undo_fail
+    assert_raise(M::DownError) {
+      m.undo
+    }
+  end
+
+  def test_undo_possible
+    m.do
+    m.undo
+    assert_equal m.done?, false
+  end
+
+  def test_do
+    m.do
+    assert_equal l, [1]
+    m.undo
+    assert_equal l, []
+    assert_raise(M::DownError){
+      m.undo
+    }
+  end
+
+  def test_do_twice
+    m.do
+    assert_raise(M::UpError) {
+      m.do
+    }
+  end
+
+  def test_up_twice
+    assert_raise (ArgumentError) {
+      m.up {}
+    }
+  end
+
+  def test_down_twice
+    assert_raise (ArgumentError) {
+      m.down {}
+    }
+  end
+
+
+end
 
 
 

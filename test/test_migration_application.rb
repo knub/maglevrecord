@@ -15,7 +15,7 @@ class TestMigrationApplication_apply # < Test::Unit::TestCase
   # this is helpful, if a migration is loaded twice: 
   #   the code will not run twice
   # 
-  class A < MaglevRecord::Migration::Application
+  class A # < MaglevRecord::Migration::Application
   end
 
   def setup
