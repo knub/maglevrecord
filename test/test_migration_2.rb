@@ -12,6 +12,13 @@ class TestBook
   end
 end
 
+class Test::Unit::TestCase
+  def assert_not(bool, message = nil)
+    assert_equal false, bool, message
+  end
+end
+ 
+
 #
 # only for parent and successor
 #
@@ -55,7 +62,7 @@ class TestMigration_list < Test::Unit::TestCase
   end
 
   def test_all_migrations_depending_on_an_other_migration_are_its_children
-    m = M.with_timestamp('a')
+    m = M.with_timestamp(0)
     x = 10
     ms = (1..x).collect { |n|
       M.with_timestamp(n).follows(m)
@@ -115,6 +122,10 @@ class TestMigration_list < Test::Unit::TestCase
     }
   end
 
+  def test_migration_is_not_nil
+    assert_not M.first.nil?
+    assert_not M.with_timestamp('lala').nil?
+  end
 end
 
 class TestMigration_Timestamp < Test::Unit::TestCase
@@ -149,7 +160,65 @@ class TestMigration_Timestamp < Test::Unit::TestCase
   end
 end
 
+class TestMigration_attributes < Test::Unit::TestCase
 
+  class M < MaglevRecord::Migration
+  end
+  
+  def test_get_timestamp
+    o = Object.new
+    m1 = M.with_timestamp(o)
+    assert_equal m1.timestamp, o
+  end
+end
+
+class TestMigration_comparism < Test::Unit::TestCase
+
+  class M < MaglevRecord::Migration
+  end
+
+  class T < M::FirstTimestamp
+
+  end
+
+  def test_first_is_smaller_than_everything
+    f = M.first.timestamp
+    assert_first_timestamp(f)
+  end
+
+  def test_first_timestamp_is_smaller_than_everything
+    assert_first_timestamp(T.new)
+  end
+
+  def assert_first_timestamp(f)
+    assert f == f,  "=="
+    assert_not f < f, "<"
+    assert_not f > f, ">"
+    assert f < 1, "< 1"
+    assert_not f > 1, "> 1"
+    assert_not f == 1, "== 1"
+    assert f < "smile", "< x"
+    assert_not f > "smile", "> x"
+    assert_not f == "smile", "== x"
+    assert f <= "trila", "<= x"
+    assert_not f >= "trila", ">= x"
+  end
+
+  def test_first_timestamp_hashes_equal
+    assert_equal T.new.hash, T.new.hash
+  end
+
+  def test_migrations_sort_by_timstamp
+    m1 = M.with_timestamp(1)
+    m5 = M.with_timestamp(5)
+    m4 = M.with_timestamp(4)
+    m2 = M.with_timestamp(2)
+    m3 = M.with_timestamp(3)
+    l = [m2, m4, m1, m3, m5].sort
+    assert_equal l, [m1, m2, m3, m4, m5]
+  end
+
+end
 
 
 
