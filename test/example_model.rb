@@ -22,7 +22,7 @@ end
 
 class MigrationBook
   include MaglevRecord::Base
-  dirty_attr_accessor :author
+  attr_accessor :author
 
   def self.setupForMigration
     clear()
