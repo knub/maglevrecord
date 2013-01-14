@@ -8,23 +8,23 @@ module MaglevRecord
       include ::Enumerable
 
       def each
-        self.all.each do |el|
+        self.object_pool.each_value do |el|
           yield(el)
         end
       end
 
       def size
-        Maglev::PERSISTENT_ROOT[self.name.to_sym].size
+        self.object_pool.size
       end
 
       alias_method :length, :size
 
       def find_by_objectid(id)
-        Maglev::PERSISTENT_ROOT[self.name.to_sym][id]
+        self.object_pool[id]
       end
 
       def all
-        Maglev::PERSISTENT_ROOT[self.name.to_sym].values
+        self.object_pool.values
       end
 
     end

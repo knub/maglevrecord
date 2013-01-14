@@ -1,5 +1,7 @@
 require "maglev_record/persistence"
 require "maglev_record/enumerable"
+require "maglev_record/read_write"
+require "maglev_record/transaction_request_wrapper"
 require "rubygems"
 require "active_support"
 require "active_model"
@@ -19,18 +21,31 @@ module MaglevRecord
       include ActiveModel::Validations
       include MaglevRecord::Persistence
       include MaglevRecord::Enumerable
+      include MaglevRecord::ReadWrite
 
-      Maglev::PERSISTENT_ROOT[self.name.to_sym] ||= Hash.new
       self.maglev_persistable
+      ActiveSupport.maglev_persistable
+      ActiveSupport::HashWithIndifferentAccess.maglev_persistable
     end
 
-    def save
-      @previously_changed = changes
-      @changed_attributes.clear
-      Maglev::PERSISTENT_ROOT[self.class.name.to_sym][self.object_id] = self
+    def initialize(*args)
+      if args.size == 1
+        args[0].each do |k, v|
+          self.send("#{k.to_s}=".to_sym, v)
+        end
+      end
     end
 
-    private
+    def clear_dirty
+      @dirty = nil
+    end
+    def reset!
+      changed.each do |attr|
+        self.send "reset_#{attr}!".to_sym
+      end
+      clear_dirty
+    end
+
     def attributes
       @attributes ||= {}
     end
@@ -41,26 +56,6 @@ module MaglevRecord
         x
       end
 
-      def clear
-        Maglev::PERSISTENT_ROOT[self.name.to_sym].clear
-      end
-
-      def dirty_attr_accessor(*attr_names)
-        attr_names.each do |attr_name|
-          define_attribute_method(attr_name)
-
-          generated_attribute_methods.module_eval <<-STR, __FILE__, __LINE__ + 1
-            def #{attr_name}=(new_value)
-              #{attr_name}_will_change! unless new_value == attributes[:#{attr_name}]
-              attributes[:#{attr_name}] = new_value
-            end
-
-            def #{attr_name}
-              attributes[:#{attr_name}]
-            end
-          STR
-        end
-      end
     end
 
     def to_key

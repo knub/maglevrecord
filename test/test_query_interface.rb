@@ -24,32 +24,27 @@ class QueryInterfaceTest < Test::Unit::TestCase
   end
 
   def test_size_returns_correct_amount_of_books
-    #assert_equal Book.size, 8
+    assert_equal Book.size, 8
   end
 
   def test_clear_clears_the_database
-    #assert Book.size > 0
+    assert Book.size > 0
     Book.clear
-    #assert Book.size == 0
+    assert Book.size == 0
   end
 
   def test_first_returns_the_first_book
-    puts Book.first
-    #assert Book.first.title.include? "Philosopher"
+    assert Book.first.title.include? "Philosopher"
   end
 
-  def test_normal_collection_methods_work
-    #assert_equal 7, Book.select do |book| book.author == "Joanne K. Rowling" end.size
+  def test_normal_enumerable_methods_work
+    assert_equal 7, Book.count { |b| b.author == "Joanne K. Rowling" }
   end
 
   def test_work_on_real_objects
     book = Book.first
     book.author = "William Shakespeare"
-    #assert_equal Book.first.author, "William Shakespeare"
-  end
-
-  def test_reset_works
-    book = Book.first
+    assert_equal Book.first.author, "William Shakespeare"
   end
 
 end
