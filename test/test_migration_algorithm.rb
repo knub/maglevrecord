@@ -37,4 +37,14 @@ class TestMigrationList < Test::Unit::TestCase
     assert_equal ML.last, l
   end
 
+  def test_lists_link_to_last_list
+    l1 = ML.last
+    l2 = ML.new
+    l3 = ML.new
+    l4 = ML.new
+    assert_equal l1, l2.last_migration_list
+    assert_equal l2, l3.last_migration_list
+    assert_equal l3, l4.last_migration_list
+  end
+
 end
