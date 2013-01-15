@@ -3,7 +3,7 @@ module MaglevRecord
   Maglev::persistent do
 
     class Migration
-
+      include Persistence
       # nested classes 
 
       class DownError < Exception
@@ -30,28 +30,24 @@ module MaglevRecord
       # save instances
       # replace with MaglevRecord::Model
 
-      @@migrations = Hash.new
-
       def self.first
-        @@first = self.with_timestamp(FirstTimestamp.new)
+        @@first = first = self.with_timestamp(FirstTimestamp.new)
+        first.up{} unless first.has_up?
+        first.down{} unless first.has_down?
+        first
       end
 
       def self.with_timestamp(timestamp)
-        if @@migrations[timestamp] == nil
-          migration = self.new(timestamp)
-          @@migrations[timestamp] = migration
-          return migration
+        migration = object_pool[timestamp]
+        if migration.nil?
+          object_pool[timestamp] = migration = self.new(timestamp)
         end
-
-        @@migrations[timestamp]
+        migration
       end
 
-      def self.clear
-        @@migrations.clear
-      end
 
       def self.size
-        @@migrations.size
+        object_pool.size
       end
 
       def initialize(timestamp)
@@ -118,13 +114,21 @@ module MaglevRecord
       def do
         raise UpError, 'I am already up' if done?
         @done = true
-        @up.call
+        @up.call unless @up.nil?
       end
 
       def undo
         raise DownError, 'I am already down' if not done?
         @done = false
-        @down.call
+        @down.call unless @down.nil?
+      end
+
+      def has_up?
+        not @up.nil?
+      end
+
+      def has_down?
+        not @down.nil?
       end
     end
 

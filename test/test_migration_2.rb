@@ -29,12 +29,23 @@ class TestMigration_list < Test::Unit::TestCase
   class M < MaglevRecord::Migration
   end
 
+  class M2 < M
+  end
+
   def setup
     @first = M.first
   end
 
   def teardown
     M.clear
+  end
+
+  def test_clear_on_subclass_does_not_clear_class
+    m1 = M.with_timestamp('test1')
+    m2 = M2.with_timestamp('test2')
+    M2.clear
+    assert m1.equal? M.with_timestamp('test1')
+    assert_not m2.equal? M2.with_timestamp('test2')
   end
 
   def test_get_timestamp
@@ -88,6 +99,12 @@ class TestMigration_list < Test::Unit::TestCase
     m = M.with_timestamp('test')
     M.clear
     assert_equal M.size, 0
+  end
+
+  def test_clear2
+    m = M.with_timestamp('test_clear')
+    M.clear
+    assert_not m.equal? M.with_timestamp('test_clear')
   end
 
   def test_M_size
@@ -215,7 +232,7 @@ class TestMigration_comparism < Test::Unit::TestCase
 
 end
 
-class TestMigration_application < Test::Unit::TestCase
+class TestMigration_up_and_down < Test::Unit::TestCase
 
   class M < MaglevRecord::Migration
   end
@@ -227,7 +244,7 @@ class TestMigration_application < Test::Unit::TestCase
       l << 1
     }
     m.down{
-      l.delete(1)
+      assert_equal(l.delete(1), 1)
     }
   end
 
@@ -293,7 +310,45 @@ class TestMigration_application < Test::Unit::TestCase
     }
   end
 
+  def test_can_do_if_up_not_set
+    m1 = M.with_timestamp('test2')
+    m1.do # raises no error!
+  end
 
+  def test_can_undo_if_down_not_set
+    m1 = M.with_timestamp('test2')
+    m1.up {}
+    m1.do 
+    m1.undo # raises no error!
+  end
+
+  def test_can_not_define_up_and_down_on_first
+    f = M.first
+    assert_raise(ArgumentError) {
+      f.up {}
+    }
+    assert_raise(ArgumentError) {
+      f.down {}
+    }
+  end
+
+  def test_has_no_up_down
+    m = M.with_timestamp('abc')
+    assert_not m.has_up?
+    assert_not m.has_down?
+  end
+
+  def test_has_up
+    m = M.with_timestamp('abc')
+    m.up {}
+    assert m.has_up?
+  end
+
+  def test_has_down
+    m = M.with_timestamp('abc')
+    m.down {}
+    assert m.has_down?
+  end
 end
 
 
