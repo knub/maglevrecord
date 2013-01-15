@@ -149,6 +149,7 @@ class TestMigration_list < Test::Unit::TestCase
     assert_not M.first.nil?
     assert_not M.with_timestamp('lala').nil?
   end
+
 end
 
 class TestMigration_Timestamp < Test::Unit::TestCase

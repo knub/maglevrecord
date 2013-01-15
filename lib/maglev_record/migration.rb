@@ -132,6 +132,19 @@ module MaglevRecord
       end
     end
 
+    class MigrationList
+      include Persistence
+
+      def self.last
+        object_pool[:last]
+      end
+
+      def self.new
+        object = super
+        object_pool[:last] = object
+      end
+    end
+
   end
 
 end
