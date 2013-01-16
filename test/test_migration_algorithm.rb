@@ -73,6 +73,11 @@ class TestMigrationList < TestMigrationListBase
     assert !l.consistent?
   end
 
+  def test_first_of_two_lists_equal
+    assert_equal ML2.first, ML2.first
+    assert_equal ML2.first.hash, ML2.first.hash
+  end
+
 end
 
 class TestMigrationList_Scenario < TestMigrationListBase
@@ -86,6 +91,11 @@ class TestMigrationList_Scenario < TestMigrationListBase
     @l2 = ML.new
     @ma = ML::Migration.with_timestamp(97).follows(@m2).up{list << "a"}.down{list.delete("a")}
     @mb = @l2.migration(98).follows(@ma).up{list << "b"}.down{list.delete("b")}
+
+    @l3 = ML.new
+    @mA = ML::Migration.with_timestamp("A").follows(l3.first_migration).up{list << "A"}.down{list.delete("A")}
+    @mC = ML::Migration.with_timestamp("C").follows(@mA).up{list << "C"}.down{list.delete("C")}
+    @mB = ML::Migration.with_timestamp("B").follows(@mC).up{list << "B"}.down{list.delete("B")}
   end
 
   def setup
@@ -100,6 +110,10 @@ class TestMigrationList_Scenario < TestMigrationListBase
 
   def l2
     @l2
+  end
+
+  def l3
+    @l3
   end
 
   def first_m
@@ -173,5 +187,67 @@ class TestMigrationList_Scenario < TestMigrationListBase
     assert_equal l2.migrations_to_undo, [@m3, @m4]
   end
 
+  def test_migration_are_executed_in_follower_order
+    l3.up
+    assert_equal l, ["A", "C", "B"]
+  end
+end
+
+class TestMigrationList_migration_order  < TestMigrationListBase
+  
+  def mf(name, *names)
+    mig = l.migration(name)
+    names.each{ |name|
+      mig.follows(l.migration(name))
+    }
+    mig
+  end
+
+  def byName(*names)
+    names.collect{ |name| l.migration(name)}
+  end
+
+  def test_order_by_name_no_parent
+    mf(1)
+    mf(3)
+    mf(2)
+    assert_equal l.migration_order byName(1,3,2), byName(1,2,3)
+  end
+
+  def test_circle
+    mf(1,2)
+    mf(2,3)
+    mf(4,5)
+    mf(3,4)
+    mf(5,1)
+    assert_raises(ML::CircularMigrationOrderError){
+      l.migration_order byName(2,5,3,4,1)
+    }
+  end
+
+  def test_split
+    mf(1).follow(l.first_migration)
+    mf(2, 1)
+    mf(3, 1)
+    mf(4, 3)
+    mf(5, 2)
+    assert_equal l.migration_order byName(5,2,3,1,4), byName(1,2,3,4,5)
+  end
+
+  def test_merge
+    mf(1)
+    mf(2)
+    mf(3, 1, 2)
+    mf(4, 3)
+    assert_equal l.migration_order byName(4,3,2,1), byName(1,2,3,4)
+  end
+
+  def test_several_merges
+    mf(3, 1); mf(2, 1)
+    mf(5, 3); mf(4, 3, 2)
+    mf(7, 5); mf(6, 4)
+    mf(9, 7); mf(8, 6, 9)
+    assert_equal l.migration_order byName(4,3,2,1,5,6,7,8,9), byName(1, 2, 3, 4, 5, 6, 7, 9, 8)
+  end
 
 end
