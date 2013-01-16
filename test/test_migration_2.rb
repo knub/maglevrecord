@@ -207,6 +207,7 @@ class TestMigration_comparism < Test::Unit::TestCase
     assert f == f,  "=="
     assert_not f < f, "<"
     assert_not f > f, ">"
+
     assert f < 1, "< 1"
     assert_not f > 1, "> 1"
     assert_not f == 1, "== 1"
@@ -215,6 +216,15 @@ class TestMigration_comparism < Test::Unit::TestCase
     assert_not f == "smile", "== x"
     assert f <= "trila", "<= x"
     assert_not f >= "trila", ">= x"
+
+#    assert 1 > f, "< 1"
+#    assert_not 1 < f, "> 1"
+#    assert_not 1 == f, "== 1"
+#    assert "smile" > f, "< x"
+#    assert_not "smile" < f, "> x"
+#    assert_not "smile" == f, "== x"
+#    assert "trila" >= f, "<= x"
+#    assert_not "trila" <= f, ">= x"
   end
 
   def test_first_timestamp_hashes_equal
