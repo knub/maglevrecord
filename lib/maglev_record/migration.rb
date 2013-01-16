@@ -25,6 +25,7 @@ module MaglevRecord
         def hash
           self.class.hash
         end
+
       end
 
       # save instances
@@ -88,7 +89,14 @@ module MaglevRecord
       end
 
       def <=> (other_migration)
-        timestamp <=> other_migration.timestamp
+        t1 = timestamp
+        t2 = other_migration.timestamp
+        v = t1 <=> t2
+        if v.nil?
+          v = - (t2 <=> t1)
+        end
+        raise TypeError, "value of <=> should be 1, -1 or 0, not #{v.inspect}" if v != 0 and v != 1 and v != -1
+        return v
       end
       
       def self.now
@@ -148,6 +156,9 @@ module MaglevRecord
       class Migration < MaglevRecord::Migration
       end
 
+      class InconsistentMigrationState < Exception
+      end
+
       def self.last
         object_pool[:last]
       end
@@ -158,6 +169,7 @@ module MaglevRecord
       end
 
       def initialize
+        @parent = self.class.last
         @migrations = []
       end
 
@@ -176,19 +188,26 @@ module MaglevRecord
       end
 
       def up
-        
+
       end
 
       def consistent?
-        true
+        migrations.include? first_migration
       end
 
       def parent
-
+        @parent
       end
 
       def migrations
-        @migrations
+        list = []
+        @migrations.each{ |migration|
+          while not list.include? migration and not migration.nil?
+            list << migration
+            migration = migration.parent
+          end
+        }
+        list.sort
       end
 
     end

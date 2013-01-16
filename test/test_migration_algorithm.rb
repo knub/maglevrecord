@@ -1,7 +1,7 @@
 require "test/unit"
 require "maglev_record"
 
-class TestMigrationList < Test::Unit::TestCase
+class TestMigrationListBase < Test::Unit::TestCase
   
   class ML < MaglevRecord::MigrationList
   end
@@ -15,11 +15,19 @@ class TestMigrationList < Test::Unit::TestCase
 
   def teardown
     ML.clear
+    ML::Migration.clear
   end
 
   def l
     @l
   end
+
+  def test_nothing
+  end
+
+end
+
+class TestMigrationList < TestMigrationListBase
 
   def test_l_was_created_last
     assert_equal ML.last, l
@@ -42,53 +50,48 @@ class TestMigrationList < Test::Unit::TestCase
     l2 = ML.new
     l3 = ML.new
     l4 = ML.new
-    assert_equal l1, l2.last_migration_list
-    assert_equal l2, l3.last_migration_list
-    assert_equal l3, l4.last_migration_list
+    assert_equal l1, l2.parent
+    assert_equal l2, l3.parent
+    assert_equal l3, l4.parent
   end
 
   def test_first_is_last_if_there_is_no_migration
-    assert_equal l.last, l.first
+    assert_equal l.last_migration, l.first_migration
   end
 
   # make sure that we have always one root
-  def test_conststent_if_root_is_first
-    m = l.migration(1).follows(l.first)
-    assert m.consistent?
+  def test_consistent_if_root_is_first
+    m = l.migration(1).follows(l.first_migration)
+    assert l.consistent?
   end
 
-  def test_not_conststent_if_root_not_first
+  def test_not_consistent_if_root_not_first
     m = l.migration(1)
     m = l.migration(2).follows(m)
     m = l.migration(3).follows(m)
     m = l.migration(4).follows(m)
-    assert !m.consistent?
+    assert !l.consistent?
   end
 
 end
 
-class TestMigrationList_Scenario < TestMigrationList
+class TestMigrationList_Scenario < TestMigrationListBase
 
   def setup_scenario_1
-    @m1 = l.migration(1).follow(l.first_migration).up{list << 1}.down{list.delete(1)}
+    @m1 = l.migration(1).follows(l.first_migration).up{list << 1}.down{list.delete(1)}
     @m2 = l.migration(2).follows(@m1).up{list << 2}.down{list.delete(2)}
     @m3 = ML::Migration.with_timestamp(3).follows(@m2).up{list << 3}.down{list.delete(3)}
     @m4 = l.migration(4).follows(@m3).up{list << 4}.down{list.delete(4)}
-  end
 
-  def setup_scenario_2
     @l2 = ML.new
-    @m1 = @l2.migration(1).follow(@l2.first_migration).up{list << 1}.down{list.delete(1)}
-    @m2 = @l2.migration(2).follows(@m1).up{list << 2}.down{list.delete(2)}
-    @ma = ML::Migration.with_timestamp("a").follows(@m2).up{list << "a"}.down{list.delete("a")}
-    @mb = @l2.migration("b").follows(@ma).up{list << "b"}.down{list.delete("b")}
+    @ma = ML::Migration.with_timestamp(97).follows(@m2).up{list << "a"}.down{list.delete("a")}
+    @mb = @l2.migration(98).follows(@ma).up{list << "b"}.down{list.delete("b")}
   end
 
   def setup
     super
     @list = []
     setup_scenario_1
-    setup_scenario_2
   end
 
   def list
@@ -140,8 +143,9 @@ class TestMigrationList_Scenario < TestMigrationList
   end
 
   def test_get_list_of_migrations
-    assert_equal l.migrations, [@m1, @m2, @m3, @m4]
-    assert_equal l2.migrations, [@m1, @m2, @ma, @mb]
+    f = l.first_migration
+    assert_equal l.migrations, [f, @m1, @m2, @m3, @m4]
+    assert_equal l2.migrations, [f, @m1, @m2, @ma, @mb]
   end
 
 end
