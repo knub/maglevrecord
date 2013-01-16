@@ -54,7 +54,7 @@ module MaglevRecord
       def initialize(timestamp)
         @timestamp = timestamp
         @children = []
-        @parent = nil
+        @parents = []
         @down = nil
         @up = nil
         @done = false
@@ -66,20 +66,22 @@ module MaglevRecord
         @children
       end
 
-      def _add_child(a_migration)
-        @children << a_migration
-      end
-
-      def follows(a_migration)
-        raise ArgumentError, "#{a_migration} must have timestamp before mine #{@timestamp} to be my parent" if a_migration.timestamp >= timestamp
-        raise ArgumentError, "can only follow one migration" unless @parent.nil? or @parent == a_migration
-        @parent = a_migration
-        a_migration._add_child(self)
+      def add_child(a_migration)
+        raise ArgumentError, "I can not follow myself" if a_migration.timestamp == timestamp
+        @children << a_migration unless @children.include? a_migration
+        a_migration.follows(self) unless a_migration.parents.include? self
         self
       end
 
-      def parent
-        @parent
+      def follows(a_migration)
+        raise ArgumentError, "I can not follow myself" if a_migration.timestamp == timestamp
+        @parents << a_migration unless @parents.include? a_migration
+        a_migration.add_child(self)
+        self
+      end
+
+      def parents
+        @parents
       end
 
       # timestamp 
@@ -150,6 +152,11 @@ module MaglevRecord
       end
     end
 
+    #
+    # A MigrationList contains  a list of migrations 
+    # that should be done when the list is the last MigrationList 
+    # in the system (MigrationList.last)
+    #
     class MigrationList
       include Persistence
 
@@ -160,8 +167,8 @@ module MaglevRecord
       end
 
       class FirstMigrationList
-        def parent
-          self
+        def parents
+          []
         end
         def migration_set_done
           Set.new
@@ -187,12 +194,12 @@ module MaglevRecord
 
       def initialize
         @parent = self.class.last
-        @migrations = []
+        @migration_set = Set.new
       end
 
       def migration(timestamp)
         migration = Migration.with_timestamp(timestamp)
-        @migrations << migration
+        @migration_set << migration
         migration
       end
 
@@ -234,13 +241,16 @@ module MaglevRecord
       end
 
       def migration_set
+        todo = Set.new(@migration_set)
         set = Set.new
-        @migrations.each{ |migration|
-          while not set.include? migration and not migration.nil?
-            set << migration
-            migration = migration.parent
-          end
-        }
+        while not todo.empty?
+          migration = todo[0]
+          todo.delete(migration)
+          set << migration
+          migration.parents.each{ |parent| 
+            todo.add(parent) unless set.include? parent
+          }
+        end
         set
       end
 
