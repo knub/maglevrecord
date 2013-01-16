@@ -65,12 +65,12 @@ class TestMigration_list < Test::Unit::TestCase
   end
 
   def test_first_has_no_parent_migration
-    assert_equal @first.parent, nil
+    assert_equal @first.parents, []
   end
 
   def test_first_preceeds_new_migration
     m = M.with_timestamp('test').follows(@first)
-    assert_equal m.parent, M.first
+    assert_equal m.parents, [M.first]
   end
 
   def test_new_migration_succeeds_first
@@ -85,7 +85,7 @@ class TestMigration_list < Test::Unit::TestCase
       M.with_timestamp(n).follows(m)
     }
     ms.each{ |m2| 
-      assert_equal m2.parent, m
+      assert_equal m2.parents, [m]
       assert m.children.include? m2
     }
   end
@@ -117,25 +117,23 @@ class TestMigration_list < Test::Unit::TestCase
     f = M.with_timestamp('axyz')
     m = M.with_timestamp('casd').follows(f)
     m.follows(f)
-    assert_equal m.parent, f
+    assert_equal m.parents, [f]
   end
 
   def test_follow_different_migrations
-    # TODO: do something better than error
     f = M.with_timestamp('axyz')
     m = M.with_timestamp('casd').follows(f)
-    assert_raise(ArgumentError) {
-      m.follows(M.first)
-    }
+    m.follows(M.first)
+    assert_equal m.parents, [f, M.first]
   end
 
   def test_can_follow_with_higher_timestamp
     m1 = M.with_timestamp('aaa').follows(@first)
     m2 = M.with_timestamp('aab').follows(m1)
     m3 = M.with_timestamp('aad').follows(m2)
-    assert_raise(ArgumentError) {
-      m4 = M.with_timestamp('aac').follows(m3)
-    }
+    m4 = M.with_timestamp('aac').follows(m3)
+    assert_equal m4.parents, [m3]
+    assert_equal m3.children, [m4]
   end
 
   def test_can_not_follow_myself
@@ -148,6 +146,30 @@ class TestMigration_list < Test::Unit::TestCase
   def test_migration_is_not_nil
     assert_not M.first.nil?
     assert_not M.with_timestamp('lala').nil?
+  end
+
+  def test_a_migration_with_two_children
+    m1 = M.with_timestamp(1)
+    m2 = M.with_timestamp(2).follows(m1)
+    m3 = M.with_timestamp(3).follows(m1)
+    m3 = M.with_timestamp(3).follows(m1)
+    assert_equal m1.children, [m2, m3]
+  end
+
+  def test_add_child
+    m1 = M.with_timestamp('a')
+    m2 = M.with_timestamp('b')
+    m3 = M.with_timestamp('c').add_child(m1).add_child(m2).add_child(m2)
+    assert_equal m3.children, [m1, m2]
+    assert_equal m1.parents, [m3]
+    assert_equal m2.parents, [m3]
+  end
+
+  def test_add_self_as_child
+     m1 = M.with_timestamp('a')
+     assert_raise(ArgumentError){
+       m1.add_child(m1)
+     }
   end
 
 end
