@@ -102,6 +102,10 @@ class TestMigrationList_Scenario < TestMigrationListBase
     @l2
   end
 
+  def first_m
+    l.first_migration
+  end
+
   def test_list_empty
     assert_equal list, []
   end
@@ -143,9 +147,31 @@ class TestMigrationList_Scenario < TestMigrationListBase
   end
 
   def test_get_list_of_migrations
-    f = l.first_migration
-    assert_equal l.migrations, [f, @m1, @m2, @m3, @m4]
-    assert_equal l2.migrations, [f, @m1, @m2, @ma, @mb]
+    assert_equal l.migrations, [first_m, @m1, @m2, @m3, @m4]
+    assert_equal l2.migrations, [first_m, @m1, @m2, @ma, @mb]
   end
+
+  def test_migrations_to_do
+    assert_equal l.migrations_to_do, [first_m, @m1, @m2, @m3, @m4]
+    assert_equal l2.migrations_to_do, [first_m, @m1, @m2, @ma, @mb]
+    l.up
+    assert_equal l2.migrations_to_do, [@ma, @mb]
+  end
+
+  def test_migrations_done
+    assert_equal l.migrations_done, []
+    assert_equal l2.migrations_done, []
+    l.up
+    assert_equal l.migrations_done, l.migrations
+    assert_equal l2.migrations_done, [first_m, @m1, @m2]
+  end
+
+  def test_migrations_to_undo
+    assert_equal l.migrations_to_undo, []
+    assert_equal l2.migrations_to_undo, []
+    l.up
+    assert_equal l2.migrations_to_undo, [@m3, @m4]
+  end
+
 
 end
