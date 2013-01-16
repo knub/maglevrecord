@@ -1,4 +1,18 @@
 
+require "set"
+
+class Set
+  
+  # remove a random element from the set and return it
+  #
+  def pop
+    each{ |element|
+      delete element
+      return element
+    }
+  end
+end
+
 module MaglevRecord
   Maglev::persistent do
 
@@ -244,8 +258,7 @@ module MaglevRecord
         todo = Set.new(@migration_set)
         set = Set.new
         while not todo.empty?
-          migration = todo[0]
-          todo.delete(migration)
+          migration = todo.pop
           set << migration
           migration.parents.each{ |parent| 
             todo.add(parent) unless set.include? parent
