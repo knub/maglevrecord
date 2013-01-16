@@ -250,4 +250,6 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     assert_equal l.migration_order byName(4,3,2,1,5,6,7,8,9), byName(1, 2, 3, 4, 5, 6, 7, 9, 8)
   end
 
+  #TODO: add tests for HEADS (parents)
+
 end
