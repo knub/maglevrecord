@@ -352,7 +352,26 @@ class TestMigration_up_and_down < Test::Unit::TestCase
   end
 end
 
+class TestMigration_conversion < Test::Unit::TestCase
 
+  class M < MaglevRecord::Migration
+  end
+
+  class M3 < M
+  end
+
+  def test_to_s_with_timestamp
+    assert_equal M.with_timestamp("aaa").to_s, M.name + '.with_timestamp("aaa")'
+    assert_equal M3.with_timestamp(123).to_s, M3.name + '.with_timestamp(123)'
+  end
+
+  def test_inspect_with_timestamp
+    assert_equal M.with_timestamp("aaa").inspect, M.name + '.with_timestamp("aaa")'
+    assert_equal M3.with_timestamp(123).inspect, M3.name + '.with_timestamp(123)'
+  end
+
+
+end
 
 
 

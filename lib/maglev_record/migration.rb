@@ -100,11 +100,13 @@ module MaglevRecord
       def up
         raise ArgumentError, 'I can only have one block to execute' unless @up.nil?
         @up = Proc.new
+        self
       end
 
       def down
-         raise ArgumentError, 'I can only have one block to execute' unless @down.nil?
+        raise ArgumentError, 'I can only have one block to execute' unless @down.nil?
         @down = Proc.new
+        self
       end
 
       def done?
@@ -130,10 +132,21 @@ module MaglevRecord
       def has_down?
         not @down.nil?
       end
+
+      def to_s
+        self.class.name + ".with_timestamp(#{timestamp.inspect})"
+      end
+
+      def inspect
+        to_s
+      end
     end
 
     class MigrationList
       include Persistence
+
+      class Migration < MaglevRecord::Migration
+      end
 
       def self.last
         object_pool[:last]
@@ -143,6 +156,41 @@ module MaglevRecord
         object = super
         object_pool[:last] = object
       end
+
+      def initialize
+        @migrations = []
+      end
+
+      def migration(timestamp)
+        migration = Migration.with_timestamp(timestamp)
+        @migrations << migration
+        migration
+      end
+
+      def first_migration
+        Migration.first
+      end
+
+      def last_migration
+        first_migration
+      end
+
+      def up
+        
+      end
+
+      def consistent?
+        true
+      end
+
+      def parent
+
+      end
+
+      def migrations
+        @migrations
+      end
+
     end
 
   end
