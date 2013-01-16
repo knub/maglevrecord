@@ -159,8 +159,25 @@ module MaglevRecord
       class InconsistentMigrationState < Exception
       end
 
+      class FirstMigrationList
+        def parent
+          self
+        end
+        def migration_set_done
+          Set.new
+        end
+      end
+
+      def self.first
+        object_pool.fetch(:first) {
+          object_pool[:first] = FirstMigrationList.new
+        }
+      end
+
       def self.last
-        object_pool[:last]
+        object_pool.fetch(:last) {
+          object_pool[:last] = first
+        }
       end
 
       def self.new
@@ -188,11 +205,23 @@ module MaglevRecord
       end
 
       def up
-
+        raise InconsistentMigrationState, 'this migration is not consistent' unless consistent?
+        migrations_to_undo.each{ |migration|
+          migration.undo
+        }
+        migrations_to_do.each{ |migration|
+          migration.do
+        }
       end
 
       def consistent?
-        migrations.include? first_migration
+        mig = migrations
+        return false unless mig.include? first_migration
+        last_mig = mig[0]
+        mig.each { |newer_mig|
+          return false if (not last_mig.done? and newer_mig.done?)
+          last_mig = newer_mig
+        }
       end
 
       def parent
@@ -200,14 +229,35 @@ module MaglevRecord
       end
 
       def migrations
-        list = []
+        list = migration_set.to_a
+        list.sort
+      end
+
+      def migration_set
+        set = Set.new
         @migrations.each{ |migration|
-          while not list.include? migration and not migration.nil?
-            list << migration
+          while not set.include? migration and not migration.nil?
+            set << migration
             migration = migration.parent
           end
         }
-        list.sort
+        set
+      end
+
+      def migrations_to_do
+        (migration_set - migration_set_done).to_a.sort
+      end
+
+      def migrations_done
+        migration_set_done.to_a.sort
+      end
+
+      def migration_set_done
+         Set.new(migration_set.select{|migration| migration.done?})
+      end
+
+      def migrations_to_undo
+        (parent.migration_set_done - migration_set).to_a.sort
       end
 
     end
