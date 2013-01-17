@@ -82,16 +82,27 @@ end
 
 class TestMigrationList_Scenario < TestMigrationListBase
 
-  def setup_scenario_1
-    @m1 = l.migration(1).follows(l.first_migration).up{list << 1}.down{list.delete(1)}
-    @m2 = l.migration(2).follows(@m1).up{list << 2}.down{list.delete(2)}
+  def setup_first_migrations
+    @m1 = ML::Migration.with_timestamp(1).follows(ML::Migration.first).up{list << 1}.down{list.delete(1)}
+    @m2 = ML::Migration.with_timestamp(2).follows(@m1).up{list << 2}.down{list.delete(2)}
+  end
+
+  def setup_list_1
+    @l1_setup = true
+    @l = ML.new
     @m3 = ML::Migration.with_timestamp(3).follows(@m2).up{list << 3}.down{list.delete(3)}
     @m4 = l.migration(4).follows(@m3).up{list << 4}.down{list.delete(4)}
+  end
 
+  def setup_list_2
+    @l2_setup = true
     @l2 = ML.new
     @ma = ML::Migration.with_timestamp(97).follows(@m2).up{list << "a"}.down{list.delete("a")}
     @mb = @l2.migration(98).follows(@ma).up{list << "b"}.down{list.delete("b")}
+  end
 
+  def setup_list_3
+    @l3_setup = true
     @l3 = ML.new
     @mA = ML::Migration.with_timestamp("A").follows(l3.first_migration).up{list << "A"}.down{list.delete("A")}
     @mC = ML::Migration.with_timestamp("C").follows(@mA).up{list << "C"}.down{list.delete("C")}
@@ -99,20 +110,26 @@ class TestMigrationList_Scenario < TestMigrationListBase
   end
 
   def setup
-    super
     @list = []
-    setup_scenario_1
+    setup_first_migrations
   end
 
   def list
     @list
   end
 
+  def l
+    setup_list_1 if not @l1_setup
+    @l
+  end
+
   def l2
+    setup_list_2 if not @l2_setup
     @l2
   end
 
   def l3
+    setup_list_3 if not @l3_setup
     @l3
   end
 
@@ -138,6 +155,42 @@ class TestMigrationList_Scenario < TestMigrationListBase
     l.up
     l2.up
     assert_equal list, [1,2,"a","b"]
+  end
+
+  def test_up_2_1
+    l2.up
+    l.up
+    assert_equal list, [1,2,3,4]
+  end
+
+  def test_parent_of_l
+    assert_equal l.parent, ML.first
+  end
+
+  def test_parent_of_l2
+    assert_equal l2.parent, ML.first
+  end
+
+  def test_parent_of_l3
+    assert_equal l3.parent, ML.first
+  end
+
+  def test_parents_1_2_3
+    l
+    l2
+    l3
+    assert_equal l2.parent, l
+    assert_equal l3.parent, l2
+    assert_equal l.parent, ML.first
+  end
+
+  def test_parents_3_1_2
+    l3
+    l
+    l2
+    assert_equal l.parent, l3
+    assert_equal l2.parent, l
+    assert_equal l3.parent, ML.first
   end
 
   def test_up_twice
@@ -187,13 +240,13 @@ class TestMigrationList_Scenario < TestMigrationListBase
     assert_equal l2.migrations_to_undo, [@m3, @m4]
   end
 
-  def test_migration_are_executed_in_follower_order
+  def test_migrations_are_executed_in_follower_order
     l3.up
     assert_equal l, ["A", "C", "B"]
   end
 end
 
-class TestMigrationList_migration_order  < TestMigrationListBase
+class TestMigrationList_migration_order # < TestMigrationListBase
   
   def mf(name, *names)
     mig = l.migration(name)
@@ -207,11 +260,16 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     names.collect{ |name| l.migration(name)}
   end
 
+  def setup
+    super
+    l.migration(1).follows(l.first_migration)
+  end
+
   def test_order_by_name_no_parent
     mf(1)
     mf(3)
     mf(2)
-    assert_equal l.migration_order byName(1,3,2), byName(1,2,3)
+    assert_equal l.migration_order, byName(1,2,3)
   end
 
   def test_circle
@@ -221,17 +279,17 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     mf(3,4)
     mf(5,1)
     assert_raises(ML::CircularMigrationOrderError){
-      l.migration_order byName(2,5,3,4,1)
+      l.migration_order 
     }
   end
 
   def test_split
-    mf(1).follow(l.first_migration)
+    mf(1).follows(l.first_migration)
     mf(2, 1)
     mf(3, 1)
     mf(4, 3)
     mf(5, 2)
-    assert_equal l.migration_order byName(5,2,3,1,4), byName(1,2,3,4,5)
+    assert_equal l.migration_order, byName(1,2,3,4,5)
   end
 
   def test_merge
@@ -239,7 +297,7 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     mf(2)
     mf(3, 1, 2)
     mf(4, 3)
-    assert_equal l.migration_order byName(4,3,2,1), byName(1,2,3,4)
+    assert_equal l.migration_order, byName(1,2,3,4)
   end
 
   def test_several_merges
@@ -247,9 +305,30 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     mf(5, 3); mf(4, 3, 2)
     mf(7, 5); mf(6, 4)
     mf(9, 7); mf(8, 6, 9)
-    assert_equal l.migration_order byName(4,3,2,1,5,6,7,8,9), byName(1, 2, 3, 4, 5, 6, 7, 9, 8)
+    assert_equal l.migration_order, byName(1, 2, 3, 4, 5, 6, 7, 9, 8)
   end
 
   #TODO: add tests for HEADS (parents)
+  
+  def test_get_heads
+    mf(2, 1)
+    mf(31, 2)
+    mf(32, 2)
+    mf(33, 3)
+    mf(35, 33)
+    mf(3, 2)
+    mf(34, 33, 32)
+    mf(55, 31, 3)
+    assert_equal l.heads, byName(34, 35, 55)
+  end
+
+  def test_get_head
+    mf(2,1)
+    assert_equal l.heads, byName(2)
+  end
 
 end
+
+
+# liste ist nicht up -> was tun?
+
