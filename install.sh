@@ -27,6 +27,8 @@
 #    Invoke update.sh to finish the job
 #=========================================================================
 
+git clone git://github.com:MagLev/maglev.git
+cd maglev
 if [ -x bin/maglev-ruby ]; then
     # echo "using $PWD as MAGLEV_HOME"
     export MAGLEV_HOME=$PWD
@@ -223,5 +225,7 @@ fi
 
 # Make sure we have a compatible version of GemStone
 bash ./update.sh
+
+cd ..
 # End of script
 exit 0
