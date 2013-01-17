@@ -408,6 +408,15 @@ class TestMigration_conversion < Test::Unit::TestCase
     assert_equal m.inspect, "<#{M.name} \"lalilu\" done>"
   end
 
+  def test_first_inspect
+    assert_equal M.first.inspect, "<#{M.name} first>"
+  end
+
+  def test_first_to_s
+    assert M.first.first?
+    assert_equal M.first.to_s, M.name + ".first"
+  end
+
 end
 
 
