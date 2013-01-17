@@ -176,6 +176,7 @@ module MaglevRecord
       s += " done" if done?
       "<#{s}>"
     end
+
   end
 
   #
@@ -305,10 +306,40 @@ module MaglevRecord
     # migrations in order of do and undo
     #
     def migration_order
+      raise CircularMigrationOrderError, 'list has circle of migrations' if has_circle?
       migration_set.to_a.sort
     end
 
     def heads
+      migrations.select{ |migration| migration.children.empty? }
+    end
+
+    def has_circle?
+      false
+    end
+
+    def clusters
+      s = migration_set
+      clusters = Set.new
+      while not s.empty?
+        todo = Set.new([s.pop])
+        cluster = Set.new
+        while not todo.empty?
+          m = todo.pop
+          s.delete(m)
+          cluster.add(m)
+          (m.parents + m.children).select{ |migration|
+            s.include? migration
+          }.each{ |migration|
+            todo.add(migration)
+          }
+        end
+        clusters.add(cluster.to_a.sort)
+      end
+      clusters
+    end
+
+    def circles
 
     end
 

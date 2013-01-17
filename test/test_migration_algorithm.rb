@@ -244,9 +244,10 @@ class TestMigrationList_Scenario < TestMigrationListBase
     l3.up
     assert_equal l, ["A", "C", "B"]
   end
+
 end
 
-class TestMigrationList_migration_order # < TestMigrationListBase
+class TestMigrationList_migration_order  < TestMigrationListBase
   
   def mf(name, *names)
     mig = l.migration(name)
@@ -256,8 +257,14 @@ class TestMigrationList_migration_order # < TestMigrationListBase
     mig
   end
 
-  def byName(*names)
+  def by_name(*names)
     names.collect{ |name| l.migration(name)}
+  end
+
+  def assert_migration_order(*names)
+    list = by_name(*names)
+    list.insert(0, l.first_migration)
+    assert_equal l.migration_order, list
   end
 
   def setup
@@ -269,7 +276,8 @@ class TestMigrationList_migration_order # < TestMigrationListBase
     mf(1)
     mf(3)
     mf(2)
-    assert_equal l.migration_order, byName(1,2,3)
+    assert_migration_order(1,2,3)
+    assert !l.has_circle?
   end
 
   def test_circle
@@ -278,18 +286,25 @@ class TestMigrationList_migration_order # < TestMigrationListBase
     mf(4,5)
     mf(3,4)
     mf(5,1)
+    mf(1, 11); mf(111, 1)
+    mf(2, 22); mf(222, 2)
+    mf(3, 33); mf(333, 3, 4)
+    mf(4, 44)
+    mf(5, 55); mf(555, 5); mf(666, 555)
+    assert_equal l.circles, [by_name(1,2,3,4,5)]
+    assert l.has_circle?
+    assert !l.is_consistent
     assert_raises(ML::CircularMigrationOrderError){
-      l.migration_order 
+      l.migration_order
     }
   end
 
   def test_split
-    mf(1).follows(l.first_migration)
     mf(2, 1)
     mf(3, 1)
     mf(4, 3)
     mf(5, 2)
-    assert_equal l.migration_order, byName(1,2,3,4,5)
+    assert_migration_order(1,2,3,4,5)
   end
 
   def test_merge
@@ -297,7 +312,7 @@ class TestMigrationList_migration_order # < TestMigrationListBase
     mf(2)
     mf(3, 1, 2)
     mf(4, 3)
-    assert_equal l.migration_order, byName(1,2,3,4)
+    assert_migration_order(1,2,3,4)
   end
 
   def test_several_merges
@@ -305,7 +320,7 @@ class TestMigrationList_migration_order # < TestMigrationListBase
     mf(5, 3); mf(4, 3, 2)
     mf(7, 5); mf(6, 4)
     mf(9, 7); mf(8, 6, 9)
-    assert_equal l.migration_order, byName(1, 2, 3, 4, 5, 6, 7, 9, 8)
+    assert_migration_order(1, 2, 3, 4, 5, 6, 7, 9, 8)
   end
 
   #TODO: add tests for HEADS (parents)
@@ -319,12 +334,29 @@ class TestMigrationList_migration_order # < TestMigrationListBase
     mf(3, 2)
     mf(34, 33, 32)
     mf(55, 31, 3)
-    assert_equal l.heads, byName(34, 35, 55)
+    assert_equal l.heads, by_name(34, 35, 55)
   end
 
   def test_get_head
     mf(2,1)
-    assert_equal l.heads, byName(2)
+    assert_equal l.heads, by_name(2)
+  end
+
+  def test_get_clusters
+    mf(2, 1)
+    mf(3, 4)
+    mf(5, 2)
+    mf(22,33)
+    mf(6, -23)
+    x = by_name(2, 1, 5)
+    x << l.first_migration
+    x.sort!
+    assert_equal(l.clusters, Set.new([x, by_name(3,4), by_name(22,33), by_name(-23, 6)]))
+  end
+
+  def test_no_clusters
+    l = ML.new
+    assert_equal l.clusters, Set.new
   end
 
 end
