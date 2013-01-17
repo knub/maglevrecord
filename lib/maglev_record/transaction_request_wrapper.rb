@@ -20,7 +20,6 @@ module MaglevRecord
             def process(action, *args)
               Maglev.abort_transaction
               process_proceed(action, *args)
-              Maglev.commit_transaction
             end
           PROCESS
           

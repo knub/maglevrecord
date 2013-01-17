@@ -23,8 +23,6 @@ module MaglevRecord
 
           generated_attribute_methods.module_eval <<-ATTRWRITER, __FILE__, __LINE__ + 1
             def #{attr_name}=(new_value)
-              @dirty = ModelNotSavedOrReset.new
-              #{attr_name}_will_change! unless new_value == attributes[:#{attr_name}]
               attributes[:#{attr_name}] = new_value
             end
           ATTRWRITER
