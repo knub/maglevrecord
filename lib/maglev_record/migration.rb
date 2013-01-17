@@ -39,6 +39,10 @@ module MaglevRecord
         self.class.hash
       end
 
+      def inspect
+        "first"
+      end
+
     end
 
     # save instances
@@ -158,7 +162,12 @@ module MaglevRecord
       not @down.nil?
     end
 
+    def first?
+      self.class.first == self
+    end
+
     def to_s
+      return self.class.name + ".first" if self.first?
       self.class.name + ".with_timestamp(#{timestamp.inspect})"
     end
 
