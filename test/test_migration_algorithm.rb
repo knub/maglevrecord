@@ -278,6 +278,7 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     mf(2)
     assert_migration_order(1,2,3)
     assert !l.has_circle?
+    assert_equal l.circles, []
   end
 
   def test_circle
