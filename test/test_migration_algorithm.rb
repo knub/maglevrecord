@@ -278,7 +278,11 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     mf(2)
     assert_migration_order(1,2,3)
     assert !l.has_circle?
-    assert_equal l.circles, []
+    assert_equal l.circles, Set.new([])
+  end
+
+  def test_no_circle
+
   end
 
   def test_circle
@@ -292,9 +296,9 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     mf(3, 33); mf(333, 3, 4)
     mf(4, 44)
     mf(5, 55); mf(555, 5); mf(666, 555)
-    assert_equal l.circles, [by_name(1,2,3,4,5)]
+    assert_equal l.circles, Set.new([by_name(1,2,3,4,5)])
     assert l.has_circle?
-    assert !l.is_consistent
+    assert !l.consistent?
     assert_raises(ML::CircularMigrationOrderError){
       l.migration_order
     }
@@ -364,4 +368,121 @@ end
 
 
 # liste ist nicht up -> was tun?
+
+class TestMigrationGraph < Test::Unit::TestCase
+
+  class M < MaglevRecord::Migration
+  end
+
+  class G < MaglevRecord::MigrationGraph
+  end
+
+  def setup
+    @a = G.new
+    M.clear
+  end
+
+  def a
+    @a
+  end
+
+  def m(timestamp, *parent_timestamps)
+    migration = M.with_timestamp(timestamp)
+    parent_timestamps.each{ |parent_timestamp| 
+      migration.follows(m(parent_timestamp))
+    }
+    a.add(migration)
+    migration
+  end
+
+  def ms(*timestamps)
+    timstamps.map{ |timestamp| m(timestamp)}
+  end
+
+  def test_sort_by_time
+    m(2)
+    m(1)
+    m(1)
+    m(3)
+    m(4)
+    assert_equal a.by_time, ms(1,2,3,4)
+  end
+
+  def test_create_with_migrations
+    m(3,1)
+    a1 = G.new([m(1, 5), m(4)])
+    assert a1.include? m(1)
+    assert ! a1.include?(m(2))
+    assert a1.include? m(4)
+    assert ! a1.include?(m(5))
+    assert ! a1.include?(m(3))
+  end
+
+  def test_no_circle
+    m(1,2)
+    m(2,3)
+    assert_equal a.circles, Set.new
+    assert !a.has_circles?
+  end
+
+  def test_2_circles
+    m(1,2)
+    m(2,1)
+    m(0, 1)
+
+    m(3, 4, 5)
+    m(4, 5)
+    m(5, 6)
+    m(6, 4)
+    m(7, 8)
+    assert a.has_circles?
+    assert_equal a.circles, Set.new([ms(0,1,2), ms(4,5,6)])
+  end
+
+  def test_clusters
+    m(3, 1)
+    m(2, 1)
+    m(4, 6)
+    m(7)
+    m(10, 11, 12, 13, 14, 15, 16, 17)
+    assert_equal a.clusters, Set.new([ms(1,2,3), ms(4, 6), ms(7), ms(10, 11, 12, 13, 14, 15, 16, 17)])
+  end
+
+  def test_assert_no_clusters
+    assert_equal a.clusters, Set.new
+  end
+
+  def test_migration_order_not_time
+    m(1, 2, 3)
+    m(2, 4)
+    m(3, 5)
+    m(4, 5)
+    assert !a.has_circles?
+    assert_equal a.migration_order, ms(5, 3, 4, 2, 1)
+  end
+
+  def test_migration_order_time
+    m(1)
+    m(2,1)
+    m(3, 2)
+    m(4, 2)
+    m(5, 3, 4)
+    m(6, 5)
+    m(7, 5)
+
+    assert_equal a.migration_order, ms(1,2,3,4,5,6,7)
+  end
+
+  def test_get_set_of_migrations
+    m(1,2,3)
+    assert_equal a.migrations, Set.new(ms(1,2,3))
+  end
+
+  def test_empty
+    assert a.empty?
+    m(2)
+    assert !a.empty?
+  end
+end
+
 

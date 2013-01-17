@@ -259,6 +259,8 @@ module MaglevRecord
         return false if (not last_mig.done? and newer_mig.done?)
         last_mig = newer_mig
       }
+      return false if has_circle?
+      true
     end
 
     def parent
@@ -307,7 +309,25 @@ module MaglevRecord
     #
     def migration_order
       raise CircularMigrationOrderError, 'list has circle of migrations' if has_circle?
-      migration_set.to_a.sort
+      mig = migrations
+      changed = true
+      while changed
+        changed = false
+        mig.each_index{ |migration_index|
+          migration = mig.at(migration_index)
+          migration.parents.each{ |parent|
+            parent_index = mig.index(parent)
+            if parent_index > migration_index
+              mig.delete_at(migration_index)
+              mig.insert(parent_index, migration)
+              migration_index = parent_index
+              changed = true
+            end
+          }
+        }
+        puts "changed #{changed}"
+      end
+      mig
     end
 
     def heads
@@ -315,7 +335,7 @@ module MaglevRecord
     end
 
     def has_circle?
-      false
+      not circles.empty?
     end
 
     def clusters
@@ -340,12 +360,37 @@ module MaglevRecord
     end
 
     def circles
-
+      circles = Set.new
+      clusters.each{ |cluster| 
+        while not cluster.empty?
+          leaf_found = cluster.any?{ |migration|
+            no_parents = !migration.parents.any?{|parent| cluster.include? parent}
+            no_children = !migration.children.any?{|child| cluster.include? child}
+            leaf_found = (no_children or no_parents)
+            if leaf_found
+              cluster.delete(migration)
+            end
+            leaf_found
+          }
+          break if not leaf_found
+        end
+        circles.add(cluster) unless cluster.empty?
+      }
+      circles
     end
 
   end
 
+  class MigrationGraph
 
+    def initialize(set = [])
+      @migrations = Set.new(set)
+    end
+    
+    def add(migration)
+      @migrations.add(migration)
+    end
+  end
 
 end
 
