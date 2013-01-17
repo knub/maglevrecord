@@ -398,10 +398,15 @@ class TestMigration_conversion < Test::Unit::TestCase
   end
 
   def test_inspect_with_timestamp
-    assert_equal M.with_timestamp("aaa").inspect, M.name + '.with_timestamp("aaa")'
-    assert_equal M3.with_timestamp(123).inspect, M3.name + '.with_timestamp(123)'
+    assert_equal M.with_timestamp("aaa").inspect, "<#{M.name} \"aaa\">"
+    assert_equal M3.with_timestamp(123).inspect, "<#{M3.name} 123>"
   end
 
+  def test_inspect_with_timestamp_and_up
+    m = M.with_timestamp('lalilu')
+    m.do
+    assert_equal m.inspect, "<#{M.name} \"lalilu\" done>"
+  end
 
 end
 

@@ -163,7 +163,9 @@ module MaglevRecord
     end
 
     def inspect
-      to_s
+      s = self.class.name + " " + timestamp.inspect
+      s += " done" if done?
+      "<#{s}>"
     end
   end
 
@@ -294,7 +296,11 @@ module MaglevRecord
     # migrations in order of do and undo
     #
     def migration_order
-      
+      migration_set.to_a.sort
+    end
+
+    def heads
+
     end
 
   end
