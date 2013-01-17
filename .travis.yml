@@ -6,8 +6,10 @@ before_install:
 before_script:
   - "./install.sh"
 script:
+  - "which rake"
   - "export MAGLEV_HOME=/home/travis/build/knub/maglevrecord/maglev"
   - "export PATH=$MAGLEV_HOME/bin:$PATH"
+  - "echo $PWD"
   - "bundle install"
   - "rake test"
 notifications:
