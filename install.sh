@@ -27,7 +27,8 @@
 #    Invoke update.sh to finish the job
 #=========================================================================
 
-git clone git://github.com:MagLev/maglev.git
+echo $PWD
+git clone https://github.com/MagLev/maglev.git
 cd maglev
 if [ -x bin/maglev-ruby ]; then
     # echo "using $PWD as MAGLEV_HOME"
