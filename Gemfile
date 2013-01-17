@@ -1,6 +1,7 @@
 source :rubygems
 source "http://rubygems.org"
 
-gem 'bacon'
+gem 'activesupport'
+gem 'activemodel'
 
 
