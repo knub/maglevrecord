@@ -1,5 +1,4 @@
 require "maglev_record/persistence"
-require "maglev_record/enumerable"
 require "maglev_record/read_write"
 require "maglev_record/transaction_request_wrapper"
 require "rubygems"
@@ -16,16 +15,14 @@ module MaglevRecord
       include ActiveModel
       include ActiveModel::AttributeMethods
       include ActiveModel::Conversion
-      include ActiveModel::Dirty
       include ActiveModel::MassAssignmentSecurity
       include ActiveModel::Validations
       include MaglevRecord::Persistence
-      include MaglevRecord::Enumerable
       include MaglevRecord::ReadWrite
 
       self.maglev_persistable
       ActiveSupport.maglev_persistable
-      ActiveSupport::HashWithIndifferentAccess.maglev_persistable
+      #ActiveSupport::HashWithIndifferentAccess.maglev_persistable
     end
 
     def initialize(*args)
@@ -34,16 +31,6 @@ module MaglevRecord
           self.send("#{k.to_s}=".to_sym, v)
         end
       end
-    end
-
-    def clear_dirty
-      @dirty = nil
-    end
-    def reset!
-      changed.each do |attr|
-        self.send "reset_#{attr}!".to_sym
-      end
-      clear_dirty
     end
 
     def attributes
@@ -55,7 +42,6 @@ module MaglevRecord
         x = self.new(*args)
         x
       end
-
     end
 
     def to_key
