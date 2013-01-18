@@ -16,7 +16,7 @@ end
 module MaglevRecord
   
   class Migration
-    include Persistence
+    include RootedPersistence 
     # nested classes 
 
     class DownError < Exception
@@ -49,23 +49,22 @@ module MaglevRecord
     # replace with MaglevRecord::Model
 
     def self.first
-      @@first = first = self.with_timestamp(FirstTimestamp.new)
+      first = self.with_timestamp(FirstTimestamp.new)
       first.up{} unless first.has_up?
       first.down{} unless first.has_down?
       first
     end
 
-    def self.with_timestamp(timestamp)
-      migration = object_pool[timestamp]
-      if migration.nil?
-        object_pool[timestamp] = migration = self.new(timestamp)
-      end
+    def self.new(timestamp)
+      migration = self.object_pool[timestamp]
+      return migration unless migration.nil?
+      migration = super(timestamp)
+      raise NameError, 'timestamp of migration must be object_id' unless migration.object_id == timestamp
       migration
     end
 
-
-    def self.size
-      object_pool.size
+    def self.with_timestamp(timestamp)
+      self.new(timestamp)
     end
 
     def initialize(timestamp)
@@ -75,6 +74,10 @@ module MaglevRecord
       @down = nil
       @up = nil
       @done = false
+    end
+
+    def object_id
+      timestamp
     end
 
     # linked tree of migrations
@@ -185,7 +188,7 @@ module MaglevRecord
   # in the system (MigrationList.last)
   #
   class MigrationList
-    include Persistence
+    include RootedPersistence
 
     class Migration < MaglevRecord::Migration
     end
@@ -197,6 +200,8 @@ module MaglevRecord
     end
 
     class FirstMigrationList
+      def delete
+      end
       def parents
         []
       end
@@ -379,17 +384,14 @@ module MaglevRecord
       circles
     end
 
-  end
-
-  class MigrationGraph
-
-    def initialize(set = [])
-      @migrations = Set.new(set)
+    def load_source(string)
+      
     end
-    
+
     def add(migration)
-      @migrations.add(migration)
+      @migration_set.add(migration)
     end
+
   end
 
 end

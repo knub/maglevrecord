@@ -374,7 +374,7 @@ class TestMigrationGraph < Test::Unit::TestCase
   class M < MaglevRecord::Migration
   end
 
-  class G < MaglevRecord::MigrationGraph
+  class G < MaglevRecord::MigrationList
   end
 
   def setup
@@ -396,7 +396,7 @@ class TestMigrationGraph < Test::Unit::TestCase
   end
 
   def ms(*timestamps)
-    timstamps.map{ |timestamp| m(timestamp)}
+    timestamps.map{ |timestamp| m(timestamp)}
   end
 
   def test_sort_by_time
@@ -405,7 +405,7 @@ class TestMigrationGraph < Test::Unit::TestCase
     m(1)
     m(3)
     m(4)
-    assert_equal a.by_time, ms(1,2,3,4)
+    assert_equal a.migrations, ms(1,2,3,4)
   end
 
   def test_create_with_migrations
@@ -422,7 +422,7 @@ class TestMigrationGraph < Test::Unit::TestCase
     m(1,2)
     m(2,3)
     assert_equal a.circles, Set.new
-    assert !a.has_circles?
+    assert !a.has_circle?
   end
 
   def test_2_circles
@@ -435,7 +435,7 @@ class TestMigrationGraph < Test::Unit::TestCase
     m(5, 6)
     m(6, 4)
     m(7, 8)
-    assert a.has_circles?
+    assert a.has_circle?
     assert_equal a.circles, Set.new([ms(0,1,2), ms(4,5,6)])
   end
 
@@ -457,7 +457,7 @@ class TestMigrationGraph < Test::Unit::TestCase
     m(2, 4)
     m(3, 5)
     m(4, 5)
-    assert !a.has_circles?
+    assert !a.has_circle?
     assert_equal a.migration_order, ms(5, 3, 4, 2, 1)
   end
 
