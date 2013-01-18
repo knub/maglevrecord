@@ -1,4 +1,5 @@
 require "rubygems"
+require "maglev_record/enumerable"
 require "maglev_record/rooted_base"
 require "maglev_record/base"
 require "maglev_record/persistence"

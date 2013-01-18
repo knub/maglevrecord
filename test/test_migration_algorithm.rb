@@ -29,31 +29,21 @@ end
 
 class TestMigrationList < TestMigrationListBase
 
-  def test_l_was_created_last
-    assert_equal ML.last, l
-  end
-
   def test_clear_clears_all_ML
     ML.clear
-    assert_not_equal ML.last, l
+    assert_equal ML.size, 0
   end
 
   def test_ml_clear_does_not_clear_ml
+    l1 = ML.new
     l2 = ML2.new
+    s = ML.size
+    assert_equal ML2.size, 1
     ML2.clear
-    assert_not_equal ML2.last, l2
-    assert_equal ML.last, l
+    assert_equal ML2.size, 0
+    assert_equal ML.size, s
   end
 
-  def test_lists_link_to_last_list
-    l1 = ML.last
-    l2 = ML.new
-    l3 = ML.new
-    l4 = ML.new
-    assert_equal l1, l2.parent
-    assert_equal l2, l3.parent
-    assert_equal l3, l4.parent
-  end
 
   def test_first_is_last_if_there_is_no_migration
     assert_equal l.last_migration, l.first_migration
@@ -73,9 +63,9 @@ class TestMigrationList < TestMigrationListBase
     assert !l.consistent?
   end
 
-  def test_first_of_two_lists_equal
-    assert_equal ML2.first, ML2.first
-    assert_equal ML2.first.hash, ML2.first.hash
+  def test_first_migration_is_always_the_same
+    assert_equal ML.new.first_migration, ML.new.first_migration
+    assert_equal ML.new.first_migration.hash, ML.new.first_migration.hash
   end
 
 end
@@ -153,6 +143,8 @@ class TestMigrationList_Scenario < TestMigrationListBase
 
   def test_up_1_2
     l.up
+    assert_equal l2.migrations_to_do, [@ma, @mb]
+    assert_equal l2.migrations_to_undo, [@m3, @m4]
     l2.up
     assert_equal list, [1,2,"a","b"]
   end
@@ -161,36 +153,6 @@ class TestMigrationList_Scenario < TestMigrationListBase
     l2.up
     l.up
     assert_equal list, [1,2,3,4]
-  end
-
-  def test_parent_of_l
-    assert_equal l.parent, ML.first
-  end
-
-  def test_parent_of_l2
-    assert_equal l2.parent, ML.first
-  end
-
-  def test_parent_of_l3
-    assert_equal l3.parent, ML.first
-  end
-
-  def test_parents_1_2_3
-    l
-    l2
-    l3
-    assert_equal l2.parent, l
-    assert_equal l3.parent, l2
-    assert_equal l.parent, ML.first
-  end
-
-  def test_parents_3_1_2
-    l3
-    l
-    l2
-    assert_equal l.parent, l3
-    assert_equal l2.parent, l
-    assert_equal l3.parent, ML.first
   end
 
   def test_up_twice
@@ -328,8 +290,6 @@ class TestMigrationList_migration_order  < TestMigrationListBase
     assert_migration_order(1, 2, 3, 4, 5, 6, 7, 9, 8)
   end
 
-  #TODO: add tests for HEADS (parents)
-  
   def test_get_heads
     mf(2, 1)
     mf(31, 2)
@@ -365,9 +325,6 @@ class TestMigrationList_migration_order  < TestMigrationListBase
   end
 
 end
-
-
-# liste ist nicht up -> was tun?
 
 class TestMigrationGraph < Test::Unit::TestCase
 
@@ -411,11 +368,11 @@ class TestMigrationGraph < Test::Unit::TestCase
   def test_create_with_migrations
     m(3,1)
     a1 = G.new([m(1, 5), m(4)])
-    assert a1.include? m(1)
+    assert a1.include?(m(1))
     assert ! a1.include?(m(2))
-    assert a1.include? m(4)
-    assert ! a1.include?(m(5))
-    assert ! a1.include?(m(3))
+    assert a1.include?(m(4))
+    assert a1.include?(m(5))
+    assert a1.include?(m(3))
   end
 
   def test_no_circle
@@ -436,7 +393,7 @@ class TestMigrationGraph < Test::Unit::TestCase
     m(6, 4)
     m(7, 8)
     assert a.has_circle?
-    assert_equal a.circles, Set.new([ms(0,1,2), ms(4,5,6)])
+    assert_equal a.circles, Set.new([ms(1,2), ms(4,5,6)])
   end
 
   def test_clusters
@@ -473,15 +430,22 @@ class TestMigrationGraph < Test::Unit::TestCase
     assert_equal a.migration_order, ms(1,2,3,4,5,6,7)
   end
 
-  def test_get_set_of_migrations
+  def test_get_migrations
     m(1,2,3)
-    assert_equal a.migrations, Set.new(ms(1,2,3))
+    assert_equal a.migrations, ms(1,2,3)
+    assert_equal a.migration_set, Set.new(ms(1,2,3))
   end
 
   def test_empty
     assert a.empty?
     m(2)
     assert !a.empty?
+  end
+
+  def test_select
+    m(1,2,3,4)
+    assert_equal a.select{ |m| m.timestamp > 2 }, ms(3, 4)
+
   end
 end
 

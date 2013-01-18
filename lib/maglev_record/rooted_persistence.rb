@@ -3,6 +3,7 @@ require "active_support"
 module MaglevRecord
   module RootedPersistence
     extend ActiveSupport::Concern
+    include MaglevRecord::Enumerable
 
     def delete
       self.class.object_pool.delete(self.object_id)
