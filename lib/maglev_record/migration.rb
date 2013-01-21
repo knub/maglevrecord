@@ -119,9 +119,10 @@ module MaglevRecord
       t2 = other_migration.timestamp
       v = t1 <=> t2
       if v.nil?
-        v = - (t2 <=> t1)
+        v = t2 <=> t1
+        raise TypeError, "value of <=> should be 1, -1 or 0, not #{v.inspect}. #{t2.inspect} <=> #{t1.inspect}" if v != 0 and v != 1 and v != -1
+        v = - v
       end
-      raise TypeError, "value of <=> should be 1, -1 or 0, not #{v.inspect}" if v != 0 and v != 1 and v != -1
       return v
     end
     
@@ -213,11 +214,13 @@ module MaglevRecord
     end
 
     def first_migration
-      Migration.first
+      fm = Migration.first
+      @migration_set.add fm
+      fm
     end
 
     def up
-      raise InconsistentMigrationState, 'this migration is not consistent' unless consistent?
+      consistent_raise
       todo = migrations_to_do
       undo = migrations_to_undo
       undo.each{ |migration|
@@ -229,14 +232,24 @@ module MaglevRecord
     end
 
     def consistent?
-      mig = migrations
-      return false unless mig.include? first_migration
-      # TODO: adapt algorithm
-      mig.each { |migration|
-        return false if (not migration.done? and migration.children.any? { |child| child.done? })
+      begin
+        consistent_raise
+        return true
+      rescue InconsistentMigrationState
+        return false
+      end
+    end
+
+    def consistent_raise
+      #raise InconsistentMigrationState, "This list must include #{first_migration}" unless migration_set.include? first_migration
+      raise InconsistentMigrationState, "This list has circular references: #{migration_set.circles}" if migration_set.has_circle?
+      migration_set.expanded.each { |migration|
+        if not migration.done?
+          migration.children.each{ |child|
+            raise InconsistentMigrationState, "#{child} is done but depends on undone migration #{migration}" if child.done?
+          }
+        end
       }
-      return false if migration_set.has_circle?
-      true
     end
 
     def load_source(string)

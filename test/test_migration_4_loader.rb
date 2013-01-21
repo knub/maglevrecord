@@ -56,14 +56,6 @@ class TestMigrationLoader < TestMigrationLoaderBase
     assert l.consistent?
   end
 
-  def test_not_consistent_if_root_not_first
-    m = l.migration(1)
-    m = l.migration(2).follows(m)
-    m = l.migration(3).follows(m)
-    m = l.migration(4).follows(m)
-    assert !l.consistent?
-  end
-
   def test_first_migration_is_always_the_same
     assert_equal ML.new.first_migration, ML.new.first_migration
     assert_equal ML.new.first_migration.hash, ML.new.first_migration.hash
@@ -176,7 +168,7 @@ class TestMigrationList_Scenario < TestMigrationLoaderBase
     @l3 = ML.new
     @mA = ML::Migration.with_timestamp("A").follows(l3.first_migration).up{list << "A"}.down{list.delete("A")}
     @mC = ML::Migration.with_timestamp("C").follows(@mA).up{list << "C"}.down{list.delete("C")}
-    @mB = ML::Migration.with_timestamp("B").follows(@mC).up{list << "B"}.down{list.delete("B")}
+    @mB = l3.migration("B").follows(@mC).up{list << "B"}.down{list.delete("B")}
   end
 
   def setup
@@ -223,11 +215,10 @@ class TestMigrationList_Scenario < TestMigrationLoaderBase
   end
 
   def test_up_1_2
-    puts "!" * 40
     l2
     l.up
     assert_equal l2.migrations_to_do, [@ma, @mb]
-    assert_equal l2.migrations_to_undo, [@m3, @m4]
+    assert_equal l2.migrations_to_undo, [@m4, @m3]
     l2.up
     assert_equal list, [1,2,"a","b"]
   end
@@ -270,24 +261,30 @@ class TestMigrationList_Scenario < TestMigrationLoaderBase
     assert_equal l2.migrations_to_do, [@ma, @mb]
   end
 
-  def test_migrations_done
-    assert_equal l.migrations_done, []
-    assert_equal l2.migrations_done, []
+  def test_migrations_to_skip
+    l
+    l2
+    assert_equal l.migrations_to_skip, [@ma, @mb]
+    assert_equal l2.migrations_to_skip, [@m3, @m4]
     l.up
-    assert_equal l.migrations_done, l.migrations
-    assert_equal l2.migrations_done, [first_m, @m1, @m2]
+    assert_equal l.migrations_to_skip, l.migrations
+    assert_equal l.migrations_to_do, []
+    assert_equal l.migrations_to_undo, []
+    assert_equal l2.migrations_to_skip, [first_m, @m1, @m2]
+    assert_equal l2.migrations_to_do, [@ma, @mb]
+    assert_equal l2.migrations_to_undo, [@m4, @m3]
   end
 
   def test_migrations_to_undo
     assert_equal l.migrations_to_undo, []
     assert_equal l2.migrations_to_undo, []
     l.up
-    assert_equal l2.migrations_to_undo, [@m3, @m4]
+    assert_equal l2.migrations_to_undo, [@m4, @m3]
   end
 
   def test_migrations_are_executed_in_follower_order
     l3.up
-    assert_equal l, ["A", "C", "B"]
+    assert_equal list, ["A", "C", "B"]
   end
 
   def test_migrations_to_do
