@@ -305,7 +305,7 @@ end
 
 
 
-class TestMigrationList_load_migrations # < TestMigrationLoaderBase
+class TestMigrationList_load_migrations < TestMigrationLoaderBase
 
   def test_load_simple_migration
     h = l.load_source "
