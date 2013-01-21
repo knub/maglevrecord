@@ -150,7 +150,7 @@ end
 
 
 
-class TestMigrationList_Scenario # < TestMigrationLoaderBase
+class TestMigrationList_Scenario < TestMigrationLoaderBase
 
   def setup_first_migrations
     @m1 = ML::Migration.with_timestamp(1).follows(ML::Migration.first).up{list << 1}.down{list.delete(1)}
