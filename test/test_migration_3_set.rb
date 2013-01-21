@@ -161,7 +161,7 @@ class TestMigrationList_migration_sequence  < TestMigrationSetBase
 
 end
 
-class TestMigrationSet# < TestMigrationSetBase
+class TestMigrationSet < TestMigrationSetBase
 
   def test_sort_by_time
     m(2)
