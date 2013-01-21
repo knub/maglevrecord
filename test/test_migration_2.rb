@@ -263,6 +263,21 @@ class TestMigration_comparism < Test::Unit::TestCase
     assert_equal l, [m1, m2, m3, m4, m5]
   end
 
+  def test_smaller
+    assert M.with_timestamp(2) < M.with_timestamp(3)
+    assert M.with_timestamp(1) < M.with_timestamp(3)
+    assert_not M.with_timestamp(3) < M.with_timestamp(3)
+    assert_not M.with_timestamp(3) < M.with_timestamp(2)
+  end
+
+  def test_greater
+    assert_not M.with_timestamp(3) > M.with_timestamp(3)
+    assert_not M.with_timestamp(1) > M.with_timestamp(3)
+    assert M.with_timestamp(4) > M.with_timestamp(3)
+    assert M.with_timestamp(3) > M.with_timestamp(2)
+  end
+
+
 end
 
 class TestMigration_up_and_down < Test::Unit::TestCase
