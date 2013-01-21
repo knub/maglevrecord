@@ -1,5 +1,6 @@
 
 require "set"
+require "maglev_record/rooted_persistence"
 
 class Set
   
@@ -16,7 +17,8 @@ end
 module MaglevRecord
   
   class Migration
-    include RootedPersistence 
+    include RootedPersistence
+    include ::Comparable
     # nested classes 
 
     class DownError < Exception
@@ -189,7 +191,6 @@ module MaglevRecord
   #
   class MigrationList
     include RootedPersistence
-    include ::Enumerable
 
     class Migration < MaglevRecord::Migration
     end
@@ -197,10 +198,7 @@ module MaglevRecord
     class InconsistentMigrationState < Exception
     end
 
-    class CircularMigrationOrderError < Exception
-    end
-
-    def initialize(migrations = Set.new)
+    def initialize
       @migration_set = Set.new(migrations)
     end
 
@@ -212,10 +210,6 @@ module MaglevRecord
 
     def first_migration
       Migration.first
-    end
-
-    def last_migration
-      first_migration
     end
 
     def up
@@ -240,54 +234,54 @@ module MaglevRecord
       true
     end
 
-
-    #
-    # migrations in order of time
-    #
-    def migrations
-      list = migration_set.to_a
-      list.sort
+    def load_source(string)
+      
     end
 
-    def migration_set
-      todo = Set.new(@migration_set)
-      set = Set.new
+  end
+
+  class MigrationSet
+    include ::Enumerable
+
+    class CircularMigrationOrderError < Exception
+    end
+
+    def initialize(migrations = Set.new)
+      @migrations = Set.new(migrations)
+    end
+
+    def migrations
+      Set.new(@migrations)
+    end
+
+    def expand!
+      todo = migrations
       while not todo.empty?
         migration = todo.pop
-        set << migration
+        add migration
         (migration.parents + migration.children).each{ |migration|
-          todo.add(migration) unless set.include? migration
+          todo.add(migration) unless include? migration
         }
       end
-      set
+      self
     end
 
-    def migrations_to_do
-      (migration_set - migration_set_done).to_a.sort
+    def copy
+      self.class.new(self)
     end
 
-    def migrations_done
-      migration_set_done.to_a.sort
+    def expanded
+      self.copy.expand!
     end
 
-    def migration_set_done
-       Set.new(migration_set.select{|migration| migration.done?})
-    end
-
-    def migrations_to_undo
-      (self.class.migrations_done - migration_set).to_a.sort
-    end
-
-    def self.migrations_done
-      Set.new(Migration.select{ |migration| migration.done? })
-    end
+    alias :dup :copy
 
     #
     # migrations in order of do and undo
     #
-    def migration_order
+    def migration_sequence
       raise CircularMigrationOrderError, 'list has circle of migrations' if has_circle?
-      mig = migrations
+      mig = migrations_by_time
       changed = true
       while changed
         changed = false
@@ -295,7 +289,7 @@ module MaglevRecord
           migration = mig.at(migration_index)
           migration.parents.each{ |parent|
             parent_index = mig.index(parent)
-            if parent_index > migration_index
+            if !parent_index.nil? and parent_index > migration_index
               mig.delete_at(migration_index)
               mig.insert(parent_index, migration)
               migration_index = parent_index
@@ -307,8 +301,12 @@ module MaglevRecord
       mig
     end
 
+    def migrations_by_time
+      migrations.to_a.sort
+    end
+
     def heads
-      migrations.select{ |migration| migration.children.empty? }
+      Set.new(migrations.select{ |migration| migration.children.empty? })
     end
 
     def has_circle?
@@ -316,7 +314,7 @@ module MaglevRecord
     end
 
     def clusters
-      s = migration_set
+      s = migrations
       clusters = Set.new
       while not s.empty?
         todo = Set.new([s.pop])
@@ -356,30 +354,19 @@ module MaglevRecord
       circles
     end
 
-    def load_source(string)
-      
+    def add(migration)
+      @migrations.add(migration)
     end
 
-    def add(migration)
-      @migration_set.add(migration)
-    end
+    alias :<< :add
 
     def include?(migration)
-      migration_set.include?(migration)
+      @migrations.include?(migration)
     end
 
     def empty?
-      @migration_set.empty?
+      @migrations.empty?
     end
-
-#    def self.select
-#      
-#      set = Set.new
-#      each{ |migration|
-#        set.add(migrations) if yield(migration)
-#      }
-#      set
-#    end
 
     def each
       raise ArgumentError, 'I need a block argument for iteration ' unless block_given?
