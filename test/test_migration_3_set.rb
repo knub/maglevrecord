@@ -178,6 +178,9 @@ class TestMigrationSet < TestMigrationSetBase
     assert a1.include?(m(1))
     assert ! a1.include?(m(2))
     assert a1.include?(m(4))
+    assert ! a1.include?(m(5))
+    assert ! a1.include?(m(3))
+    a1.expand!
     assert a1.include?(m(5))
     assert a1.include?(m(3))
   end
@@ -217,10 +220,11 @@ class TestMigrationSet < TestMigrationSetBase
   end
 
   def test_migration_sequence_not_time
-    m(1, 2, 3)
-    m(2, 4)
-    m(3, 5)
-    m(4, 5)
+    puts "!" * 30
+    m(1, 2, 3) # 1___2___4_
+    m(2, 4)    #   \_3_____\5
+    m(3, 5)    #
+    m(4, 5)    #
     assert !s.has_circle?
     assert_equal s.migration_sequence, ms(5, 3, 4, 2, 1)
   end
