@@ -281,26 +281,18 @@ module MaglevRecord
     #
     def migration_sequence
       raise CircularMigrationOrderError, 'list has circle of migrations' if has_circle?
-      mig = migrations_by_time
-      changed = true
-      while changed
-        changed = false
-        mig.each_index{ |migration_index|
-          migration = mig.at(migration_index)
-          migration.parents.each{ |parent|
-            parent_index = mig.index(parent)
-            if !parent_index.nil? and parent_index > migration_index
-              mig.delete_at(migration_index)
-              mig.insert(parent_index, migration)
-              migration_index = parent_index
-              changed = true
-              puts "1 mig: #{mig.collect{|m|m.timestamp}}"
-            end
-          }
+      todo = tails.to_a
+      result = []
+      while not todo.empty?
+        todo.sort!
+        migration_to_expand = todo.delete_at(0)
+        result << migration_to_expand
+        migration_to_expand.children.each{ |child|
+          todo << child unless todo.include? child
+          result.delete(child)
         }
-        puts "2 mig: #{mig.collect{|m|m.timestamp}}"
       end
-      mig
+      result
     end
 
     def migrations_by_time
@@ -308,7 +300,20 @@ module MaglevRecord
     end
 
     def heads
-      Set.new(migrations.select{ |migration| migration.children.empty? })
+      Set.new(migrations.select{ |migration| 
+        migration.children.all?{ |child|
+            ! include?(child)
+          }
+        })
+    end
+
+    # return a set of migrations without parent
+    def tails
+      Set.new(migrations.select{ |migration| 
+        migration.parents.all?{ |parent|
+            ! include?(parent)
+          }
+        })
     end
 
     def has_circle?

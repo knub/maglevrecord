@@ -220,7 +220,9 @@ class TestMigrationSet < TestMigrationSetBase
   end
 
   def test_migration_sequence_not_time
-    puts "!" * 30
+    #
+    # it is important that migrations are executed in the order fo time
+    #
     m(1, 2, 3) # 1___2___4_
     m(2, 4)    #   \_3_____\5
     m(3, 5)    #
@@ -256,6 +258,23 @@ class TestMigrationSet < TestMigrationSetBase
   def test_select
     m(1,2,3,4)
     assert_equal s.select{ |m| m.timestamp > 2 }, ms(3, 4)
-
   end
+
+  def test_tails_parent_not_in_set
+    m(1).follows(M.first)
+    assert_equal s.tails, Set.new([m(1)])
+    s.add(M.first)
+    assert_equal s.tails, Set.new([M.first])
+  end
+
+  def test_heads_parent_not_in_set
+    m(1).follows(M.first)
+    m(2, 1)
+    m3 = M.with_timestamp(3).follows(m(2))
+    assert_equal s.heads, Set.new([m(2)])
+    s.add(M.first)
+    s.add(m3)
+    assert_equal s.heads, Set.new([m3])
+  end
+
 end
