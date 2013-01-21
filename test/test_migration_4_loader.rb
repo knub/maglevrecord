@@ -4,6 +4,8 @@ require "maglev_record"
 class TestMigrationLoaderBase < Test::Unit::TestCase
   
   class ML < MaglevRecord::MigrationLoader
+    def lalilulalilu
+    end
   end
 
   class ML2 < ML
@@ -303,9 +305,22 @@ class TestMigrationList_Scenario < TestMigrationLoaderBase
 
 end
 
+class TestMigrationExecutionContext < Test::Unit::TestCase
+
+  class MockList
+    def migration(timestamp)
+      @t = timestamp
+    end
+
+    def migration_get
+      @t
+    end
+  end
+
+end
 
 
-class TestMigrationList_load_migrations < TestMigrationLoaderBase
+class TestMigrationList_load_migrations # < TestMigrationLoaderBase
 
   def test_load_simple_migration
     h = l.load_source "
@@ -313,6 +328,7 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
       m = migration(1).follows(first_migration)
       m.up{ l << 1 } unless m.has_up?
       m.down{ assert l.delete(1) == 1 } unless m.has_down?
+      l
     "
     list = h["l"]
     m = h["m"]
@@ -335,6 +351,7 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
           assert l.delete(2) != nil
         }
       }
+      l
     "
     s = "
       l = []
@@ -342,6 +359,7 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
       m.up{ l << 3
       } unless m.has_up?
       m.down{l << 6} unless m.has_down?
+      l
     "
     h2 = l.load_source s
     h3 = l.load_source s
@@ -358,6 +376,11 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
     assert ! l.migration(2).done?
   end
 
+  def test_eval_is_not_in_context_of_loader
+    l.lalilulalilu
+    assert_raise(NoMethodError){
+      l.load_source "lalilulalilu"
+    }
+  end
 
-  
 end

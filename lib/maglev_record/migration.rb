@@ -121,7 +121,7 @@ module MaglevRecord
       if v.nil?
         v = t2 <=> t1
         raise TypeError, "value of <=> should be 1, -1 or 0, not #{v.inspect}. #{t2.inspect} <=> #{t1.inspect}" if v != 0 and v != 1 and v != -1
-        v = - v
+        return - v
       end
       return v
     end
