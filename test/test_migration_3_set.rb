@@ -277,4 +277,38 @@ class TestMigrationSet < TestMigrationSetBase
     assert_equal s.heads, Set.new([m3])
   end
 
+  def test_expanded_parents
+    m(2, 1)
+    m(3, 2, 2.5)
+    M.with_timestamp(4).follows(m(2))
+    m6 = M.with_timestamp(6).follows(m(1))
+    m0 = M.with_timestamp(0).add_child(m(1))
+    assert !(m(1).parents.include? m6)
+    e = s.expanded_parents.migrations_by_time
+    assert_equal e, ms(0, 1, 2, 2.5, 3)
+  end
+
+  def test_concat
+    l = l2 = []
+    l += [1,2]
+    assert_equal l2, []
+  end
+
+  def test_migration_sequence_no_root
+    m2 = M.with_timestamp(2)
+    m(3).follows(m2)
+    m(4, 3)
+    m(5, 3)
+    seq = s.migration_sequence
+    assert_equal seq , ms(3,4,5)
+  end
+
+  def migration_sequence_no_head
+    m2 = m(2,3)
+    S::Migration.with_timestamp(4).follows(m2)
+    S::Migration.with_timestamp(5).follows(m2.parents[0])
+    seq = s.migration_sequence
+    assert_equal seq, ms(3,2)
+  end
+
 end

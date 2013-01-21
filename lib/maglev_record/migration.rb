@@ -189,7 +189,7 @@ module MaglevRecord
   # that should be done when the list is the last MigrationList 
   # in the system (MigrationList.last)
   #
-  class MigrationList
+  class MigrationLoader
     include RootedPersistence
 
     class Migration < MaglevRecord::Migration
@@ -199,7 +199,11 @@ module MaglevRecord
     end
 
     def initialize
-      @migration_set = Set.new(migrations)
+      @migration_set = MigrationSet.new
+    end
+
+    def migration_set
+      @migration_set.copy
     end
 
     def migration(timestamp)
@@ -214,10 +218,12 @@ module MaglevRecord
 
     def up
       raise InconsistentMigrationState, 'this migration is not consistent' unless consistent?
-      migrations_to_undo.each{ |migration|
+      todo = migrations_to_do
+      undo = migrations_to_undo
+      undo.each{ |migration|
         migration.undo
       }
-      migrations_to_do.each{ |migration|
+      todo.each{ |migration|
         migration.do
       }
     end
@@ -225,17 +231,42 @@ module MaglevRecord
     def consistent?
       mig = migrations
       return false unless mig.include? first_migration
-      last_mig = mig[0]
-      mig.each { |newer_mig|
-        return false if (not last_mig.done? and newer_mig.done?)
-        last_mig = newer_mig
+      # TODO: adapt algorithm
+      mig.each { |migration|
+        return false if (not migration.done? and migration.children.any? { |child| child.done? })
       }
-      return false if has_circle?
+      return false if migration_set.has_circle?
       true
     end
 
     def load_source(string)
       
+    end
+
+    def migrations
+      migration_set.expanded.migrations_by_time
+    end
+
+    def migrations_to_undo
+      skip = migration_set.expanded_parents.migration_sequence
+      skip = Migration.select{ |migration|
+        ! skip.include?(migration) and migration.done?
+      }
+      skip.reverse
+    end
+
+    def migrations_to_do
+      todo = migration_set.expanded_parents
+      todo = MigrationSet.new(todo)
+      todo = todo.migration_sequence
+      todo = todo.select{ |migration| ! migration.done? }
+      todo
+    end
+
+    def migrations_to_skip
+      skip  = Set.new(Migration.all) - Set.new(migrations_to_do) 
+      skip -= Set.new(migrations_to_undo)
+      MigrationSet.new(skip).migrations_by_time
     end
 
   end
@@ -254,16 +285,22 @@ module MaglevRecord
       Set.new(@migrations)
     end
 
-    def expand!
+    def expand!(children = true)
       todo = migrations
       while not todo.empty?
         migration = todo.pop
         add migration
-        (migration.parents + migration.children).each{ |migration|
+        to_expand = migration.parents
+        to_expand += migration.children if children
+        to_expand.each{ |migration|
           todo.add(migration) unless include? migration
         }
       end
       self
+    end
+
+    def expand_parents!
+      expand!(children = false)
     end
 
     def copy
@@ -274,6 +311,10 @@ module MaglevRecord
       self.copy.expand!
     end
 
+    def expanded_parents
+      self.copy.expand_parents!
+    end
+
     alias :dup :copy
 
     #
@@ -281,6 +322,8 @@ module MaglevRecord
     #
     def migration_sequence
       raise CircularMigrationOrderError, 'list has circle of migrations' if has_circle?
+      # use tsort? 
+      # http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tsort/rdoc/TSort.html
       todo = tails.to_a
       result = []
       while not todo.empty?
@@ -288,7 +331,7 @@ module MaglevRecord
         migration_to_expand = todo.delete_at(0)
         result << migration_to_expand
         migration_to_expand.children.each{ |child|
-          todo << child unless todo.include? child
+          todo << child unless (todo.include? child or !include? child)
           result.delete(child)
         }
       end
