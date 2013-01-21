@@ -294,9 +294,11 @@ module MaglevRecord
               mig.insert(parent_index, migration)
               migration_index = parent_index
               changed = true
+              puts "1 mig: #{mig.collect{|m|m.timestamp}}"
             end
           }
         }
+        puts "2 mig: #{mig.collect{|m|m.timestamp}}"
       end
       mig
     end
