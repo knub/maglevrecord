@@ -68,19 +68,13 @@ class TestMigrationContext_load < Test::Unit::TestCase
 
   def test_create_migration
     v = c.load_string "\n\n\n  migration('2012-10-2 20:20:20 +03:00')"
-    # this is just a suggestion for now...
-    # in further implementation this can refer to a timestamp
-    # assert_equal f.migrations, [ some timestamp]
     assert_equal f.args, [Time.new(2012, 10, 2, 20, 20, 20, '+03:00')]
   end
 
   def test_load_from_file
-    # make sure this file does exist
     filename = migration_directory + 'migration_1.rb'
-    
-    # test
     c.load_file filename
-    assert_equal l.args [["2013-01-22 18:31:11"]]
+    assert_equal l.args [["2013-01-22 18:31:11"]] # TODO: timestamp
   end
 
   def test_load_nonexistent_file
@@ -95,8 +89,8 @@ class TestMigrationContext_load < Test::Unit::TestCase
 
   def test_load_directory
     c.load_directory(migration_directory)
-    assert f.args.include?(["2012-01-22 19:01:01"])
-    assert f.args.include?(["2013-01-22 18:31:11"])
+    assert f.args.include?(["2012-01-22 19:01:01"]) # TODO: timestamp
+    assert f.args.include?(["2013-01-22 18:31:11"]) # TODO: timestamp
   end
 
   def test_call_the_special_method
@@ -105,6 +99,10 @@ class TestMigrationContext_load < Test::Unit::TestCase
     assert_equal c.method_called, 1
   end
   
+  def assert_arg(argument)
+    assert_equal f.args[0], argument
+  end
+
   def test_converting_from_timestamp
     # TODO ! create timestamp
     c.load_string "\nmigration('2014-02-21 07:33:21 +06:00')"
@@ -115,10 +113,6 @@ class TestMigrationContext_load < Test::Unit::TestCase
     assert_raise{
       c.migration('jaskldjlajlkd')
     }
-  end
-
-  def assert_arg(argument)
-    assert_equal f.args[0], argument
   end
 
   def test_get_source_of_migration
