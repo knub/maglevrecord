@@ -61,7 +61,7 @@ module MaglevRecord
       migration = self.object_pool[timestamp]
       return migration unless migration.nil?
       migration = super(timestamp)
-      raise NameError, 'timestamp of migration must be object_id' unless migration.object_id == timestamp
+      raise NameError, 'timestamp of migration must be id' unless migration.id == timestamp
       migration
     end
 
@@ -78,7 +78,7 @@ module MaglevRecord
       @done = false
     end
 
-    def object_id
+    def id
       timestamp
     end
 

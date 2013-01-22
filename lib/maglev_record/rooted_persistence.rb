@@ -6,7 +6,11 @@ module MaglevRecord
     include MaglevRecord::Enumerable
 
     def delete
-      self.class.object_pool.delete(self.object_id)
+      self.class.object_pool.delete(self.id)
+    end
+
+    def id
+      object_id
     end
 
     module ClassMethods
@@ -20,7 +24,7 @@ module MaglevRecord
 
       def new(*args)
         instance = super(*args)
-        self.object_pool[instance.object_id] = instance
+        self.object_pool[instance.id] = instance
         instance
       end
 

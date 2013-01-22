@@ -89,6 +89,12 @@ class TestMigration_list < Test::Unit::TestCase
     }
   end
 
+  def test_id_is_not_object_id
+    m = M.with_timestamp(0)
+    assert_equal m.id, 0
+    assert_not m.object_id == 0
+  end
+
   def test_new_migration_has_no_children
     m = M.with_timestamp('tritra')
     assert_equal m.children.size, 0
