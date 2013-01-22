@@ -305,7 +305,7 @@ class TestMigrationList_Scenario < TestMigrationLoaderBase
 
 end
 
-class TestMigrationExecutionContext < Test::Unit::TestCase
+class TestMigrationExecutionContext #< Test::Unit::TestCase
 
   class MockList
     def migration(timestamp)

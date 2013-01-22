@@ -9,7 +9,7 @@ class EBook
   include MaglevRecord::Base
 end
 
-class MigrationTest # < Test::Unit::TestCase
+class MigrationTest #< Test::Unit::TestCase
   def setup
     @EBook = Class.new(EBook){
       attr_accessor :title
@@ -28,9 +28,6 @@ class MigrationTest # < Test::Unit::TestCase
     @books.each do |book|
       book.save
     end
-    @EBook.instance_eval{
-      dirty_attr_accessor :author, :sold
-    }
   end
 
   def newMigration

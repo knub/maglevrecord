@@ -1,8 +1,3 @@
-
-
-#
-# set the author
-#
 class ExampleMigration1 < MaglevRecord::Migration
   
   timestamp = 1
@@ -26,7 +21,7 @@ class ExampleMigration2 < MaglevRecord::Migration
   ofClass = MigrationBook
 
   def up
-    MigrationBook.each{ |book|
+    MigrationBook.each { |book|
       book.comments = [] if book.comments.nil?
     }
   end
@@ -44,13 +39,13 @@ class ExampleMigration3 < MaglevRecord::Migration
 
   def up
     MigrationBook.each { |book|
-      book.title << " in practice"
+      book.title << " for Dummies"
     }
   end
 
   def down
     MigrationBook.each { |book|
-      book.title = book.title[-" in practice".size..0]
+      book.title = book.title[-" for Dummies".size..0]
     }
   end
 

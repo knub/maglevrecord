@@ -70,7 +70,7 @@ class TestMigration_list < Test::Unit::TestCase
 
   def test_first_preceeds_new_migration
     m = M.with_timestamp('test').follows(@first)
-    assert_equal m.parents, [M.first]
+    assert_equal m.parents, [@first]
   end
 
   def test_new_migration_succeeds_first
@@ -78,15 +78,14 @@ class TestMigration_list < Test::Unit::TestCase
     assert @first.children.include? m
   end
 
-  def test_all_migrations_depending_on_an_other_migration_are_its_children
+  def test_all_migrations_depending_on_another_migration_are_its_children
     m = M.with_timestamp(0)
-    x = 10
-    ms = (1..x).collect { |n|
+    migration_children = (1..10).collect { |n|
       M.with_timestamp(n).follows(m)
     }
-    ms.each{ |m2| 
-      assert_equal m2.parents, [m]
-      assert m.children.include? m2
+    migration_children.each { |migration_child|
+      assert_equal migration_child.parents, [m]
+      assert m.children.include? migration_child
     }
   end
 

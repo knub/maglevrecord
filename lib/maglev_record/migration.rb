@@ -7,7 +7,7 @@ class Set
   # remove a random element from the set and return it
   #
   def pop
-    each{ |element|
+    each { |element|
       delete element
       return element
     }
@@ -439,8 +439,4 @@ module MaglevRecord
   end
 
 end
-
-
-
-
 
