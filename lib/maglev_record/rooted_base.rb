@@ -6,11 +6,10 @@ require "maglev_record/base"
 module MaglevRecord
   module RootedBase
     extend ActiveSupport::Concern
-    
+
     included do
       include MaglevRecord::Base
       include MaglevRecord::RootedPersistence
-      include MaglevRecord::Enumerable
     end
   end
 end

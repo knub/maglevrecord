@@ -5,6 +5,7 @@ require "rooted_example_model"
 class ValidationTest < Test::Unit::TestCase
 
   def setup
+    Maglev.abort_transaction
     RootedBook.new(:title => "Harry Potter and the Philosopher's stone", :author => "Joanne K. Rowling")
     RootedBook.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
     MaglevRecord.save
