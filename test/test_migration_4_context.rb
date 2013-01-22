@@ -1,5 +1,7 @@
+require "test/unit"
+require "maglev_record"
 
-class TestMigrationContext_load
+class TestMigrationContext_load < Test::Unit::TestCase
   #
   # create a context class with our special method we want to use
   # when creating a migration
@@ -52,7 +54,7 @@ class TestMigrationContext_load
     @f = MigrationFactory.new
     @c = C.new(f)
     @migration_directory = File.dirname(__FILE__) + '/_migrations/'
-    assert File(migration_directory).directory?
+    assert File.directory?(migration_directory)
     assert (File.file? migration_directory + 'migration_1.rb')
     assert (File.file? migration_directory + 'migration_2.rb')
   end

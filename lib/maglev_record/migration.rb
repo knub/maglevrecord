@@ -438,5 +438,9 @@ module MaglevRecord
 
   end
 
+  class MigrationContext
+
+  end
+
 end
 
