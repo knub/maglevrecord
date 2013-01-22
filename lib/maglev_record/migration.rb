@@ -433,7 +433,7 @@ module MaglevRecord
 
     def each
       raise ArgumentError, 'I need a block argument for iteration ' unless block_given?
-      migrations.each{ |migration| yield migration}
+      migrations.sort.each{ |migration| yield migration}
     end
 
   end
