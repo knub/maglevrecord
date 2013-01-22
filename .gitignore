@@ -22,4 +22,4 @@ gem_*_code.log
 # gvim files
 *.swp
 
-
+/test.rb
