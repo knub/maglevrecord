@@ -1,5 +1,6 @@
 require "test/unit"
 require "maglev_record"
+require "more_asserts"
 
 require 'time'
 
@@ -11,13 +12,6 @@ class TestBook
     @author = author
   end
 end
-
-class Test::Unit::TestCase
-  def assert_not(bool, message = nil)
-    assert_equal false, bool, message
-  end
-end
- 
 
 #
 # only for parent and successor
