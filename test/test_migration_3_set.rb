@@ -257,7 +257,7 @@ class TestMigrationSet < TestMigrationSetBase
 
   def test_select
     m(1,2,3,4)
-    assert_equal s.select{ |m| m.timestamp > 2 }, ms(3, 4)
+    assert_equal Set.new(s.select{ |m| m.timestamp > 2 }), Set.new(ms(3, 4))
   end
 
   def test_tails_parent_not_in_set

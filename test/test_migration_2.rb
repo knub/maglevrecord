@@ -1,5 +1,6 @@
 require "test/unit"
 require "maglev_record"
+require "more_asserts"
 
 require 'time'
 
@@ -11,13 +12,6 @@ class TestBook
     @author = author
   end
 end
-
-class Test::Unit::TestCase
-  def assert_not(bool, message = nil)
-    assert_equal false, bool, message
-  end
-end
- 
 
 #
 # only for parent and successor
@@ -87,6 +81,12 @@ class TestMigration_list < Test::Unit::TestCase
       assert_equal migration_child.parents, [m]
       assert m.children.include? migration_child
     }
+  end
+
+  def test_id_is_not_object_id
+    m = M.with_timestamp(0)
+    assert_equal m.id, 0
+    assert_not m.object_id == 0
   end
 
   def test_new_migration_has_no_children
