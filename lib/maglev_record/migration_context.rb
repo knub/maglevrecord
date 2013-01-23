@@ -107,10 +107,11 @@ module MaglevRecord
       @migration_factory = migration_factory
     end
 
-    def load_string(source)
+    def load_string(source, file = __FILE__)
       @source = source
-      instance_eval source
+      value = instance_eval source, file
       @source = nil
+      value
     end
 
     attr_reader :source

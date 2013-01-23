@@ -32,6 +32,10 @@ module MaglevRecord
         "first"
       end
 
+      def timestamp
+        self
+      end
+
     end
 
     # save instances

@@ -73,7 +73,19 @@ module MaglevRecord
     end
 
     def load_string(string)
-      MigrationContext.new(self).load_string(string)
+      migration_context.load_string(string)
+    end
+
+    def load_file(string)
+      migration_context.load_file(string)
+    end
+
+    def load_directory(string)
+      migration_context.load_directory(string)
+    end
+
+    def migration_context
+      MigrationContext.new(self)
     end
 
     def migrations

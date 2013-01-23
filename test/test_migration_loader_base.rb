@@ -29,4 +29,7 @@ class TestMigrationLoaderBase < Test::Unit::TestCase
   def test_nothing
   end
 
+  def migration_folder
+    File.dirname(__FILE__) + '/_migrations/'
+  end
 end
