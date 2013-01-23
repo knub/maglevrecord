@@ -46,7 +46,7 @@ class TestTimestamp_parse < Test::Unit::TestCase
     assert_equal t2.hash, t2.hash
   end
   
-  # todo: make sure the timestamp is correctly comparable
+  # TODO: make sure the timestamp is correctly comparable
   
   def test_include_in_array
     s = '1990-12-21 22:21:20 +00:00'
