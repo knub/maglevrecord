@@ -61,8 +61,30 @@ class TestTimestamp_parse < Test::Unit::TestCase
 
 end
 
+class TestTimestamp_with_migration <  Test::Unit::TestCase
+  class T < MaglevRecord::MigrationContext::Timestamp
+  end
 
+  class M < MaglevRecord::Migration
+  end
 
+  def test_can_use_timestamp_for_migration
+    t = T.parse('2003-2-2 3:3:32 +00:00')
+    m = M.with_timestamp(t)
+    assert_equal m.timestamp, t
+    assert_equal m.timestamp, T.parse('2003-2-2 3:3:32 +00:00')
+  end
+
+  def test_migrations_are_identified_by_timestamp
+    t1 = T.parse('2033-3-4 5:6:2 +03:00')
+    t2 = T.parse('2033-3-4 4:6:2 +04:00')
+    m1 = M.with_timestamp(t1)
+    m2 = M.with_timestamp(t2)
+    assert_equal t1, t2
+    assert_equal m1, m2
+  end
+
+end
 
 class TestMigrationContext_load < Test::Unit::TestCase
   #
