@@ -15,6 +15,13 @@ class TestMigrationContext_load < Test::Unit::TestCase
   end
 
   # 
+  # get the MalgevRecordTimestamp
+  #
+
+  class T < MaglevRecord::Timestamp
+  end
+
+  # 
   # This migration factory creates the migrations we use
   #
   class MigrationFactory
@@ -68,13 +75,14 @@ class TestMigrationContext_load < Test::Unit::TestCase
 
   def test_create_migration
     v = c.load_string "\n\n\n  migration('2012-10-2 20:20:20 +03:00')"
-    assert_equal f.args, [Time.new(2012, 10, 2, 20, 20, 20, '+03:00')]
+    assert_equal f.args, [T.new(2012, 10, 2, 20, 20, 20, '+03:00')]
   end
 
   def test_load_from_file
     filename = migration_directory + 'migration_1.rb'
     c.load_file filename
-    assert_equal l.args [["2013-01-22 18:31:11"]] # TODO: timestamp
+    # "2013-01-22 18:31:11"
+    assert_equal l.args [[T.new(2013, 01, 22, 18, 31, 11)]]
   end
 
   def test_load_nonexistent_file
@@ -89,8 +97,8 @@ class TestMigrationContext_load < Test::Unit::TestCase
 
   def test_load_directory
     c.load_directory(migration_directory)
-    assert f.args.include?(["2012-01-22 19:01:01"]) # TODO: timestamp
-    assert f.args.include?(["2013-01-22 18:31:11"]) # TODO: timestamp
+    assert f.args.include?([T.new(2012, 01, 22, 19, 1, 1)]) # "2012-01-22 19:01:01"
+    assert f.args.include?([T.new(2013, 01, 22, 18, 31, 11)]) # "2013-01-22 18:31:11"
   end
 
   def test_call_the_special_method
@@ -104,9 +112,8 @@ class TestMigrationContext_load < Test::Unit::TestCase
   end
 
   def test_converting_from_timestamp
-    # TODO ! create timestamp
     c.load_string "\nmigration('2014-02-21 07:33:21 +06:00')"
-    assert_arg(Time.new(2014, 2, 21, 7, 33, 21, "+06:00"))
+    assert_arg(T.new(2014, 2, 21, 7, 33, 21, "+06:00"))
   end
 
   def test_bad_time_format
