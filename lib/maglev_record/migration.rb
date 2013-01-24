@@ -1,6 +1,12 @@
 
 require "maglev_record/rooted_persistence"
 
+class Object
+  def is_first_timestamp?
+    false
+  end
+end
+
 module MaglevRecord
   
   class Migration
@@ -18,7 +24,7 @@ module MaglevRecord
       include Comparable
 
       def <=> (other)
-        if self.class == other.class
+        if other.is_first_timestamp?
           return 0
         end
         return -1
@@ -34,6 +40,10 @@ module MaglevRecord
 
       def timestamp
         self
+      end
+
+      def is_first_timestamp?
+        true
       end
 
     end

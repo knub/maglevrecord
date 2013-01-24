@@ -18,7 +18,7 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
       m.down{ assert l.delete(1) == 1 } unless m.has_down?
       l
     "
-    assert_equal l.migrations.size, 2
+    assert_equal l.migrations.size, 2, l.migrations
     assert_equal list, []
     assert l.migration_set.any?{|m| m.timestamp.to_s == t1 }
   end
@@ -76,6 +76,18 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
     l.load_directory(migration_folder)
     assert l.migrations.any?{|m| m.timestamp.to_s == "2013-01-22 18:31:11 +00:00"}
     assert l.migrations.any?{|m| m.timestamp.to_s == "2012-01-22 19:01:01 +00:00"}
+  end
+
+  def test_use_method_of_context_in_up
+     s = "
+      m = migration(#{t2.inspect}).follows(migration(#{t1.inspect}))
+      m.up{ method_used_by_up } unless m.has_up?
+      m.down{ method_used_by_down } unless m.has_down?
+    "
+    l.load_string s
+    l.up # no error
+    l2 = ML.new
+    l2.up # no error
   end
 
 end

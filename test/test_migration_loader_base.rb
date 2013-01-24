@@ -8,6 +8,14 @@ class TestMigrationLoaderBase < Test::Unit::TestCase
   class ML < MaglevRecord::MigrationLoader
     def lalilulalilu
     end
+    class MigrationContext < MaglevRecord::MigrationContext
+      def method_used_by_up
+      end
+      def method_used_by_down
+      end
+    end
+    class Migration < MaglevRecord::MigrationLoader::Migration
+    end
   end
 
   class ML2 < ML

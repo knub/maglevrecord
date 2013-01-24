@@ -84,6 +84,12 @@ class TestTimestamp_with_migration <  Test::Unit::TestCase
     assert_equal m1, m2
   end
 
+  def test_inspect
+    s = '2033-3-4 5:6:2 +03:00'
+    t = T.parse(s)
+    assert_equal t.inspect, "timestamp(#{s.inspect})"
+  end
+
 end
 
 class TestMigrationContext_load < Test::Unit::TestCase
