@@ -23,7 +23,6 @@ module MaglevRecord
       self.maglev_persistable
       ActiveSupport.maglev_persistable
       ActiveSupport::OrderedHash.maglev_persistable
-      ActiveModel::Callbacks.maglev_persistable
       ActiveSupport::Callbacks.maglev_persistable
       #ActiveSupport::HashWithIndifferentAccess.maglev_persistable
     end
