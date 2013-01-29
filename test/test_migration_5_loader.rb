@@ -1,7 +1,11 @@
 require "test_migration_loader_base"
 
-class TestMigrationList_load_migrations < TestMigrationLoaderBase
-  
+class TestMigrationList_load_migrations < Test::Unit::TestCase
+
+  def migration_folder
+    File.dirname(__FILE__) + '/_migrations/'
+  end
+
   def t1
     '2012-2-20 2:2:2 +00:00'
   end
@@ -66,7 +70,7 @@ class TestMigrationList_load_migrations < TestMigrationLoaderBase
       l.load_string "lalilulalilu"
     }
   end
-  
+
   def test_load_from_file
     l.load_file(migration_folder + 'migration_1.rb')
     assert l.migrations.any?{|m| m.timestamp.to_s == "2013-01-22 18:31:11 +00:00"}
