@@ -1,4 +1,3 @@
-require "test_migration_loader_base"
 
 class TestMigrationList_load_migrations < Test::Unit::TestCase
 
