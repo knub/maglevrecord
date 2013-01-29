@@ -119,6 +119,14 @@ class TestMigration_list < Test::Unit::TestCase
     assert_equal m.parents, [f]
   end
 
+  def test_follows?
+    m1 = M.with_timestamp(1)
+    m2 = M.with_timestamp(2)
+    m2.follows(m1)
+    assert m2.follows?(m1)
+    assert_not m1.follows?(m2)
+  end
+
   def test_follow_different_migrations
     f = M.with_timestamp('axyz')
     m = M.with_timestamp('casd').follows(f)
