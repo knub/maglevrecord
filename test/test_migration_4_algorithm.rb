@@ -1,113 +1,127 @@
 require "test_migration_loader_base"
 
-class TestMigrationLoader < TestMigrationLoaderBase
+class TestMigrationAlgorithm < Test::Unit::TestCase
 
-  def test_clear_clears_all_ML
-    ML.clear
-    assert_equal ML.size, 0
+  Migration = MaglevRecord::Migration
+  def setup
+    # Remember for all tests:
+    # This set contains the desired state for all migrations.
+    # All migrations in this set should be applied,
+    # all migrations not in this set should not be applied.
+    Migration.clear
+    @migrations = MigrationSet.new
   end
 
-  def test_ml_clear_does_not_clear_ml
-    l1 = ML.new
-    l2 = ML2.new
-    s = ML.size
-    assert_equal ML2.size, 1
-    ML2.clear
-    assert_equal ML2.size, 0
-    assert_equal ML.size, s
+  def alg
+    MigrationAlgorithm.new(@migrations)
   end
 
+  ###
+  ## Factory methods for creating test setups
+  ###
 
-  def test_first_is_last_if_there_is_no_migration
-    #assert_equal l.last_migration, l.first_migration
-    #TODO!
-  end
-
-  # make sure that we have always one root
-  def test_consistent_if_root_is_first
-    m = l.migration(1).follows(l.first_migration)
-    assert l.consistent?
-  end
-
-  def test_first_migration_is_always_the_same
-    assert_equal ML.new.first_migration, ML.new.first_migration
-    assert_equal ML.new.first_migration.hash, ML.new.first_migration.hash
-  end
-
-end
-
-class TestMigrationLoader_do_done_undo < TestMigrationLoaderBase
-
-  # create migration without list
-  def mm(timestamp, *parents)
-    m = ML::Migration.with_timestamp(timestamp)
-    parents.each{ |parent| 
-      m.follows(mm(parent))
+  # Creates a migration graph with the first argument being the head,
+  # and the following being its parents.
+  # m_with_parents(1, 2, 3, 4) =
+  #  1
+  # | \ \
+  # 2 3 4
+  def m_with_parents(timestamp, *parent_timestamps)
+    m = Migration.with_timestamp(timestamp)
+    parent_timestamps.each { |parent_timestamp|
+      m.follows(Migration.with_timestamp(parent_timestamp))
     }
     m
   end
 
-  def m(timestamp, *args)
-    m = mm(timestamp, *args)
-    l.migration(timestamp)
+  # Same as m_with_parents, but also adds to the MigrationSet instance
+  # which will be passed to the algorithm when calling alg.
+  def m_with_parents_in_set(timestamp, *args)
+    m = m_with_parents(timestamp, *args)
+    @migrations.add(m)
+    m
   end
 
-  def ms(*timestamps)
-    timestamps.map{ |timestamp| mm(timestamp)}
-  end
-
+  # Just some assert helper to test undo, skip and todo.
   def assert_lists(undo, skip, todo)
     li = []
-    li << l.migrations_to_undo.map{|m|m.timestamp}
-    li << l.migrations_to_skip.map{|m|m.timestamp}
-    li << l.migrations_to_do.map{|m|m.timestamp}
+    li << alg.migrations_to_undo.map{|m|m.timestamp}
+    li << alg.migrations_to_skip.map{|m|m.timestamp}
+    li << alg.migrations_to_do.map{|m|m.timestamp}
     assert_equal li, [undo, skip, todo]
   end
 
   def test_has_nothing
-    mm(2,3)
+    # 2 → 3
+    m_with_parents(2, 3)
     assert_lists([], [2,3], [])
   end
 
   def test_undo
-    mm(2, 3).do
-    mm(4, 2)
-    mm(5, 3)
+    # 4 → 2 → 3
+    #      5 ↗
+    m_with_parents(2, 3).do
+    m_with_parents(4, 2)
+    m_with_parents(5, 3)
+    # set is empty, so 2 needs to be undone
     assert_lists([2], [3, 4, 5], [])
   end
 
   def test_do
-    m(2,3)
-    mm(4, 2)
-    mm(5, 3)
-    assert mm(4).follows(mm(2))
+    # 4 → 2 → 3
+    #      5 ↗
+    m2 = m_with_parents_in_set(2, 3)
+    m4 = m_with_parents(4, 2)
+    m_with_parents(5, 3)
+    assert_include? m4.parents, m2
     assert_lists([], [4, 5], [3, 2])
   end
 
   def test_skip
-    m(2).do
+    m_with_parents_in_set(2).do
+    # 2 is already done, so should be in skip list now
     assert_lists([], [2], [])
   end
 
   def test_skip_todo_undo
-    m(2,3)
-    mm(4).do
-    m(3).do
+    # 2 → 3, 4
+    m_with_parents_in_set(2,3)
+    m_with_parents(4).do
+    m_with_parents_in_set(3).do
+    # 2 is in set, and not done, so needs to be done
+    # 3 is in set and done, so everything is fine
+    # 4 is done, but not in set, so needs to be undone
     assert_lists([4], [3], [2])
   end
 
   def test_big_scenario
-    m(1).do
-    m(2, 1).do
-      mm(3, 1).do # detached branch
-      mm(5, 3).do
-      mm(7, 5)
-    mm(4, 2)
-    mm(4, 2.5)
-        mm(2.5)
-    m(8, 4, 6.5)
-    m(6.5, 6)
-    m(6, 4)
+    # 4 → 2.5
+    # 8 →             4 → 2done → 1done
+    # 8 → 6.5 → 6 → 4
+    # 7 → 5done → 3done → 1done
+    #
+    # in set for algorithm: 8, 6.5, 6, 1, 2
+    m_with_parents_in_set(1).do
+    m_with_parents_in_set(2, 1).do
+      m_with_parents(3, 1).do # detached branch
+      m_with_parents(5, 3).do
+      m_with_parents(7, 5)
+    m_with_parents(4, 2)
+    m_with_parents(4, 2.5)
+        m_with_parents(2.5)
+    m_with_parents_in_set(8, 4, 6.5)
+    m_with_parents_in_set(6.5, 6)
+    m_with_parents_in_set(6, 4)
+    # 1 is in set and done, so everything is fine
+    # 2 is in set and done, so everything is fine
+    # 3 is not in set but done, so needs to be undone
+    # 4 is not in set, but 8 is, which depends on 4, so 4 needs to be done
+    # 4 depends on 2.5, so 2.5 needs to be done as well
+    # 5 is done, but not in set, so needs to be undone
+    # 6 is in set and not done, so needs to be done
+    # 6.5 is in set but not done, so needs to be done
+    # 7 is not in set and undone, so can be skipped
+    # 8 is in set but not done, so needs to be done
     assert_lists([5, 3], [1, 2, 7], [2.5, 4, 6, 6.5, 8])
   end
 
@@ -118,29 +132,29 @@ end
 class TestMigrationList_Scenario < TestMigrationLoaderBase
 
   def setup_first_migrations
-    @m1 = ML::Migration.with_timestamp(1).follows(ML::Migration.first).up{list << 1}.down{list.delete(1)}
-    @m2 = ML::Migration.with_timestamp(2).follows(@m1).up{list << 2}.down{list.delete(2)}
+    @m1 = Migration.with_timestamp(1).follows(Migration.first).up{list << 1}.down{list.delete(1)}
+    @m2 = Migration.with_timestamp(2).follows(@m1).up{list << 2}.down{list.delete(2)}
   end
 
   def setup_list_1
     @l1_setup = true
-    @l = ML.new
-    @m3 = ML::Migration.with_timestamp(3).follows(@m2).up{list << 3}.down{list.delete(3)}
+    @l = Migration.new
+    @m3 = Migration.with_timestamp(3).follows(@m2).up{list << 3}.down{list.delete(3)}
     @m4 = l.migration(4).follows(@m3).up{list << 4}.down{list.delete(4)}
   end
 
   def setup_list_2
     @l2_setup = true
-    @l2 = ML.new
-    @ma = ML::Migration.with_timestamp(97).follows(@m2).up{list << "a"}.down{list.delete("a")}
+    @l2 = Migration.new
+    @ma = Migration.with_timestamp(97).follows(@m2).up{list << "a"}.down{list.delete("a")}
     @mb = @l2.migration(98).follows(@ma).up{list << "b"}.down{list.delete("b")}
   end
 
   def setup_list_3
     @l3_setup = true
-    @l3 = ML.new
-    @mA = ML::Migration.with_timestamp("A").follows(l3.first_migration).up{list << "A"}.down{list.delete("A")}
-    @mC = ML::Migration.with_timestamp("C").follows(@mA).up{list << "C"}.down{list.delete("C")}
+    @l3 = Migration.new
+    @mA = Migration.with_timestamp("A").follows(l3.first_migration).up{list << "A"}.down{list.delete("A")}
+    @mC = Migration.with_timestamp("C").follows(@mA).up{list << "C"}.down{list.delete("C")}
     @mB = l3.migration("B").follows(@mC).up{list << "B"}.down{list.delete("B")}
   end
 
@@ -211,12 +225,12 @@ class TestMigrationList_Scenario < TestMigrationLoaderBase
   def test_error_if_migration_up_in_between
     @m2.do
     assert !l.consistent?
-    assert_raise(ML::InconsistentMigrationState) {
+    assert_raise(InconsistentMigrationState) {
       l.up
     }
     assert !l2.consistent?
     assert_equal list, [2]
-    assert_raise(ML::InconsistentMigrationState) {
+    assert_raise(InconsistentMigrationState) {
       l2.up
     }
     assert_equal list, [2]
