@@ -41,7 +41,7 @@ module MaglevRecord
         add migration
         to_expand = migration.parents
         to_expand += migration.children if children
-        to_expand.each{ |migration|
+        to_expand.each { |migration|
           todo.add(migration) unless include? migration
         }
       end

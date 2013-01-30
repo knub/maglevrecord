@@ -1,12 +1,6 @@
 
 require "maglev_record/rooted_persistence"
 
-class Object
-  def is_first_timestamp?
-    false
-  end
-end
-
 module MaglevRecord
   
   class Migration
@@ -20,43 +14,8 @@ module MaglevRecord
     class UpError < Exception
     end
 
-    class FirstTimestamp
-      include Comparable
-
-      def <=> (other)
-        if other.is_first_timestamp?
-          return 0
-        end
-        return -1
-      end
-
-      def hash
-        self.class.hash
-      end
-
-      def inspect
-        "first"
-      end
-
-      def timestamp
-        self
-      end
-
-      def is_first_timestamp?
-        true
-      end
-
-    end
-
     # save instances
     # replace with MaglevRecord::Model
-
-    def self.first
-      first = self.with_timestamp(FirstTimestamp.new)
-      first.up{} unless first.has_up?
-      first.down{} unless first.has_down?
-      first
-    end
 
     def self.new(timestamp)
       migration = self.object_pool[timestamp]
@@ -133,15 +92,15 @@ module MaglevRecord
 
     # methods for code execution
 
-    def up
+    def up(&block)
       raise ArgumentError, 'I can only have one block to execute' unless @up.nil?
-      @up = Proc.new
+      @up = Proc.new &block
       self
     end
 
-    def down
+    def down(&block)
       raise ArgumentError, 'I can only have one block to execute' unless @down.nil?
-      @down = Proc.new
+      @down = Proc.new &block
       self
     end
 
@@ -169,12 +128,7 @@ module MaglevRecord
       not @down.nil?
     end
 
-    def first?
-      self.class.first == self
-    end
-
     def to_s
-      return self.class.name + ".first" if self.first?
       self.class.name + ".with_timestamp(#{timestamp.inspect})"
     end
 
@@ -185,7 +139,6 @@ module MaglevRecord
     end
 
     # required methods for user interface
-
     attr_accessor :source
   end
 end

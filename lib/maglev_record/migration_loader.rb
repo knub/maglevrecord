@@ -43,13 +43,15 @@ module MaglevRecord
       consistent_raise
       todo = migrations_to_do
       undo = migrations_to_undo
-      undo.each{ |migration|
+      undo.each { |migration|
         migration.undo
+        context.mark_undo(migration)
       }
-      todo.each{ |migration|
+      todo.each { |migration|
         migration.do
       }
     end
+
 
     def consistent?
       begin
@@ -109,7 +111,7 @@ module MaglevRecord
     end
 
     def migrations_to_skip
-      skip  = Set.new(Migration.all) - Set.new(migrations_to_do) 
+      skip  = Set.new(Migration.all) - Set.new(migrations_to_do)
       skip -= Set.new(migrations_to_undo)
       MigrationSet.new(skip).migrations_by_time
     end
