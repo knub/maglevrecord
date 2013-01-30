@@ -1,17 +1,7 @@
-require "test/unit"
 require "maglev_record"
 require "more_asserts"
 
 require 'time'
-
-class TestBook
-  def author
-    @author
-  end
-  def author=(author)
-    @author = author
-  end
-end
 
 #
 # only for parent and successor
@@ -182,7 +172,7 @@ class TestMigration_list < Test::Unit::TestCase
 end
 
 class TestMigration_Timestamp < Test::Unit::TestCase
-  
+
   class M < MaglevRecord::Migration
   end
 
@@ -194,7 +184,7 @@ class TestMigration_Timestamp < Test::Unit::TestCase
     assert t2 <= t3
   end
 
-  def test_can_use_time_as_Migration_timestamp 
+  def test_can_use_time_as_Migration_timestamp
     # time_compares_independent_from_zone
     #
     # check if we can use timestamps as migration ids
@@ -373,7 +363,7 @@ class TestMigration_up_and_down < Test::Unit::TestCase
   def test_can_undo_if_down_not_set
     m1 = M.with_timestamp('test2')
     m1.up {}
-    m1.do 
+    m1.do
     m1.undo # raises no error!
   end
 

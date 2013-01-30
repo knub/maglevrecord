@@ -1,29 +1,20 @@
 require "test/unit"
 require "maglev_record"
 
-
-class EBook
-  def self.name 
-    :EBook
-  end
-  include MaglevRecord::Base
-end
+require "example_model"
 
 class MigrationTest #< Test::Unit::TestCase
+  Migration = MaglevRecord::Migration
   def setup
-    @EBook = Class.new(EBook){
-      attr_accessor :title
-    }
-
     @books = [
-      @EBook.new(:title => "Harry Potter and the Philosopher's stone"),
-      @EBook.new(:title => "Harry Potter and the Chamber of Secrets"),
-      @EBook.new(:title => "Harry Potter and the Prisoner of Azkaban"),
-      @EBook.new(:title => "Harry Potter and the Goblet of Fire"),
-      @EBook.new(:title => "Harry Potter and the Order of the Phoenix"),
-      @EBook.new(:title => "Harry Potter and the Half-blood Prince"),
-      @EBook.new(:title => "Harry Potter and the Deathly Hallows"),
-      @EBook.new(:title => "The Magician's Guild")
+      Book.new(:title => "Harry Potter and the Philosopher's stone"),
+      Book.new(:title => "Harry Potter and the Chamber of Secrets"),
+      Book.new(:title => "Harry Potter and the Prisoner of Azkaban"),
+      Book.new(:title => "Harry Potter and the Goblet of Fire"),
+      Book.new(:title => "Harry Potter and the Order of the Phoenix"),
+      Book.new(:title => "Harry Potter and the Half-blood Prince"),
+      Book.new(:title => "Harry Potter and the Deathly Hallows"),
+      Book.new(:title => "The Magician's Guild")
     ]
     @books.each do |book|
       book.save
@@ -31,40 +22,21 @@ class MigrationTest #< Test::Unit::TestCase
   end
 
   def newMigration
-    MaglevRecord::Migration.new(@EBook)
+    Migration.new(Time.now)
   end
 
-  def book(no = 1)
-    @books[no]
-  end
-
-  def test_teardown_and_setup_work
-    assert_equal("Harry Potter and the Chamber of Secrets", book.title)
+  # Access one of the books via index
+  def book(index = 1)
+    @books[index]
   end
 
   def test_add_field_author
-    newMigration.add_attribute(:author, "J. K. Rohling")
-    assert_equal("J. K. Rohling", book.author)
+    newMigration.add_attribute(:writer, "J. K. Rohling")
+    assert_equal("J. K. Rohling", book.writer)
   end
 
   def test_add_field_author_with_nil
     newMigration.add_attribute(:author)
     assert_equal(nil, book.author)
-  end
-
-  def test_migrate_sold
-    newMigration.add_attribute(:sold, 0)
-    mig = newMigration
-    mig.attribute(:sold) {
-      up { |book|
-        book.sold += 1
-      }
-      down { |book|
-        book.sold -= 1
-      }
-    }
-    @books.each { |book|
-      assert_equal 1, book.sold
-    }
   end
 end
