@@ -13,14 +13,7 @@ class TestMigration_list < Test::Unit::TestCase
     Migration.clear
   end
 
-  def test_get_timestamp
-    # everything can be a timestamp
-    o = Object.new
-    m1 = Migration.with_timestamp(o)
-    assert_equal m1.timestamp, o
-  end
-
-  def test_migration_with_same_timestamp_is_same_migration
+  def test_migration_with_same_timestamp_and_name_is_same_migration
     m1 = Migration.with_timestamp('hallo')
     m2 = Migration.with_timestamp('hallo')
     assert_equal m1, m2

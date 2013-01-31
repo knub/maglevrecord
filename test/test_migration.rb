@@ -26,9 +26,9 @@ class MigrationTestNew < Test::Unit::TestCase
     File.dirname(__FILE__) + '/test_migrations'
   end
 
-  # def test_migration_loader_loads_correct_number_of_migrations
-  #   assert_equal 3, loader.migration_list.size
-  # end
+  def test_migration_loader_loads_correct_number_of_migrations
+    assert_equal 3, loader.migration_list.size
+  end
 
   def test_migration_loader
     migration_list = loader.migration_list
