@@ -1,5 +1,7 @@
 require "maglev_record/rooted_persistence"
 
+require "time"
+
 module MaglevRecord
 
   class Migration
@@ -11,20 +13,26 @@ module MaglevRecord
     attr_reader :name
 
     def initialize(timestamp, name, &block)
-      @timestamp = timestamp
+      if (timestamp.kind_of? String)
+        @timestamp = Time.parse(timestamp)
+      else
+        @timestamp = timestamp
+      end
+
       @name = name
       @done = false
       instance_eval &block unless block.nil?
     end
 
     def id
-      # TODO: Use better to string function for timestamp
-      @timestamp.to_s + @name
+      [timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec].reduce(timestamp.year.to_s) do |sum, s|
+        sum + s.to_s.rjust(2, '0')
+      end + name.to_s
+      # "#{timestamp.year}#{timestamp.month.rjust(2, '0')}#{timestamp.day}#{timestamp.hour}#{timestamp.min}#{timestamp.sec}#{name}"
     end
 
-    # e.g. "2013-01-05 12:20:20 migration"
     def to_s
-      "#{timestamp.year}-#{timestamp.month}-#{timestamp.day} #{timestamp.hour}:#{timestamp.min}:#{timestamp.sec} #{name}"
+      "MaglevRecord::Migration<\"#{timestamp.year}-#{timestamp.month}-#{timestamp.day} #{timestamp.hour}:#{timestamp.min}:#{timestamp.sec}\", \"#{name}\">"
     end
 
     def inspect

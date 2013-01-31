@@ -7,8 +7,8 @@ class TestMigration < Test::Unit::TestCase
 
   def setup
     Migration.clear
-    @t1 = Time.utc(2013, 1, 1, 0, 0, 0)
-    @m = Migration.new("2013-01-20 12:01:03", "migration")
+    @t1 = "2013-01-20 12:01:03"
+    @m = Migration.new(@t1, "migration")
   end
 
   def test_migration_with_same_timestamp_and_name_is_same_migration
@@ -32,7 +32,8 @@ class TestMigration < Test::Unit::TestCase
   def test_clear_forgets_about_object_identities
     m = Migration.new(@t1, 'migration')
     Migration.clear
-    assert_not m, Migration.new(@t1, 'migration')
+    assert_not_equal m,
+      Migration.new(@t1, 'migration')
   end
 
   def test_migrations_sort_by_timstamp
@@ -53,11 +54,6 @@ class TestMigration < Test::Unit::TestCase
     m5 = Migration.new(@t1 + 5, "migration")
     l = [m2, m4, m1, m3, m5].sort
     assert_equal l, [m1, m2, m3, m4, m5]
-  end
-
-
-  def setup
-    Migration.clear
   end
 
   def test_id
@@ -119,16 +115,16 @@ class TestMigration_up_and_down < Test::Unit::TestCase
 
   def test_do
     m.do
-    assert_equal self.class.test_list, [1]
+    assert_equal @@test_list, [1]
     m.undo
-    assert_equal l, []
+    assert_equal @@test_list, []
   end
 
   def test_do_twice
     # running do twice only executes it once
     m.do
     m.do
-    assert_equal self.class.test_list.size, 1
+    assert_equal @@test_list.size, 1
   end
 
   def test_undo_twice
@@ -140,7 +136,7 @@ class TestMigration_up_and_down < Test::Unit::TestCase
   def test_can_do_if_up_not_set
     m1 = Migration.new(@t1, 'migration')
     m1.do # raises no error!, but nothing happens :)
-    assert_equal self.class.test_list.size, 0
+    assert_equal @@test_list.size, 0
   end
 
   def test_can_undo_if_down_not_set
