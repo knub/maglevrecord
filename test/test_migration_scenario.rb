@@ -23,7 +23,7 @@ class MigrationScenarioTest < Test::Unit::TestCase
   end
 
   def migration_directory
-    File.dirname(__FILE__) + '/test_migrations'
+    File.dirname(__FILE__) + '/migrations'
   end
 
   def test_migration_loader_loads_correct_number_of_migrations
