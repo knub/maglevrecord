@@ -13,22 +13,20 @@ module MaglevRecord
     attr_reader :name
 
     def initialize(timestamp, name, &block)
-      if (timestamp.kind_of? String)
-        @timestamp = Time.parse(timestamp)
-      else
-        @timestamp = timestamp
-      end
-
+      @timestamp = timestamp
       @name = name
       @done = false
       instance_eval &block unless block.nil?
     end
 
     def id
+      self.class.id_for(timestamp, name)
+    end
+
+    def self.id_for(timestamp, name)
       [timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec].reduce(timestamp.year.to_s) do |sum, s|
         sum + s.to_s.rjust(2, '0')
       end + name.to_s
-      # "#{timestamp.year}#{timestamp.month.rjust(2, '0')}#{timestamp.day}#{timestamp.hour}#{timestamp.min}#{timestamp.sec}#{name}"
     end
 
     def to_s
@@ -40,10 +38,10 @@ module MaglevRecord
     end
 
     def self.new(timestamp, name)
-      migration = super(timestamp, name)
-      self.object_pool.fetch(migration.id) {
-        self.object_pool[migration.id] = migration
-        migration
+      timestamp = Time.parse(timestamp) if timestamp.kind_of? String
+      id = id_for(timestamp, name)
+      self.object_pool.fetch(id) {
+        migration = super(timestamp, name)
       }
     end
 

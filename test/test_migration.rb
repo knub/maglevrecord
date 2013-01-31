@@ -32,8 +32,7 @@ class TestMigration < Test::Unit::TestCase
   def test_clear_forgets_about_object_identities
     m = Migration.new(@t1, 'migration')
     Migration.clear
-    assert_not_equal m,
-      Migration.new(@t1, 'migration')
+    assert_not_equal m, Migration.new(@t1, 'migration')
   end
 
   def test_migrations_sort_by_timstamp
@@ -80,6 +79,7 @@ class TestMigration_up_and_down < Test::Unit::TestCase
 
   def setup
     @@test_list = []
+    @t1 = "2013-01-20 12:01:03"
     @m = Migration.new(@t1, 'test') do
       def up
         TestMigration_up_and_down.test_list << 1
