@@ -1,7 +1,7 @@
 require "maglev_record"
 
 class Book
-  include MaglevRecord::Base
+  include MaglevRecord::RootedBase
 
   attr_accessor :author, :title, :comments
 

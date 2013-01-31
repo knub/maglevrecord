@@ -15,7 +15,10 @@ module MaglevRecord
 
     module ClassMethods
       def clear
-        self.object_pool.each { |k, v| v.delete }
+        self.object_pool.each { |k, v|
+          p v.methods.sort
+          v.delete
+        }
       end
 
       def size
