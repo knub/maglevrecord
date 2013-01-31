@@ -62,7 +62,7 @@ class TestMigration < Test::Unit::TestCase
   end
 
   def test_to_s
-    assert_equal "MaglevRecord::Migration<'\"2013-01-20 12:01:03\", \"migration\"", @m.to_s
+    assert_equal Migration.name + "<\"2013-01-20 12:01:03\", \"migration\">", @m.to_s
   end
 
   def test_inspect

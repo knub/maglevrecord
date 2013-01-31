@@ -30,7 +30,7 @@ module MaglevRecord
     end
 
     def to_s
-      "MaglevRecord::Migration<\"#{timestamp.year}-#{timestamp.month}-#{timestamp.day} #{timestamp.hour}:#{timestamp.min}:#{timestamp.sec}\", \"#{name}\">"
+      self.class.name + "<\"#{timestamp.year}-#{timestamp.month.to_s.rjust(2, '0')}-#{timestamp.day.to_s.rjust(2, '0')} #{timestamp.hour.to_s.rjust(2, '0')}:#{timestamp.min.to_s.rjust(2, '0')}:#{timestamp.sec.to_s.rjust(2, '0')}\", \"#{name}\">"
     end
 
     def inspect
