@@ -37,22 +37,24 @@ class TestMigration < Test::Unit::TestCase
     assert_not m.equal?(Migration.new(@t1, 'migration'))
   end
 
-  def test_migrations_sort_by_timstamp
-    m1 = Migration.new(@t1 + 1, "migration")
-    m2 = Migration.new(@t1 + 2, "migration")
-    m3 = Migration.new(@t1 + 3, "migration")
-    m4 = Migration.new(@t1 + 4, "migration")
-    m5 = Migration.new(@t1 + 5, "migration")
+  def test_migrations_sort_by_timestamp
+    parsed_time = Time.parse(@t1)
+    m1 = Migration.new(parsed_time + 1, "migration")
+    m2 = Migration.new(parsed_time + 2, "migration")
+    m3 = Migration.new(parsed_time + 3, "migration")
+    m4 = Migration.new(parsed_time + 4, "migration")
+    m5 = Migration.new(parsed_time + 5, "migration")
     l = [m2, m4, m1, m3, m5].sort
     assert_equal l, [m1, m2, m3, m4, m5]
   end
 
   def test_migrations_sort_by_name_if_timestamp_equal
-    m1 = Migration.new(@t1 + 1, "migration")
-    m2 = Migration.new(@t1 + 1, "zzmigration")
-    m3 = Migration.new(@t1 + 3, "aamigration")
-    m4 = Migration.new(@t1 + 3, "migration")
-    m5 = Migration.new(@t1 + 5, "migration")
+    parsed_time = Time.parse(@t1)
+    m1 = Migration.new(parsed_time + 1, "migration")
+    m2 = Migration.new(parsed_time + 1, "zzmigration")
+    m3 = Migration.new(parsed_time + 3, "aamigration")
+    m4 = Migration.new(parsed_time + 3, "migration")
+    m5 = Migration.new(parsed_time + 5, "migration")
     l = [m2, m4, m1, m3, m5].sort
     assert_equal l, [m1, m2, m3, m4, m5]
   end
