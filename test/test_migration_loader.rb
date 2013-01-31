@@ -1,8 +1,8 @@
 
-class TestMigrationList_load_migrations < Test::Unit::TestCase
+class TestMigrationLoader < Test::Unit::TestCase
 
   def migration_folder
-    File.dirname(__FILE__) + '/_migrations/'
+    File.dirname(__FILE__) + '/migrations'
   end
 
   def t1
