@@ -1,143 +1,59 @@
-
 require "maglev_record/rooted_persistence"
 
-# module MaglevRecord
+module MaglevRecord
 
-#   class Migration
-#     include RootedPersistence
-#     include ::Comparable
-#     # nested classes
+  class Migration
+    include RootedPersistence
+    include ::Comparable
 
-#     class DownError < Exception
-#     end
+    attr_accessor :source
+    attr_reader :timestamp
+    attr_reader :name
 
-#     class UpError < Exception
-#     end
+    def initialize(timestamp, name, &block)
+      @timestamp = timestamp
+      @name = name
+      @done = false
+      instance_eval &block
+    end
 
-#     # save instances
-#     # replace with MaglevRecord::Model
-#     def self.new(timestamp)
-#       migration = self.object_pool[timestamp]
-#       return migration unless migration.nil?
-#       migration = super(timestamp)
-#       migration
-#     end
+    def id
+      # TODO: Use better to string function for timestamp
+      @timestamp.to_s + "_" + @name
+    end
 
-#     def self.with_timestamp(timestamp)
-#       self.new(timestamp)
-#     end
+    def self.new(timestamp, name)
+      migration = super(timestamp, name)
+      self.object_pool.fetch(migration.id) {
+        self.object_pool[migration.id] = migration
+        migration
+      }
+    end
 
-#     def initialize(timestamp)
-#       @timestamp = timestamp
-#       @children = []
-#       @parents = []
-#       @down = nil
-#       @up = nil
-#       @done = false
-#     end
+    def done?
+      @done
+    end
 
-#     def id
-#       timestamp
-#     end
+    def do
+      puts "does not know up" unless respond_to?(:up)
+      up if respond_to?(:up) && !done?
+      @done = true
+    end
 
-#     # linked tree of migrations
+    def undo
+      down if respond_to?(:down) && done?
+      @done = false
+    end
 
-#     def children
-#       @children
-#     end
+    def <=>(other)
+      compare = timestamp <=> other.timestamp
+      return compare if compare != 0
+      name <=> other.name
+    end
 
-#     def add_child(a_migration)
-#       raise ArgumentError, "I can not follow myself" if a_migration.timestamp == timestamp
-#       @children << a_migration unless @children.include? a_migration
-#       a_migration.follows(self) unless a_migration.parents.include? self
-#       self
-#     end
+    def remove_field
+      puts "Removing a field"
+    end
 
-#     def follows(a_migration)
-#       raise ArgumentError, "I can not follow myself" if a_migration.timestamp == timestamp
-#       @parents << a_migration unless @parents.include? a_migration
-#       a_migration.add_child(self)
-#       self
-#     end
-
-#     alias :add_parent :follows
-
-#     def parents
-#       @parents
-#     end
-
-#     # timestamp
-
-#     def timestamp
-#       @timestamp
-#     end
-
-#     def <=> (other_migration)
-#       t1 = timestamp
-#       t2 = other_migration.timestamp
-#       v = t1 <=> t2
-#       if v.nil?
-#         v = t2 <=> t1
-#         raise TypeError, "value of <=> should be 1, -1 or 0, not #{v.inspect}. #{t2.inspect} <=> #{t1.inspect}" if v != 0 and v != 1 and v != -1
-#         return - v
-#       end
-#       return v
-#     end
-
-#     def self.now
-#       Time.now
-#     end
-
-#     # methods for code execution
-
-#     def up(&block)
-#       raise ArgumentError, 'I can only have one block to execute' unless @up.nil?
-#       @up = Proc.new &block
-#       self
-#     end
-
-#     def down(&block)
-#       raise ArgumentError, 'I can only have one block to execute' unless @down.nil?
-#       @down = Proc.new &block
-#       self
-#     end
-
-#     def done?
-#       @done
-#     end
-
-#     def do
-#       raise UpError, 'I am already up' if done?
-#       @done = true
-#       @up.call unless @up.nil?
-#     end
-
-#     def undo
-#       raise DownError, 'I am already down' if not done?
-#       @done = false
-#       @down.call unless @down.nil?
-#     end
-
-#     def has_up?
-#       not @up.nil?
-#     end
-
-#     def has_down?
-#       not @down.nil?
-#     end
-
-#     def to_s
-#       self.class.name + ".with_timestamp(#{timestamp.inspect})"
-#     end
-
-#     def inspect
-#       s = self.class.name + " " + timestamp.inspect
-#       s += " done" if done?
-#       "<#{s}>"
-#     end
-
-#     # required methods for user interface
-#     attr_accessor :source
-#   end
-# end
-
+  end
+end

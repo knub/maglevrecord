@@ -1,7 +1,4 @@
-require "set"
 require "maglev_record/migration"
-require "maglev_record/migration_context"
-require "maglev_record/migration_set"
 
 module MaglevRecord
   #
@@ -11,110 +8,32 @@ module MaglevRecord
   # found in list::Migration.all
   #
   class MigrationLoader
-    include RootedPersistence
-
-    class Migration < MaglevRecord::Migration
-    end
-
-    class InconsistentMigrationState < Exception
-    end
 
     def initialize
-      @migration_set = MigrationSet.new
+      @migration_list = []
     end
 
-    def migration_set
-      @migration_set.copy
+
+    def migration_list
+      @migration_list.sort
     end
 
-    def migration(timestamp)
-      migration = Migration.with_timestamp(timestamp)
-      @migration_set << migration
+    def load_string(source, file = __FILE__)
+      migration = instance_eval source, file
+      migration.source = source
+      @migration_list << migration
       migration
     end
 
-    def first_migration
-      fm = Migration.first
-      @migration_set.add fm
-      fm
+    def load_file(file_path)
+      raise ArgumentError, "file #{file_path.inspect} not found" unless File.file?(file_path)
+      load_string(File.open(file_path).read, file_path)
     end
 
-    def up
-      consistent_raise
-      todo = migrations_to_do
-      undo = migrations_to_undo
-      undo.each { |migration|
-        migration.undo
-        context.mark_undo(migration)
-      }
-      todo.each { |migration|
-        migration.do
+    def load_directory(directory_path)
+      Dir.foreach(directory_path){ |file_name|
+        load_file(directory_path + '/' + file_name) if file_name.end_with? '.rb'
       }
     end
-
-
-    def consistent?
-      begin
-        consistent_raise
-        return true
-      rescue InconsistentMigrationState
-        return false
-      end
-    end
-
-    def consistent_raise
-      #raise InconsistentMigrationState, "This list must include #{first_migration}" unless migration_set.include? first_migration
-      raise InconsistentMigrationState, "This list has circular references: #{migration_set.circles}" if migration_set.has_circle?
-      migration_set.expanded.each { |migration|
-        if not migration.done?
-          migration.children.each{ |child|
-            raise InconsistentMigrationState, "#{child} is done but depends on undone migration #{migration}" if child.done?
-          }
-        end
-      }
-    end
-
-    def load_string(string)
-      migration_context.load_string(string)
-    end
-
-    def load_file(string)
-      migration_context.load_file(string)
-    end
-
-    def load_directory(string)
-      migration_context.load_directory(string)
-    end
-
-    def migration_context
-      MigrationContext.new(self)
-    end
-
-    def migrations
-      migration_set.expanded.migrations_by_time
-    end
-
-    def migrations_to_undo
-      skip = migration_set.expanded_parents.migration_sequence
-      skip = Migration.select{ |migration|
-        ! skip.include?(migration) and migration.done?
-      }
-      skip.reverse
-    end
-
-    def migrations_to_do
-      todo = migration_set.expanded_parents
-      todo = MigrationSet.new(todo)
-      todo = todo.migration_sequence
-      todo = todo.select{ |migration| ! migration.done? }
-      todo
-    end
-
-    def migrations_to_skip
-      skip  = Set.new(Migration.all) - Set.new(migrations_to_do)
-      skip -= Set.new(migrations_to_undo)
-      MigrationSet.new(skip).migrations_by_time
-    end
-
   end
 end
