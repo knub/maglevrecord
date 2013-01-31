@@ -31,8 +31,10 @@ class TestMigration < Test::Unit::TestCase
 
   def test_clear_forgets_about_object_identities
     m = Migration.new(@t1, 'migration')
+    assert_equal m.object_id, Migration.new(@t1, 'migration').object_id
     Migration.clear
-    assert_not_equal m, Migration.new(@t1, 'migration')
+    # assert_not_equal m.object_id, Migration.new(@t1, 'migration').object_id
+    assert_not m.equal?(Migration.new(@t1, 'migration'))
   end
 
   def test_migrations_sort_by_timstamp
