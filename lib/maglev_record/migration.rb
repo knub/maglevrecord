@@ -14,12 +14,21 @@ module MaglevRecord
       @timestamp = timestamp
       @name = name
       @done = false
-      instance_eval &block
+      instance_eval &block unless block.nil?
     end
 
     def id
       # TODO: Use better to string function for timestamp
-      @timestamp.to_s + "_" + @name
+      @timestamp.to_s + @name
+    end
+
+    # e.g. "2013-01-05 12:20:20 migration"
+    def to_s
+      "#{timestamp.year}-#{timestamp.month}-#{timestamp.day} #{timestamp.hour}:#{timestamp.min}:#{timestamp.sec} #{name}"
+    end
+
+    def inspect
+      source
     end
 
     def self.new(timestamp, name)
@@ -35,7 +44,6 @@ module MaglevRecord
     end
 
     def do
-      puts "does not know up" unless respond_to?(:up)
       up if respond_to?(:up) && !done?
       @done = true
     end
