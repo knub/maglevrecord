@@ -1,5 +1,9 @@
 require "maglev_record/migration"
 
+##
+# Offers methods for reading migrations from strings, files and directories.
+# Migrations are sorted and dou
+# All read in migrations can be accessed after the reading.
 module MaglevRecord
   class MigrationLoader
 
@@ -8,6 +12,8 @@ module MaglevRecord
     end
 
     def migration_list
+      # TODO
+      # Print a warning, if there are two or more migrations which are equal.
       @migration_list.sort.uniq
     end
 

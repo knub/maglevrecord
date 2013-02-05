@@ -1,9 +1,26 @@
-require "maglev_record/rooted_persistence"
-
 require "time"
 
 module MaglevRecord
 
+  ##
+  # This class represents a migration which transfers the data set from one
+  # state to another.
+  # Each migrations is identified by its name and its timestamp. Creating a new
+  # migration is as easy as:
+
+  #   Migration.new("2013-02-02 1, 10, 0, 0, 0), "Change book title") do
+  #     def up
+  #       Book.each do |book|
+  #         book.title = "A new book title"
+  #       end
+  #     end
+  #     def down
+  #       Book.each do |book|
+  #         book.title = "Back to old title"
+  #       end
+  #     end
+  #   end
+  # Furthermore, this class offers methods to actually do data migration.
   class Migration
     include RootedPersistence
     include ::Comparable
