@@ -8,7 +8,7 @@ module MaglevRecord
     end
 
     def migration_list
-      @migration_list.sort
+      @migration_list.sort.uniq
     end
 
     def load_string(source, file = __FILE__)
