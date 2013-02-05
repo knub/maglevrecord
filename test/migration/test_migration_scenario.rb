@@ -1,5 +1,4 @@
 require "maglev_record"
-require "maglev_record/migrator"
 require "more_asserts"
 
 require "example_model"

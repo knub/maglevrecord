@@ -1,18 +1,11 @@
 require "maglev_record/migration"
 
 module MaglevRecord
-  #
-  # A MigrationList contains a migrations
-  # Those migrations can be done with up
-  # up rolls back every migration that is not in the list but
-  # found in list::Migration.all
-  #
   class MigrationLoader
 
     def initialize
       @migration_list = []
     end
-
 
     def migration_list
       @migration_list.sort
@@ -31,7 +24,7 @@ module MaglevRecord
     end
 
     def load_directory(directory_path)
-      Dir.foreach(directory_path){ |file_name|
+      Dir.foreach(directory_path) { |file_name|
         load_file(directory_path + '/' + file_name) if file_name.end_with? '.rb'
       }
     end
