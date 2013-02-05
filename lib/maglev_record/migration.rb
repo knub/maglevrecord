@@ -1,5 +1,7 @@
 require "maglev_record/rooted_persistence"
 
+require "time"
+
 module MaglevRecord
 
   class Migration
@@ -14,19 +16,32 @@ module MaglevRecord
       @timestamp = timestamp
       @name = name
       @done = false
-      instance_eval &block
+      instance_eval &block unless block.nil?
     end
 
     def id
-      # TODO: Use better to string function for timestamp
-      @timestamp.to_s + "_" + @name
+      self.class.id_for(timestamp, name)
+    end
+
+    def self.id_for(timestamp, name)
+      [timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec].reduce(timestamp.year.to_s) do |sum, s|
+        sum + s.to_s.rjust(2, '0')
+      end + name.to_s
+    end
+
+    def to_s
+      self.class.name + "<\"#{timestamp.year}-#{timestamp.month.to_s.rjust(2, '0')}-#{timestamp.day.to_s.rjust(2, '0')} #{timestamp.hour.to_s.rjust(2, '0')}:#{timestamp.min.to_s.rjust(2, '0')}:#{timestamp.sec.to_s.rjust(2, '0')}\", \"#{name}\">"
+    end
+
+    def inspect
+      source
     end
 
     def self.new(timestamp, name)
-      migration = super(timestamp, name)
-      self.object_pool.fetch(migration.id) {
-        self.object_pool[migration.id] = migration
-        migration
+      timestamp = Time.parse(timestamp) if timestamp.kind_of? String
+      id = id_for(timestamp, name)
+      self.object_pool.fetch(id) {
+        migration = super(timestamp, name)
       }
     end
 
@@ -35,7 +50,6 @@ module MaglevRecord
     end
 
     def do
-      puts "does not know up" unless respond_to?(:up)
       up if respond_to?(:up) && !done?
       @done = true
     end

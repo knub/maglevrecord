@@ -1,39 +1,150 @@
 require "maglev_record"
-require "maglev_record/migrator"
 require "more_asserts"
+require 'time'
 
-require "example_model"
-
-class MigrationTestNew < Test::Unit::TestCase
+class TestMigration < Test::Unit::TestCase
   Migration = MaglevRecord::Migration
-  MigrationLoader = MaglevRecord::MigrationLoader
-  Migrator = MaglevRecord::Migrator
-
-  attr_reader :loader
 
   def setup
-    MaglevRecord.reset
-    Book.clear
-    @loader = MigrationLoader.new
-    Book.new(:title => "Harry Potter and the Philosopher's stone")
-    Book.new(:title => "Harry Potter and the Chamber of Secrets")
-    Book.new(:title => "Harry Potter and the Prisoner of Azkaban")
-    MaglevRecord.save
-    loader.load_directory(migration_directory)
+    Migration.clear
+    @t1 = "2013-01-20 12:01:03"
+    @m = Migration.new(@t1, "migration")
   end
 
-  def migration_directory
-    File.dirname(__FILE__) + '/test_migrations'
+  def test_migration_with_same_timestamp_and_name_is_same_migration
+    m1 = Migration.new(@t1, "same")
+    m2 = Migration.new(@t1, "same")
+    assert_equal m1.id, m2.id
+    assert_equal m1.object_id, m2.object_id
   end
 
-  def test_migration_loader_loads_correct_number_of_migrations
-    assert_equal 3, loader.migration_list.size
+  def test_id_is_not_object_id
+    m = Migration.new(@t1, "migration")
+    assert_not_equal m.id, m.object_id
   end
 
-  def test_migration_loader
-    migration_list = loader.migration_list
-    migrator = Migrator.new(migration_list)
-    migrator.up
-    assert_equal "The most recent book title", Book.first.title
+  def test_migration_clear
+    m = Migration.new(@t1, "migration")
+    Migration.clear
+    assert_equal Migration.size, 0
+  end
+
+  def test_clear_forgets_about_object_identities
+    m = Migration.new(@t1, 'migration')
+    assert_equal m.object_id, Migration.new(@t1, 'migration').object_id
+    Migration.clear
+    # assert_not_equal m.object_id, Migration.new(@t1, 'migration').object_id
+    assert_not m.equal?(Migration.new(@t1, 'migration'))
+  end
+
+  def test_migrations_sort_by_timestamp
+    parsed_time = Time.parse(@t1)
+    m1 = Migration.new(parsed_time + 1, "migration")
+    m2 = Migration.new(parsed_time + 2, "migration")
+    m3 = Migration.new(parsed_time + 3, "migration")
+    m4 = Migration.new(parsed_time + 4, "migration")
+    m5 = Migration.new(parsed_time + 5, "migration")
+    l = [m2, m4, m1, m3, m5].sort
+    assert_equal l, [m1, m2, m3, m4, m5]
+  end
+
+  def test_migrations_sort_by_name_if_timestamp_equal
+    parsed_time = Time.parse(@t1)
+    m1 = Migration.new(parsed_time + 1, "migration")
+    m2 = Migration.new(parsed_time + 1, "zzmigration")
+    m3 = Migration.new(parsed_time + 3, "aamigration")
+    m4 = Migration.new(parsed_time + 3, "migration")
+    m5 = Migration.new(parsed_time + 5, "migration")
+    l = [m2, m4, m1, m3, m5].sort
+    assert_equal l, [m1, m2, m3, m4, m5]
+  end
+
+  def test_id
+    assert_equal "20130120120103migration", @m.id
+  end
+
+  def test_to_s
+    assert_equal Migration.name + "<\"2013-01-20 12:01:03\", \"migration\">", @m.to_s
+  end
+
+  def test_inspect
+    assert_equal @m.inspect, @m.source
+  end
+end
+
+
+class TestMigration_up_and_down < Test::Unit::TestCase
+  Migration = MaglevRecord::Migration
+  attr_reader :m
+
+  def self.test_list
+    @@test_list
+  end
+
+  def setup
+    @@test_list = []
+    @t1 = "2013-01-20 12:01:03"
+    @m = Migration.new(@t1, 'test') do
+      def up
+        TestMigration_up_and_down.test_list << 1
+      end
+      def down
+        raise "Wrong call to down" unless TestMigration_up_and_down.test_list.delete(1) == 1
+      end
+    end
+  end
+
+  def teardown
+    Migration.clear
+  end
+
+  def test_can_be_done
+    m.do
+    assert m.done?
+  end
+
+  def test_new_app_is_not_done
+    assert_not m.done?
+  end
+
+  def test_undo_fail
+    m.undo
+  end
+
+  def test_undo_possible
+    m.do
+    m.undo
+    assert_not m.done?
+  end
+
+  def test_do
+    m.do
+    assert_equal @@test_list, [1]
+    m.undo
+    assert_equal @@test_list, []
+  end
+
+  def test_do_twice
+    # running do twice only executes it once
+    m.do
+    m.do
+    assert_equal @@test_list.size, 1
+  end
+
+  def test_undo_twice
+    # assert_equal in down should not throw an error
+    m.undo
+    m.undo
+  end
+
+  def test_can_do_if_up_not_set
+    m1 = Migration.new(@t1, 'migration')
+    m1.do # raises no error!, but nothing happens :)
+    assert_equal @@test_list.size, 0
+  end
+
+  def test_can_undo_if_down_not_set
+    m1 = Migration.new(@t1, 'migration')
+    m1.undo # raises no error!, but nothing happens :)
   end
 end
