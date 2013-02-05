@@ -1,4 +1,5 @@
 require "active_support"
+require "maglev_record/enumerable"
 
 module MaglevRecord
   module RootedPersistence
