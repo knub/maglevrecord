@@ -15,7 +15,6 @@ module MaglevRecord
       migration = instance_eval source, file
       migration.source = source
       @migration_list << migration
-      migration
     end
 
     def load_file(file_path)
