@@ -4,5 +4,4 @@ source "http://rubygems.org"
 gem 'activesupport'
 gem 'activemodel'
 gem 'actionpack'
-gem 'bacon'
 
