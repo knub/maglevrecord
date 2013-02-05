@@ -227,6 +227,10 @@ fi
 # Make sure we have a compatible version of GemStone
 bash ./update.sh
 
+rake stone:create[test]
+rake test:start
+
+
 cd ..
 # End of script
 exit 0
