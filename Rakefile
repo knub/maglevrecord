@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rake/testtask'
 require 'bundler/gem_tasks'
-require 'tasks/maglevrecord'
+require 'lib/tasks/maglev_record'
 
 Rake::TestTask.new do |t|
   t.libs << 'test'

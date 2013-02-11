@@ -1,3 +1,7 @@
+require "maglev_record"
+
+puts $LOAD_PATH
+
 MIGRATION_FOLDER = "./migrations"
 namespace :db do
   task :migrate do

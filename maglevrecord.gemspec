@@ -8,4 +8,5 @@ Gem::Specification.new do |s|
   s.files       = Dir["{bin,lib,man,test,spec}/**/*"]
   s.email       = "bp2012h1@hpi.uni-potsdam.de"
   s.homepage    = 'https://github.com/knub/maglevrecord'
+  s.require_path = 'lib'
 end
