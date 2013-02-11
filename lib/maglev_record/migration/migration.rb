@@ -82,8 +82,20 @@ module MaglevRecord
       name <=> other.name
     end
 
-    def remove_field
-      puts "Removing a field"
+    def remove_field(klass, field)
+      klass.all do |instance|
+        instance.attributes.delete(field)
+      end
+    end
+
+    def rename_field(klass, old_name, new_name)
+      klass.all do |instance|
+        val = instance.attributes.delete(old_name)
+        instance.attributes[new_name] = val
+      end
+    end
+
+    def rename_model(old_name, new_name)
     end
 
   end

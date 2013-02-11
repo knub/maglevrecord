@@ -31,8 +31,12 @@ module MaglevRecord
         instance
       end
 
+      def object_pool_key
+        self.name.to_sym
+      end
+
       def object_pool
-        Maglev::PERSISTENT_ROOT[self.name.to_sym] ||= {}
+        Maglev::PERSISTENT_ROOT[object_pool_key] ||= {}
       end
     end
   end
