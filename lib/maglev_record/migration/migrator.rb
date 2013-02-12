@@ -26,7 +26,7 @@ module MaglevRecord
       end
       to_do = @migration_list
       to_do.sort.each do |mig|
-        puts "Doing '" + mig.name + "' from " + mig.timestamp
+        puts "Doing '" + mig.name + "' from " + mig.timestamp.to_s
         mig.do
       end
     end

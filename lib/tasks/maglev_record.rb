@@ -1,14 +1,11 @@
 require "maglev_record"
 
-puts $LOAD_PATH
-
-MIGRATION_FOLDER = "./migrations"
+MIGRATION_FOLDER = "test/migration/dummy_migrations"
 namespace :db do
   task :migrate do
-    puts "Loading migrations."
-    loader = MaglevRecord.MigrationLoader.new
+    loader = MaglevRecord::MigrationLoader.new
     loader.load_directory(MIGRATION_FOLDER)
-    migrator = MaglevRecord.Migrator.new(loader.migration_list)
+    migrator = MaglevRecord::Migrator.new(loader.migration_list)
     migrator.up
   end
 end
