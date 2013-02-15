@@ -1,7 +1,6 @@
 require "time"
 
 module MaglevRecord
-
   ##
   # This class represents a migration which transfers the data set from one
   # state to another.
@@ -22,7 +21,6 @@ module MaglevRecord
   #   end
   # Furthermore, this class offers methods to actually do data migration.
   class Migration
-    include RootedPersistence
     include ::Comparable
 
     attr_accessor :source
@@ -57,9 +55,7 @@ module MaglevRecord
     def self.new(timestamp, name)
       timestamp = Time.parse(timestamp) if timestamp.kind_of? String
       id = id_for(timestamp, name)
-      self.object_pool.fetch(id) {
-        migration = super(timestamp, name)
-      }
+      migration = super(timestamp, name)
     end
 
     def done?
@@ -97,6 +93,5 @@ module MaglevRecord
 
     def rename_model(old_name, new_name)
     end
-
   end
 end
