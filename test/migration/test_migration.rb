@@ -6,7 +6,6 @@ class TestMigration < Test::Unit::TestCase
   Migration = MaglevRecord::Migration
 
   def setup
-    Migration.clear
     @t1 = "2013-01-20 12:01:03"
     @m = Migration.new(@t1, "migration")
   end
@@ -15,26 +14,12 @@ class TestMigration < Test::Unit::TestCase
     m1 = Migration.new(@t1, "same")
     m2 = Migration.new(@t1, "same")
     assert_equal m1.id, m2.id
-    assert_equal m1.object_id, m2.object_id
+    assert_equal m1, m2
   end
 
   def test_id_is_not_object_id
     m = Migration.new(@t1, "migration")
     assert_not_equal m.id, m.object_id
-  end
-
-  def test_migration_clear
-    m = Migration.new(@t1, "migration")
-    Migration.clear
-    assert_equal Migration.size, 0
-  end
-
-  def test_clear_forgets_about_object_identities
-    m = Migration.new(@t1, 'migration')
-    assert_equal m.object_id, Migration.new(@t1, 'migration').object_id
-    Migration.clear
-    # assert_not_equal m.object_id, Migration.new(@t1, 'migration').object_id
-    assert_not m.equal?(Migration.new(@t1, 'migration'))
   end
 
   def test_migrations_sort_by_timestamp
@@ -73,7 +58,7 @@ class TestMigration < Test::Unit::TestCase
 end
 
 
-class TestMigration_up_and_down < Test::Unit::TestCase
+class TestMigrationUpDown < Test::Unit::TestCase
   Migration = MaglevRecord::Migration
   attr_reader :m
 
@@ -86,16 +71,12 @@ class TestMigration_up_and_down < Test::Unit::TestCase
     @t1 = "2013-01-20 12:01:03"
     @m = Migration.new(@t1, 'test') do
       def up
-        TestMigration_up_and_down.test_list << 1
+        TestMigrationUpDown.test_list << 1
       end
       def down
-        raise "Wrong call to down" unless TestMigration_up_and_down.test_list.delete(1) == 1
+        raise "Wrong call to down" unless TestMigrationUpDown.test_list.delete(1) == 1
       end
     end
-  end
-
-  def teardown
-    Migration.clear
   end
 
   def test_can_be_done
