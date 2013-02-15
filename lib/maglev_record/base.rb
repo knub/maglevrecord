@@ -8,6 +8,7 @@ require "active_model"
 module MaglevRecord
   module Base
     extend ActiveSupport::Concern
+    # TODO: The following line emits a warning in MagLev: binding for eval does not include CopyingBlockArgs yet
     extend ActiveModel::Naming
 
     @attributes = {}
