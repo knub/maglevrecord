@@ -38,6 +38,10 @@ module MaglevRecord
       self.class.id_for(timestamp, name)
     end
 
+    def hash
+      id.hash
+    end
+
     def self.id_for(timestamp, name)
       [timestamp.month, timestamp.day, timestamp.hour, timestamp.min, timestamp.sec].reduce(timestamp.year.to_s) do |sum, s|
         sum + s.to_s.rjust(2, '0')
