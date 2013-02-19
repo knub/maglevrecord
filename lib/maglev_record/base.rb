@@ -4,8 +4,11 @@ require "maglev_record/transaction_request_wrapper"
 require "rubygems"
 require "active_support"
 require "active_model"
+require "logger"
 
 module MaglevRecord
+  Logger = Logger.new(STDOUT)
+  Logger.level = ::Logger::INFO
   module Base
     extend ActiveSupport::Concern
     # TODO: The following line emits a warning in MagLev: binding for eval does not include CopyingBlockArgs yet
