@@ -1,4 +1,4 @@
-require "maglev_record"
+require "lib/maglev_record/migration"
 
 MIGRATION_FOLDER = "test/migration/dummy_migrations"
 namespace :db do

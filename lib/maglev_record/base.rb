@@ -1,7 +1,6 @@
 require "maglev_record/persistence"
 require "maglev_record/read_write"
 require "maglev_record/transaction_request_wrapper"
-require "rubygems"
 require "active_support"
 require "active_model"
 
