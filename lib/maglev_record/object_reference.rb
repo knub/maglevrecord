@@ -78,6 +78,8 @@ class Object
         # ... --> attribute
         elsif not (variable = object.__instance_variable_equal_to(referenced)).nil?
           name_of_referenced = variable
+        elsif object.respond_to?(:find_index) and (index = object.find_index{ |element| element.equal?(referenced)})
+          name_of_referenced = "at #{index.inspect}"
         end
       rescue Exception => e
         name_of_referenced = 'error'
@@ -119,3 +121,8 @@ end
 
 ## Object.new references true
 # maglev-ruby -e "require 'object_reference'; o = Object.new; start = Time.now; f = o.string_reference_path_to(true, 20); p start - Time.now; puts f" 
+
+## Array
+# maglev-ruby -e "require 'object_reference'; a = b = []; 20.times{a = [a]}; start = Time.now; f = a.string_reference_path_to(b, 20); p start - Time.now; puts f"
+
+
