@@ -1,7 +1,6 @@
 require "maglev_record/persistence"
 require "maglev_record/read_write"
 require "maglev_record/transaction_request_wrapper"
-require "rubygems"
 require "active_support"
 require "active_model"
 
@@ -25,6 +24,7 @@ module MaglevRecord
       ActiveSupport.maglev_persistable
       ActiveSupport::OrderedHash.maglev_persistable
       ActiveSupport::Callbacks.maglev_persistable
+      Maglev.commit_transaction
     end
 
     def initialize(*args)

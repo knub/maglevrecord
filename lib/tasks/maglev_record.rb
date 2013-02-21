@@ -1,4 +1,4 @@
-require "maglev_record"
+require "lib/maglev_record/migration"
 
 MIGRATION_FOLDER = "test/migration/dummy_migrations"
 namespace :db do
@@ -8,7 +8,5 @@ namespace :db do
     loader.load_directory(MIGRATION_FOLDER)
     migrator = MaglevRecord::Migrator.new(loader.migration_list)
     migrator.up
-    Maglev.abort_transaction
-    Maglev.commit_transaction
   end
 end
