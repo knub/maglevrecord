@@ -60,9 +60,12 @@ class Object
     return "" if reference_path.nil?
     lines = []
     left_column_size = 0
-    reference_path.inject{ |object, _referenced|
+    referenced_index = 0
+    while referenced_index < reference_path.size - 1
       # prepare loop
-      referenced = _referenced
+      object = reference_path[referenced_index]
+      referenced = reference_path[referenced_index + 1]
+      referenced_index += 1
       name_of_referenced = '??'
       inspect_string = nil
       # switch case on displaying references
@@ -110,8 +113,7 @@ class Object
       end
       lines << [name_of_referenced, inspect_string]
       left_column_size = name_of_referenced.size if name_of_referenced.size > left_column_size
-      _referenced # referenced is next object
-    }
+    end
     width_of_line -= 8 # subtract additional characters like ' is ' ' of '
     right_column_size = width_of_line - left_column_size
     right_column_size = 10 if right_column_size < 0
