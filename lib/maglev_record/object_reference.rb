@@ -4,10 +4,11 @@ class Object
   #
   # breadth first search for references from the given object to self
   #
-  def reference_path_to(to_object, length)
+  def reference_path_to(to_object, length, trace = false)
     paths = [[to_object]]
     traversed = IdentitySet.new
     traversed.add(to_object)
+    start_size = 1 if trace
     while not paths.empty? and paths.first.size <= length
       references = paths[0][0].find_references_in_memory
       # if we print here a SecurityError mey occur
@@ -18,6 +19,10 @@ class Object
           traversed.add(reference)
         end
       }
+      if trace and start_size != paths[0].size
+        puts "reference_path_length: #{paths[0].size}"
+        start_size = paths[0].size
+      end
       paths.delete_at(0)
     end
     return nil
@@ -44,7 +49,7 @@ class Object
   
   # format the reference path
   def string_reference_path_to(to_object, length, width_of_line = 80)
-    reference_path = reference_path_to(to_object, length)
+    reference_path = reference_path_to(to_object, length, trace = true)
     return "" if reference_path.nil?
     lines = []
     left_column_size = 0
