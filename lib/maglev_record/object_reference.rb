@@ -28,13 +28,21 @@ class Object
     return nil
   end
   
-  def __hash_key_value(anObject)
+  def __hash_key_value
     begin
       assoc_value = instance_variable_defined?(:@_st_value)
       assoc_key = instance_variable_defined?(:@_st_key)
     rescue NameError
       return nil
     end
+    return nil unless assoc_key and assoc_value
+    return [assoc_key, assoc_value]
+  end
+
+  def __hash_key_value_equal_to(anObject)
+    value = __hash_key_value
+    return nil if value.nil?
+    assoc_key, assoc_value = value
     return nil unless assoc_key.equal?(anObject) or assoc_value.equal?(anObject)
     return [assoc_key, assoc_value]
   end
@@ -54,7 +62,6 @@ class Object
     eigenclass = class << self
       self
     end
-    puts "got it!"
     eigenclass.equal? anObject
   end
 
@@ -94,7 +101,7 @@ class Object
       inspect_string = nil
       # switch case on displaying references
       begin 
-        puts "#obj: #{object.inspect}  #{referenced.inspect} at: #{referenced_index}\n\n"
+        # puts "#obj: #{object.inspect}  #{referenced.inspect} at: #{referenced_index}\n\n"
         # object --> class
         if object.class.equal?(referenced)
           name_of_referenced = 'class of'
@@ -107,17 +114,16 @@ class Object
           referenced = reference_path[referenced_index + 2]
           referenced_index += 2
         # OrderPreservingHashAssociation --> ...
-        elsif not object.__hash_key_value(referenced).nil?
-          assoc_key, assoc_value = object.__hash_key_value(referenced)
-          puts "lalalalala #{assoc_key} #{assoc_value}"
+        elsif not object.__hash_key_value_equal_to(referenced).nil?
+          assoc_key, assoc_value = object.__hash_key_value_equal_to(referenced)
           if assoc_value.equal?(referenced)
             name_of_referenced = 'value of'
           elsif assoc_key.equal?(referenced)
             name_of_referenced = 'key of'
           end
         # ... --> OrderPreservingHashAssociation
-        elsif not referenced.__hash_key_value(referenced).nil?
-          assoc_key, assoc_value = referenced.__hash_key_value(referenced)
+        elsif not referenced.__hash_key_value.nil?
+          assoc_key, assoc_value = referenced.__hash_key_value
           inspect_string = "#{assoc_key.inspect} => #{assoc_value.inspect}"
           name_of_referenced = 'association in'
         # ... --> attribute
