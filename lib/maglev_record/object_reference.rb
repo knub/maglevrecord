@@ -47,9 +47,16 @@ class Object
     return nil
   end
   
+  def __eigenclass_equal_to(anObject)
+    eigenclass = class << self
+      self
+    end
+    eigenclass.equal? anObject
+  end
+
   # format the reference path
-  def string_reference_path_to(to_object, length, width_of_line = 80)
-    reference_path = reference_path_to(to_object, length, trace = true)
+  def string_reference_path_to(to_object, length = 10, width_of_line = 80, trace = true)
+    reference_path = reference_path_to(to_object, length, trace = trace)
     return "" if reference_path.nil?
     lines = []
     left_column_size = 0
@@ -83,8 +90,14 @@ class Object
         # ... --> attribute
         elsif not (variable = object.__instance_variable_equal_to(referenced)).nil?
           name_of_referenced = variable
+        # [...] -> object at index
         elsif object.respond_to?(:find_index) and (index = object.find_index{ |element| element.equal?(referenced)})
           name_of_referenced = "at #{index.inspect}"
+        # eigenclass
+        elsif object.__eigenclass_equal_to(referenced)
+          name_of_referenced = "eigenclass"
+        elsif referenced.__eigenclass_equal_to(object)
+          name_of_referenced = "eigenbase"
         end
       rescue Exception => e
         name_of_referenced = 'error'
@@ -130,4 +143,8 @@ end
 ## Array
 # maglev-ruby -e "require 'object_reference'; a = b = []; 20.times{a = [a]}; start = Time.now; f = a.string_reference_path_to(b, 20); p start - Time.now; puts f"
 
+## Eigenclass (x is eigenclass of y)
+# maglev-ruby -e "require 'object_reference'; class X;end; x = class <<X;self;end; puts X.string_reference_path_to(x, 5)"
 
+## Eigenbase ( reverse of eigenclass)
+# maglev-ruby -e "require 'object_reference'; class X;end; x = class <<X;self;end; puts x.string_reference_path_to(X, 5)"
