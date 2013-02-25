@@ -18,7 +18,7 @@ end
 class X
 end 
 
-class ObjectPathTest_string < Test::Unit::TestCase
+class ObjectPathTest_string # < Test::Unit::TestCase
 
   attr_accessor :d, :o, :aa, :bb, :cc, :a, :b, :x
 
