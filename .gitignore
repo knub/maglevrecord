@@ -25,3 +25,4 @@ gem_*_code.log
 /test.rb
 
 *~
+*.lock
