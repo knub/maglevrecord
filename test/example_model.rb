@@ -10,7 +10,7 @@ class Book
                      :length => { :minimum => 5 }
 
   def self.dummy
-    Book.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
+    self.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
   end
 end
 
