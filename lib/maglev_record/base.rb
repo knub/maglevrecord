@@ -24,7 +24,7 @@ module MaglevRecord
       ActiveSupport.maglev_persistable
       ActiveSupport::OrderedHash.maglev_persistable
       ActiveSupport::Callbacks.maglev_persistable
-      Maglev.commit_transaction
+      # Maglev.commit_transaction
     end
 
     def initialize(*args)
