@@ -3,7 +3,6 @@ require "maglev_record/enumerable"
 
 module MaglevRecord
   module RootedPersistence
-    extend ActiveSupport::Concern
     include MaglevRecord::Enumerable
 
     def delete

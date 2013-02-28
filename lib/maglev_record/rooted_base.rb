@@ -4,11 +4,9 @@ require "maglev_record/base"
 
 module MaglevRecord
   module RootedBase
-    extend ActiveSupport::Concern
-
-    included do
-      include MaglevRecord::Base
-      include MaglevRecord::RootedPersistence
+    def self.included(base)
+      base.include MaglevRecord::Base
+      base.include MaglevRecord::RootedPersistence
     end
   end
 end

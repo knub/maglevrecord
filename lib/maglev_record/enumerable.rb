@@ -2,8 +2,6 @@ require "active_support"
 
 module MaglevRecord
   module Enumerable
-    extend ActiveSupport::Concern
-
     module ClassMethods
       include ::Enumerable
 

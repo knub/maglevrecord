@@ -6,25 +6,21 @@ require "active_model"
 
 module MaglevRecord
   module Base
-    extend ActiveSupport::Concern
-    # TODO: The following line emits a warning in MagLev: binding for eval does not include CopyingBlockArgs yet
-    extend ActiveModel::Naming
 
     @attributes = {}
-    included do
-      include ActiveModel
-      include ActiveModel::AttributeMethods
-      include ActiveModel::Conversion
-      include ActiveModel::MassAssignmentSecurity
-      include ActiveModel::Validations
-      include MaglevRecord::Persistence
-      include MaglevRecord::ReadWrite
+    def self.included(base)
 
-      self.maglev_persistable
-      ActiveSupport.maglev_persistable
-      ActiveSupport::OrderedHash.maglev_persistable
-      ActiveSupport::Callbacks.maglev_persistable
-      Maglev.commit_transaction
+      # base.include ActiveModel
+      # base.include ActiveModel::AttributeMethods
+      # base.include ActiveModel::Conversion
+      # base.include ActiveModel::MassAssignmentSecurity
+      # base.include ActiveModel::Validations
+      # base.include MaglevRecord::Persistence
+      # base.include MaglevRecord::ReadWrite
+      
+      base.include ActiveModel::Validations
+      base.include ActiveModel::MassAssignmentSecurity
+      base.maglev_persistable
     end
 
     def initialize(*args)

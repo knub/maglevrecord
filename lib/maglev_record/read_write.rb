@@ -2,8 +2,6 @@ require "active_support"
 
 module MaglevRecord
   module ReadWrite
-    extend ActiveSupport::Concern
-
     module ClassMethods
       def attr_reader(*attr_names)
         attr_names.each do |attr_name|
