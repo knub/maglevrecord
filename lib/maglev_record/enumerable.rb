@@ -2,6 +2,11 @@ require "active_support"
 
 module MaglevRecord
   module Enumerable
+
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
     module ClassMethods
       include ::Enumerable
 
@@ -14,7 +19,7 @@ module MaglevRecord
       def size
         self.object_pool.size
       end
-
+      
       alias_method :length, :size
 
       def find_by_objectid(id)
@@ -24,9 +29,7 @@ module MaglevRecord
       def all
         self.object_pool.values
       end
-
     end
-
   end
 
 end

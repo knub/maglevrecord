@@ -17,7 +17,7 @@ module MaglevRecord
       # base.include ActiveModel::Validations
       # base.include MaglevRecord::Persistence
       # base.include MaglevRecord::ReadWrite
-      
+      base.extend(ClassMethods)
       base.include ActiveModel::Validations
       base.include ActiveModel::MassAssignmentSecurity
       base.maglev_persistable
@@ -35,17 +35,17 @@ module MaglevRecord
       @attributes ||= {}
     end
 
-    module ClassMethods
-      def create(*args)
-        x = self.new(*args)
-        x
-      end
-    end
 
     def to_key
       key = self.__id__
       [key] if key
     end
 
+    module ClassMethods
+      def create(*args)
+        x = self.new(*args)
+        x
+      end
+    end
   end
 end

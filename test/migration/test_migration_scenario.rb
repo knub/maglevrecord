@@ -8,10 +8,19 @@ class MigrationScenarioTest < Test::Unit::TestCase
   MigrationLoader = MaglevRecord::MigrationLoader
   Migrator = MaglevRecord::Migrator
 
+  Maglev.persistent do
+    load File.dirname(__FILE__) + '/../example_model.rb'
+  end
+
   attr_reader :loader
 
   def setup
     MaglevRecord.reset
+    # force example loading
+
+    # p (Book.public_methods - Book.new.public_methods).sort 
+    p "HEREEE #{Book.method(:clear).source_location}"
+    
     Book.clear
     @loader = MigrationLoader.new
     Book.new(:title => "Harry Potter and the Philosopher's stone")
