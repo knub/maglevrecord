@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'maglevrecord'
-  s.version     = '0.0.3'
+  s.version     = '0.0.4'
   s.date        = '2013-01-10'
   s.summary     = "MagLev persistence with an ActiveRecord-like interface!"
   s.description = "Library for using to MagLev to persist your data in a Rails app."

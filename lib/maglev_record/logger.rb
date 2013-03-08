@@ -1,6 +1,7 @@
 require "logger"
 
 module MaglevRecord
+  # nil.pause
   Logger.maglev_persistable
   # Maglev.commit_transaction
   log = Logger.new(STDOUT)

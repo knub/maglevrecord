@@ -1,4 +1,3 @@
-require "active_support"
 require "maglev_record/enumerable"
 
 module MaglevRecord
@@ -7,6 +6,9 @@ module MaglevRecord
 
     def self.included(base)
       base.extend(ClassMethods)
+      self.included_modules.each do |mod|
+        base.extend(mod::ClassMethods)
+      end
     end
 
     def delete
@@ -24,9 +26,10 @@ module MaglevRecord
         }
       end
 
-      def size
-        self.object_pool.size
-      end
+      # is defiened in Enumerable
+      # def size
+      #   self.object_pool.size
+      # end
 
       def new(*args)
         instance = super(*args)

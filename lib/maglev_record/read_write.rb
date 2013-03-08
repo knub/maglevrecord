@@ -1,10 +1,12 @@
-require "active_support"
 
 module MaglevRecord
   module ReadWrite
 
     def self.included(base)
       base.extend(ClassMethods)
+      self.included_modules.each do |mod|
+        base.extend(mod::ClassMethods)
+      end
     end
 
     module ClassMethods
