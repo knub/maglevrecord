@@ -3,7 +3,7 @@ require "maglev_record/enumerable"
 module MaglevRecord
   module RootedPersistence
     include MaglevRecord::Enumerable
-
+    
     def self.included(base)
       base.extend(ClassMethods)
       self.included_modules.each do |mod|
@@ -18,8 +18,25 @@ module MaglevRecord
     def id
       object_id
     end
-    
+
+    module MaglevPersistence
+      def object_pool_key
+        self
+      end
+
+      def object_pool
+        Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY] ||= {}
+        Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY][object_pool_key] ||= {}
+      end
+
+      def save(obj)
+        self.object_pool[obj.id] = obj
+      end
+    end
+        
     module ClassMethods
+      include MaglevRecord::RootedPersistence::MaglevPersistence
+
       def clear
         self.object_pool.each { |k, v|
           v.delete
@@ -35,14 +52,6 @@ module MaglevRecord
         instance = super(*args)
         self.object_pool[instance.id] = instance
         instance
-      end
-
-      def object_pool_key
-        self.name.to_sym
-      end
-
-      def object_pool
-        Maglev::PERSISTENT_ROOT[object_pool_key] ||= {}
       end
     end
 

@@ -5,15 +5,27 @@ require "maglev_record/transaction_request_wrapper"
 
 module MaglevRecord
   module Base
+    extend MaglevRecord::RootedPersistence::MaglevPersistence
+    extend MaglevRecord::Enumerable::ClassMethods
+
+    def self.object_pool_key
+      :base
+    end
 
     @attributes = {}
+    
     def self.included(base)
       base.extend(ClassMethods)
       base.extend(MaglevRecord::Naming)
       self.included_modules.each do |mod|
         base.extend(mod::ClassMethods)
       end
+
       base.maglev_persistable
+      puts "Saving #{base}"
+      self.save(base)
+      puts "self is #{self}"
+      Maglev.commit_transaction
     end
     
     def initialize(*args)
@@ -28,7 +40,6 @@ module MaglevRecord
       @attributes ||= {}
     end
 
-
     def to_key
       key = self.__id__
       [key] if key
@@ -38,6 +49,10 @@ module MaglevRecord
       def create(*args)
         x = self.new(*args)
         x
+      end
+
+      def id
+        object_id
       end
     end
   end
