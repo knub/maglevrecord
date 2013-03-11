@@ -1,12 +1,15 @@
 require "maglev_record/persistence"
 require "maglev_record/read_write"
 require "maglev_record/naming"
+require "maglev_record/integration"
 require "maglev_record/transaction_request_wrapper"
 
 module MaglevRecord
   module Base
     extend MaglevRecord::RootedPersistence::MaglevPersistence
     extend MaglevRecord::Enumerable::ClassMethods
+
+    include MaglevRecord::Integration
 
     def self.object_pool_key
       :base
@@ -18,7 +21,7 @@ module MaglevRecord
       base.extend(ClassMethods)
       base.extend(MaglevRecord::Naming)
       self.included_modules.each do |mod|
-        base.extend(mod::ClassMethods)
+        base.extend(mod::ClassMethods) if mod.constants.include? "ClassMethods"
       end
 
       base.maglev_persistable

@@ -5,6 +5,7 @@ require "maglev_record/enumerable"
 require "maglev_record/rooted_base"
 require "maglev_record/base"
 require "maglev_record/naming"
+require "maglev_record/integration"
 # require "maglev_record/logger"
 require "maglev_record/persistence"
 require "maglev_record/migration"
@@ -16,7 +17,9 @@ require "maglev_record/object_reference"
   MaglevRecord::Base,
   MaglevRecord::Base::ClassMethods,
   MaglevRecord::RootedBase,
+  MaglevRecord::Integration,
   MaglevRecord::RootedPersistence,
+  MaglevRecord::RootedPersistence::MaglevPersistence,
   MaglevRecord::RootedPersistence::ClassMethods,
   MaglevRecord::Enumerable,
   MaglevRecord::Enumerable::ClassMethods,

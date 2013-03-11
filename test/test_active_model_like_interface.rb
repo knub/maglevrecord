@@ -15,4 +15,9 @@ class ActiveModelLikeInterfaceTest < Test::Unit::TestCase
     book.author = "Another author"
     assert_equal book.author, "Another author"
   end
+
+  def test_to_params_returns_id
+    book = self.model
+    assert_equal book.id book.to_param
+  end
 end

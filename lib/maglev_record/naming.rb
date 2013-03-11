@@ -12,9 +12,12 @@ module MaglevRecord
       @unnamespaced = self.sub(/^#{namespace.name}::/, '') if namespace
       @klass        = klass
       @param_key    = klass.name.downcase
-      @singular    = klass.name.downcase
+      @singular     = klass.name.downcase
     end
 
+    def singular_route_key
+      @singular
+    end
   end
 
   module Naming
@@ -28,6 +31,20 @@ module MaglevRecord
         MaglevRecord::Name.new(self, namespace)
       end
     end
+
+    def self.singular_route_key(record_or_class)
+      model_name_from_record_or_class(record_or_class).singular_route_key
+    end
+
+
+    private
+      def self.model_name_from_record_or_class(record_or_class)
+        (record_or_class.is_a?(Class) ? record_or_class : convert_to_model(record_or_class).class).model_name
+      end
+
+      def self.convert_to_model(object)
+        object.respond_to?(:to_model) ? object.to_model : object
+      end
   end
 
 end
