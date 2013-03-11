@@ -3,6 +3,8 @@ require 'bundler/gem_tasks'
 $LOAD_PATH << "./lib"
 require 'lib/tasks/maglev_record'
 
+MaglevRecord.Logger.level = ::Logger::ERROR
+
 Rake::TestTask.new do |t|
   t.libs << 'test'
   t.pattern = "test/**/test*.rb"
