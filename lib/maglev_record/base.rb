@@ -1,3 +1,4 @@
+require "maglev_record/enumerable"
 require "maglev_record/persistence"
 require "maglev_record/read_write"
 require "maglev_record/naming"
@@ -20,17 +21,30 @@ module MaglevRecord
     def self.included(base)
       base.extend(ClassMethods)
       base.extend(MaglevRecord::Naming)
+
       self.included_modules.each do |mod|
         base.extend(mod::ClassMethods) if mod.constants.include? "ClassMethods"
       end
 
       base.maglev_persistable
-      puts "Saving #{base}"
       self.save(base)
-      puts "self is #{self}"
       Maglev.commit_transaction
     end
     
+    # Initialize existing (persisted) model classes
+    def self.load_model_files
+      self.all.each do |model|
+        name = ActiveSupport::Dependencies.qualified_name_for(Object, model).underscore
+        file = ActiveSupport::Dependencies.search_for_file(name)
+
+        if (file)
+          ActiveSupport::Dependencies.require_or_load(file)
+        else
+          warn "Cannot find model file for #{name}"
+        end
+      end
+    end
+
     def initialize(*args)
       if args.size == 1
         args[0].each do |k, v|
@@ -60,3 +74,4 @@ module MaglevRecord
     end
   end
 end
+
