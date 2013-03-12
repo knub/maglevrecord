@@ -4,6 +4,7 @@ require "maglev_record/read_write"
 require "maglev_record/naming"
 require "maglev_record/integration"
 require "maglev_record/transaction_request_wrapper"
+require "active_support/dependencies"
 
 module MaglevRecord
   module Base
