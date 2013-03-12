@@ -12,10 +12,10 @@ end
 module MaglevSupport
   module Concern
     def included(base)
-      base.extend(self::ClassMethods) if self.constants.include? 'ClassMethods'
-      self.included_modules.each do |mod|
+      self.included_modules.reverse.each do |mod|
         base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
       end
+      base.extend(self::ClassMethods) if self.constants.include? 'ClassMethods'
       ([base] + base.ancestors).each do |klass|
         klass.maglev_persistable
       end

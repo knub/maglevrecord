@@ -104,11 +104,13 @@ class RootedPersistanceTest < Test::Unit::TestCase
     assert RootedBook.object_pool.is_a? Hash
   end
 
-  # def test_clear_clears
-
-  #   RootedBook.create(RootedBook.example_params)
-
-  # end
+  def test_clear_clears
+    RootedBook.new(RootedBook.example_params)
+    assert_not_equal RootedBook.object_pool.size, 0
+    MaglevRecord.save
+    RootedBook.clear
+    assert_equal RootedBook.object_pool.size, 0
+  end
 
   # def test_create_commits_model
   #   assert_equal RootedBook.size, 0

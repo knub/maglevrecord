@@ -19,6 +19,7 @@ module MaglevRecord
       end
 
       def clear
+        self.object_pool.clear
       end
 
       def create
