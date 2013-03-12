@@ -17,7 +17,7 @@ module MaglevRecord
     end
 
     @attributes = {}
-    
+
     def self.included(base)
       base.extend(ClassMethods)
       base.extend(MaglevRecord::Naming)
@@ -30,7 +30,7 @@ module MaglevRecord
       self.save(base)
       Maglev.commit_transaction
     end
-    
+
     # Initialize existing (persisted) model classes
     def self.load_model_files
       self.all.each do |model|
