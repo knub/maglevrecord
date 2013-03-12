@@ -1,4 +1,14 @@
 
+class Module
+  def include_with_block(a_module)
+    value = include_without_block(a_module)
+    yield if block_given?
+    value
+  end
+  alias :include_without_block :include
+  alias :include :include_with_block
+end
+
 module MaglevSupport
   module Concern
     def included(base)

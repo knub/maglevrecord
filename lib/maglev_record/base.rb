@@ -15,6 +15,7 @@ module MaglevRecord
 
     include MaglevRecord::Integration
 
+
     def self.object_pool_key
       :base
     end
