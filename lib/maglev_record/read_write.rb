@@ -1,19 +1,7 @@
 
 module MaglevRecord
   module ReadWrite
-
-    def self.included(base)
-      base.extend(ClassMethods)
-      self.included_modules.each do |mod|
-        base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
-      end
-    end
-
-    # def update_attributes(hash)
-    #   for att, value in hash
-    #     self.send(att+"=", value)
-    #   end
-    # end
+    extend MaglevSupport::Concern
 
     module ClassMethods
       def attr_reader(*attr_names)

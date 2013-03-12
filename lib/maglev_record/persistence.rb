@@ -1,33 +1,27 @@
-
 module MaglevRecord
   module Persistence
-    def persisted?
-      !new_record?
+    extend MaglevSupport::Concern
+
+    def initialize(*args)
+      if args.size == 1
+        args[0].each do |k, v|
+          self.send("#{k.to_s}=".to_sym, v)
+        end
+      end
     end
 
+    alias :persisted? :committed?
     def new_record?
-      !committed?
+      !persisted?
+    end
+
+    module ClassMethods
+      def clear
+      end
+
+      def create
+        raise MaglevRecord::InvalidOperationError, "Do not use create without including MaglevRecord::RootedBase."
+      end
     end
   end
-
-  def self.save
-    Maglev.commit_transaction
-  end
-
-  def self.reset
-    Maglev.abort_transaction
-  end
-
-  def self.make_modules_persistent
-    modules = [MaglevRecord]
-
-    while (!modules.empty?)
-      mod = modules.pop
-
-      mod.maglev_persistable
-      modules += mod.constants.collect {|c| mod.const_get(c)}.find_all {|c| c.class == Module}
-    end
-  end
-
 end
-
