@@ -30,9 +30,10 @@ module MaglevRecord
       to_do = @migration_list.reject do |mig|
        migration_store.include?(mig.id)
       end
-      Logger.info("Already applied all migrations.") if to_do.empty?
+      logger = MaglevRecordTransient::Logger
+      logger.info("Already applied all migrations.") if to_do.empty?
       to_do.sort.each do |mig|
-        Logger.info("Doing '" + mig.name + "' from " + mig.timestamp.to_s)
+        logger.info("Doing '" + mig.name + "' from " + mig.timestamp.to_s)
         mig.do
         migration_store.add(mig.id)
       end
