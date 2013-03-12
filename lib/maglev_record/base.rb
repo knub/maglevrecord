@@ -23,7 +23,7 @@ module MaglevRecord
 
     def self.included(base)
       base.extend(ClassMethods)
-      base.extend(ActiveModel::Naming)
+      ##base.extend(ActiveModel::Naming)
 
       self.included_modules.each do |mod|
         base.extend(mod::ClassMethods) if mod.constants.include? "ClassMethods"
