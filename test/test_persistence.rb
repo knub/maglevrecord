@@ -60,11 +60,20 @@ class RootedPersistanceTest < Test::Unit::TestCase
     RootedBook.example
   end
 
+  def setup
+    # RootedBook.clear
+  end
+
   def test_new_creates_new_object
     b = new_rooted_example_book
     assert_not_nil b
     assert_equal b.author, "Author"
     assert_equal b.title, "Title"
+  end
+
+  def test_new_stores_object_in_persistent_root
+    b = new_rooted_example_book
+    assert RootedBook.object_pool.has_value? b
   end
 
   def test_new_object_is_maglev_persistable
@@ -94,5 +103,18 @@ class RootedPersistanceTest < Test::Unit::TestCase
   def test_object_pool_is_a_hash
     assert RootedBook.object_pool.is_a? Hash
   end
+
+  # def test_clear_clears
+
+  #   RootedBook.create(RootedBook.example_params)
+
+  # end
+
+  # def test_create_commits_model
+  #   assert_equal RootedBook.size, 0
+  #   RootedBook.create(RootedBook.example_params)
+  #   MaglevRecord.reset
+  #   assert_equal RootedBook.size, 1
+  # end
 
 end
