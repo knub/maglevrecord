@@ -23,11 +23,9 @@ module MaglevRecord
 
     while (!modules.empty?)
       mod = modules.pop
-      
-      if !mod.maglev_persistable?
-        mod.maglev_persistable
-        modules += mod.constants.collect {|c| mod.const_get(c)}.find_all {|c| c.class == Module}
-      end
+
+      mod.maglev_persistable
+      modules += mod.constants.collect {|c| mod.const_get(c)}.find_all {|c| c.class == Module}
     end
   end
 
