@@ -16,7 +16,9 @@ module MaglevSupport
       self.included_modules.each do |mod|
         base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
       end
-      base.maglev_persistable
+      ([base] + base.ancestors).each do |klass|
+        klass.maglev_persistable
+      end
       Maglev.commit_transaction
     end
   end

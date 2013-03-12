@@ -4,8 +4,12 @@ require "example_model"
 
 class PersistanceTest < Test::Unit::TestCase
 
-  def new_unrooted_new_unrooted_example_book
-    UnrootedBook.new(:author => "Author", :title => "Title")
+  def new_unrooted_example_book
+    UnrootedBook.example
+  end
+
+  def new_rooted_example_book
+    # RootedBook.example
   end
 
   def test_new_creates_new_object

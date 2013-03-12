@@ -1,23 +1,17 @@
 require "maglev_record"
-  # class Book
-  #   include MaglevRecord::RootedBase
 
-  #   attr_accessor :author, :title, :comments
-
-  #   # validates :author, :presence => true
-  #   # validates :title,  :presence => true,
-  #   #                    :length => { :minimum => 5 }
-
-  #   def self.dummy
-  #     self.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
-  #   end
-  # end
-
-
-class UnrootedBook
-  include MaglevRecord::Base
+class Book
   attr_accessor :author, :title, :comments
-  # validates :author, :presence => true
-  # validates :title,  :presence => true,
-  #                    :length => { :minimum => 5 }
+  def self.example
+    self.new(:author => "Author", :title => "Title")
+  end
+end
+
+# class RootedBook < Book
+#   include MaglevRecord::RootedBase
+# end
+
+
+class UnrootedBook < Book
+  include MaglevRecord::Base
 end
