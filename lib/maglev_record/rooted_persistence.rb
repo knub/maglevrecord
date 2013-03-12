@@ -1,13 +1,15 @@
 require "maglev_record/enumerable"
+require "maglev_record/persistence"
 
 module MaglevRecord
   module RootedPersistence
     include MaglevRecord::Enumerable
+    include MaglevRecord::Persistence
     
     def self.included(base)
       base.extend(ClassMethods)
       self.included_modules.each do |mod|
-        base.extend(mod::ClassMethods)
+        base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
       end
     end
 

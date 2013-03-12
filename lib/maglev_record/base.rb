@@ -5,6 +5,8 @@ require "maglev_record/naming"
 require "maglev_record/integration"
 require "maglev_record/transaction_request_wrapper"
 require "active_support/dependencies"
+require "active_model/naming"
+
 
 module MaglevRecord
   module Base
@@ -21,7 +23,7 @@ module MaglevRecord
 
     def self.included(base)
       base.extend(ClassMethods)
-      base.extend(MaglevRecord::Naming)
+      base.extend(ActiveModel::Naming)
 
       self.included_modules.each do |mod|
         base.extend(mod::ClassMethods) if mod.constants.include? "ClassMethods"

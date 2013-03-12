@@ -5,7 +5,7 @@ module MaglevRecord
     def self.included(base)
       base.extend(ClassMethods)
       self.included_modules.each do |mod|
-        base.extend(mod::ClassMethods)
+        base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
       end
     end
 
@@ -25,7 +25,8 @@ module MaglevRecord
       alias_method :length, :size
 
       def find_by_objectid(id)
-        self.object_pool[id]
+        raise "cannot convert #{id} to fixnum!" unless id.respond_to? :to_i
+        self.object_pool[id.to_i]
       end
 
       def all
