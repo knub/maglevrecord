@@ -9,6 +9,7 @@ puts "Loading maglev_record..."
   require "maglev_record/integration"
   require "maglev_record/persistence"
   require "maglev_record/rooted_persistence"
+  require "maglev_record/read_write"
   require "maglev_record/base"
   require "maglev_record/rooted_base"
 # end

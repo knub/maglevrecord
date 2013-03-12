@@ -1,6 +1,7 @@
 require "maglev_record"
 
 class Book
+  include MaglevRecord::ReadWrite
   attr_accessor :author, :title, :comments
   def self.example_params
     { :author => "Author", :title => "Title" }
