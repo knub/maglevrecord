@@ -7,10 +7,9 @@ class Book
   end
 end
 
-# class RootedBook < Book
-#   include MaglevRecord::RootedBase
-# end
-
+class RootedBook < Book
+  include MaglevRecord::RootedBase
+end
 
 class UnrootedBook < Book
   include MaglevRecord::Base

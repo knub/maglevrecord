@@ -2,14 +2,10 @@ require "more_asserts"
 require "maglev_record"
 require "example_model"
 
-class PersistanceTest < Test::Unit::TestCase
+class UnrootedPersistanceTest < Test::Unit::TestCase
 
   def new_unrooted_example_book
     UnrootedBook.example
-  end
-
-  def new_rooted_example_book
-    # RootedBook.example
   end
 
   def test_new_creates_new_object
@@ -54,6 +50,22 @@ class PersistanceTest < Test::Unit::TestCase
   def test_id_returns_object_id
     b = new_unrooted_example_book
     assert_equal b.id, b.object_id
+  end
+
+end
+
+class RootedPersistanceTest < Test::Unit::TestCase
+
+  def new_rooted_example_book
+    RootedBook.example
+  end
+
+  def test_object_pool_key_is_a_class
+    assert_equal RootedBook.object_pool_key, RootedBook
+  end
+
+  def test_object_pool_is_a_hash
+    assert RootedBook.object_pool.is_a? Hash
   end
 
 end
