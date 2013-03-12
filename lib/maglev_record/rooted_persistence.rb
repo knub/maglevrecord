@@ -5,7 +5,7 @@ module MaglevRecord
   module RootedPersistence
     include MaglevRecord::Enumerable
     include MaglevRecord::Persistence
-    
+
     def self.included(base)
       base.extend(ClassMethods)
       self.included_modules.each do |mod|
@@ -35,7 +35,7 @@ module MaglevRecord
         self.object_pool[obj.id] = obj
       end
     end
-        
+
     module ClassMethods
       include MaglevRecord::RootedPersistence::MaglevPersistence
 
