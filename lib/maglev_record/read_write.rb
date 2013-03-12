@@ -7,6 +7,10 @@ module MaglevRecord
       @maglev_attributes ||= Hash.new 
     end
 
+    def update_attributes(attribute_hash)
+      attributes.update(attribute_hash)
+    end
+
     module ClassMethods
       def attr_reader(*attr_names)
         attr_names.each do |attr_name|
