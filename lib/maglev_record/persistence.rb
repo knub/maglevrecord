@@ -15,8 +15,13 @@ module MaglevRecord
       !persisted?
     end
 
+    def id
+      object_id
+    end
+
     module ClassMethods
       def clear
+        raise MaglevRecord::InvalidOperationError, "Do not use clear without including MaglevRecord::RootedBase."
       end
 
       def create

@@ -9,7 +9,6 @@ class Module
   alias :include :include_with_block
 end
 
-puts "Defining MaglevSupport"
 module MaglevSupport
   module Concern
     def included(base)

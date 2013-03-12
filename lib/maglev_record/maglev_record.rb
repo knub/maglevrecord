@@ -7,3 +7,5 @@ module MaglevRecord
     Maglev.abort_transaction
   end
 end
+
+MaglevRecord.maglev_persistable
