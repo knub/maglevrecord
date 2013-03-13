@@ -1,6 +1,4 @@
-require "maglev_record"
 require "more_asserts"
-
 require "example_model"
 
 class MigrationScenarioTest < Test::Unit::TestCase
@@ -8,20 +6,16 @@ class MigrationScenarioTest < Test::Unit::TestCase
   MigrationLoader = MaglevRecord::MigrationLoader
   Migrator = MaglevRecord::Migrator
 
-  Maglev.persistent do
-    load File.dirname(__FILE__) + '/../example_model.rb'
-  end
 
   attr_reader :loader
 
   def setup
     MaglevRecord.reset
-
-    Book.clear
+    RootedBook.clear
     @loader = MigrationLoader.new
-    Book.new(:title => "Harry Potter and the Philosopher's stone")
-    Book.new(:title => "Harry Potter and the Chamber of Secrets")
-    Book.new(:title => "Harry Potter and the Prisoner of Azkaban")
+    RootedBook.new(:title => "Harry Potter and the Philosopher's stone")
+    RootedBook.new(:title => "Harry Potter and the Chamber of Secrets")
+    RootedBook.new(:title => "Harry Potter and the Prisoner of Azkaban")
     MaglevRecord.save
     loader.load_directory(migration_directory)
   end

@@ -22,7 +22,10 @@ module MaglevRecord
         self.object_pool.clear
       end
 
-      def create
+      def create(*args)
+        instance = new(*args)
+        MaglevRecord.save
+        instance
       end
     end
   end
