@@ -1,6 +1,6 @@
-puts "Loading maglev_record..."
-
 # require "maglev_record/settings"
+require "active_model"
+require "active_support/core_ext/class/attribute"
 require "maglev_record/maglev_record"
 require "maglev_record/errors"
 require "maglev_record/maglev_support/concern"
