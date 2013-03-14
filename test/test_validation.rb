@@ -1,4 +1,4 @@
-require "test/unit"
+require "more_asserts"
 require "maglev_record"
 require "example_model"
 
@@ -12,7 +12,7 @@ class ValidationTest < Test::Unit::TestCase
   end
 
   def teardown
-    Book.clear
+    MaglevRecord.reset
     MaglevRecord.save
   end
 
@@ -26,15 +26,26 @@ class ValidationTest < Test::Unit::TestCase
   #   assert_not_nil Book.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
   # end
 
+  def valid_model
+    RootedBook.new(:author => "LotR")
+  end
   def invalid_model
     # Author is not given
-    RootedBook.new(:title => "LotR")
+    RootedBook.new()
+  end
+
+  def test_validation_works
+    book = valid_model
+    assert book.valid?
+    assert_not book.invalid?
+    MaglevRecord.save
   end
 
   def test_validation_fails
     book = invalid_model
     assert !book.valid?
     assert book.invalid?
+    MaglevRecord.save
   end
 
   # def test_errors_not_empty
