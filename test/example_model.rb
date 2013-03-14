@@ -1,5 +1,3 @@
-require "maglev_record"
-
 class Book
   include MaglevRecord::ReadWrite
   attr_accessor :author, :title, :comments

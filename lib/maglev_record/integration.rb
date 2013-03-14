@@ -1,5 +1,3 @@
-
-
 module MaglevRecord
   module Integration
     def to_param
