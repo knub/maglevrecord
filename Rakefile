@@ -2,7 +2,6 @@ require 'rake/testtask'
 require 'bundler/gem_tasks'
 require 'logger'
 $LOAD_PATH << './lib'
-# require 'lib/tasks/maglev_record'
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
