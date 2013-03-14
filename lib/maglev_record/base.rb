@@ -4,5 +4,6 @@ module MaglevRecord
     include MaglevRecord::Integration
     include MaglevRecord::Persistence
     include MaglevRecord::ReadWrite
+    extend ActiveModel::Naming
   end
 end
