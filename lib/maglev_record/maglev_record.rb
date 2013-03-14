@@ -11,3 +11,8 @@ module MaglevRecord
 end
 
 MaglevRecord.maglev_persistable
+ActiveModel.maglev_persistable
+ActiveSupport.maglev_persistable
+ActiveModel::Validations.maglev_persistable
+require "base64"
+Base64.maglev_persistable
