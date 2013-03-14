@@ -11,6 +11,7 @@ end
 
 class RootedBook < Book
   include MaglevRecord::RootedBase
+  validates :author, :presence => true
 end
 
 class UnrootedBook < Book

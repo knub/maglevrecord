@@ -27,16 +27,15 @@ class ValidationTest < Test::Unit::TestCase
   # end
 
   def invalid_model
-    # Title is not long enough, must be at least 5 characters long
-    Book.new(:author => "J. R. R. Tolkien", :title => "LotR")
+    # Author is not given
+    RootedBook.new(:title => "LotR")
   end
 
-  # TODO
-  # def test_validation_fails
-  #   book = invalid_model
-  #   assert !book.valid?
-  #   assert book.invalid?
-  # end
+  def test_validation_fails
+    book = invalid_model
+    assert !book.valid?
+    assert book.invalid?
+  end
 
   # def test_errors_not_empty
   #   book = invalid_model
