@@ -1,7 +1,7 @@
 
 class Module
-  def include_with_block(a_module)
-    value = include_without_block(a_module)
+  def include_with_block(*a_module)
+    value = include_without_block(*a_module)
     yield(self) if block_given?
     value
   end
