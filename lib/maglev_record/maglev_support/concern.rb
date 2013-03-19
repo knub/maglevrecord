@@ -21,7 +21,12 @@ module MaglevSupport
         #   puts "Module: #{mod}"
         #   mod.maglev_persistable
         # end
-        klass.maglev_persistable
+        begin
+          klass.maglev_persistable
+        rescue Exception => e
+          puts "====>Failed on #{klass}"
+          raise e
+        end
 
       end
       if base.is_a? Class #&& (self == MaglevRecord::RootedBase || self == MaglevRecord::Base)
