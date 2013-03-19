@@ -7,6 +7,6 @@ class ActiveModelLikeInterfaceTest < Test::Unit::TestCase
   include ActiveModel::Lint::Tests
 
   def model
-    Book.dummy
+    RootedBook.example
   end
 end
