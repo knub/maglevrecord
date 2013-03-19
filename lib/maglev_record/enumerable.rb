@@ -12,6 +12,9 @@ module MaglevRecord
       def size
         object_pool.size
       end
+      def find_by_objectid(id)
+        object_pool[id]
+      end
     end
   end
 end

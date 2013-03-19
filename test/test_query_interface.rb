@@ -36,4 +36,10 @@ class QueryInterfaceTest < Test::Unit::TestCase
     book.author = "William Shakespeare"
     assert_equal RootedBook.first.author, "William Shakespeare"
   end
+
+  def test_find_object_by_id
+    book = RootedBook.all[2]
+    assert_equal book, RootedBook.find_by_objectid(book.object_id)
+  end
+
 end

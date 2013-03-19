@@ -7,6 +7,7 @@ require "active_model/naming"
 require "active_model"
 # require "active_model/validations"
 require "active_support/core_ext/class/attribute"
+require "active_support/dependencies"
 require "json"
 
 require "maglev_record/maglev_record"
