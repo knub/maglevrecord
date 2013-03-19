@@ -26,6 +26,7 @@ module MaglevSupport
       end
       if base.is_a? Class #&& (self == MaglevRecord::RootedBase || self == MaglevRecord::Base)
         base.send :include, ActiveModel::Validations
+        base.send :extend, Enumerable
       end
       Maglev.commit_transaction
     end

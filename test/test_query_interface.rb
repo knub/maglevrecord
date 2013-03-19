@@ -17,17 +17,17 @@ class QueryInterfaceTest < Test::Unit::TestCase
     assert_equal RootedBook.size, 5
   end
 
-  # def test_first_returns_the_first_book
-  #   assert Book.first.title.include? "Philosopher"
-  # end
+  def test_first_returns_the_first_book
+    assert RootedBook.first.title.include? "Philosopher"
+  end
 
-  # def test_normal_enumerable_methods_work
-  #   assert_equal 7, Book.count { |b| b.author == "Joanne K. Rowling" }
-  # end
+  def test_normal_enumerable_methods_work
+    assert_equal 2, RootedBook.count { |b| b.author == "J. R. R. Tolkien" }
+  end
 
-  # def test_work_on_real_objects
-  #   book = Book.first
-  #   book.author = "William Shakespeare"
-  #   assert_equal Book.first.author, "William Shakespeare"
-  # end
+  def test_work_on_real_objects
+    book = RootedBook.first
+    book.author = "William Shakespeare"
+    assert_equal RootedBook.first.author, "William Shakespeare"
+  end
 end
