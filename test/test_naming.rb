@@ -14,9 +14,9 @@ class NamingTest < Test::Unit::TestCase
 
   def test_models_respond_to_model_name
     [rooted_example_book, unrooted_example_book].each do |b|
-      assert b.class.respond_to? :model_name
+      assert b.class.respond_to?(:model_name)
     end
-    assert_true rooted_example_book.class.model_name "Rooted Book"
-    assert_true unrooted_example_book.class.model_name "Unrooted Book"
+    assert_equal "RootedBook", rooted_example_book.class.model_name
+    assert_equal "UnrootedBook", unrooted_example_book.class.model_name
   end
 end
