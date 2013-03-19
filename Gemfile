@@ -5,4 +5,5 @@ gem 'activesupport'
 gem 'activemodel'
 gem 'actionpack'
 gem 'rake'
+gem 'json'
 
