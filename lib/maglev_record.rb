@@ -6,6 +6,8 @@ require "active_support/core_ext/class/attribute"
 require "maglev_record/maglev_record"
 require "maglev_record/errors"
 require "maglev_record/maglev_support/concern"
+
+require "maglev_record/enumerable"
 require "maglev_record/integration"
 require "maglev_record/persistence"
 require "maglev_record/rooted_persistence"
