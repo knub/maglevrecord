@@ -13,6 +13,12 @@ class QueryInterfaceTest < Test::Unit::TestCase
     RootedBook.create(:title => "A Christmas Carol", :author => "Charles Dickens")
   end
 
+  def test_all_returns_all_books
+    all_books = RootedBook.all
+    assert_equal all_books.class, Array
+    assert_equal all_books.size, 5
+  end
+
   def test_size_returns_correct_amount_of_books
     assert_equal RootedBook.size, 5
   end
