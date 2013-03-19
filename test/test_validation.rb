@@ -1,18 +1,12 @@
-require "test/unit"
+require "more_asserts"
 require "maglev_record"
 require "example_model"
 
 class ValidationTest < Test::Unit::TestCase
 
   def setup
-    Maglev.abort_transaction
-    Book.new(:title => "Harry Potter and the Philosopher's stone", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
-    MaglevRecord.save
-  end
-
-  def teardown
-    Book.clear
+    MaglevRecord.reset
+    RootedBook.clear
     MaglevRecord.save
   end
 
@@ -26,29 +20,25 @@ class ValidationTest < Test::Unit::TestCase
   #   assert_not_nil Book.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
   # end
 
-  def invalid_model
-    # Title is not long enough, must be at least 5 characters long
-    Book.new(:author => "J. R. R. Tolkien", :title => "LotR")
+  def test_validation_works
+    book = RootedBook.new(:author => "Book")
+    assert book.valid?
+    assert_not book.invalid?
+    MaglevRecord.save
   end
 
-  # TODO
-  # def test_validation_fails
-  #   book = invalid_model
-  #   assert !book.valid?
-  #   assert book.invalid?
-  # end
+  def test_validation_fails
+    book = RootedBook.new()
+    assert !book.valid?
+    assert book.invalid?
+    MaglevRecord.save
+  end
 
-  # def test_errors_not_empty
-  #   book = invalid_model
-  #   book.valid?
-  #   assert book.errors.count > 0
-  # end
-
-  # def test_validation_succeeds
-  #   book = Book.new(:author => "J. R. R. Tolkien", :title => "Harry Potter and the Philosopher's stone")
-  #   assert book.valid?
-  #   assert !book.invalid?
-  # end
+  def test_errors_not_empty
+    book = RootedBook.new()
+    book.valid?
+    assert book.errors.count > 0
+  end
 
 end
 

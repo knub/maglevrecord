@@ -16,8 +16,17 @@ module MaglevSupport
         base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
       end
       base.extend(self::ClassMethods) if self.constants.include? 'ClassMethods'
-      ([base] + base.ancestors).each do |klass|
+      (base.ancestors + [base]).each do |klass|
+        # klass.included_modules.each do |mod|
+        #   puts "Module: #{mod}"
+        #   mod.maglev_persistable
+        # end
         klass.maglev_persistable
+
+      end
+      if base.is_a? Class #&& (self == MaglevRecord::RootedBase || self == MaglevRecord::Base)
+        base.send :include, ActiveModel::Validations
+        base.send :extend, Enumerable
       end
       Maglev.commit_transaction
     end
