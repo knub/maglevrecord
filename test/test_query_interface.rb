@@ -5,15 +5,12 @@ require "example_model"
 class QueryInterfaceTest < Test::Unit::TestCase
 
   def setup
+    RootedBook.clear
     RootedBook.create(:title => "Harry Potter and the Philosopher's stone", :author => "Joanne K. Rowling")
     RootedBook.create(:title => "The Hobbit", :author => "J. R. R. Tolkien")
     RootedBook.create(:title => "The Lord of the Rings", :author => "J. R. R. Tolkien")
     RootedBook.create(:title => "Charlie and the Chocolate Factory", :author => "Roald Dahl")
     RootedBook.create(:title => "A Christmas Carol", :author => "Charles Dickens")
-  end
-
-  def teardown
-    RootedBook.clear
   end
 
   def test_size_returns_correct_amount_of_books
