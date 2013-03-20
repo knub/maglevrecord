@@ -8,6 +8,14 @@ module MaglevRecord
           self.send("#{k.to_s}=".to_sym, v)
         end
       end
+      @created_at_timestamp = Time.now
+    end
+
+    def created_at
+      @created_at_timestamp
+    end
+    def created_at=(timestamp)
+      @created_at_timestamp = timestamp
     end
 
     alias :persisted? :committed?
