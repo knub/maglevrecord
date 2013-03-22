@@ -10,8 +10,8 @@ require "active_support/core_ext/class/attribute"
 require "active_support/dependencies"
 require "json"
 
-require "maglev_record/maglev_record"
 require "maglev_record/maglev_support/concern"
+require "maglev_record/maglev_record"
 
 require "maglev_record/enumerable"
 require "maglev_record/errors"

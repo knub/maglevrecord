@@ -15,6 +15,7 @@ ActiveModel.maglev_persistable
 ActiveSupport.maglev_persistable
 ActiveModel::Validations.maglev_persistable
 ActiveModel::Errors.maglev_persistable
+ActiveModel::Conversion.maglev_persistable
 ActiveSupport::OrderedHash.maglev_persistable
 ActiveSupport::Dependencies.maglev_persistable
 JSON.maglev_persistable
@@ -25,6 +26,9 @@ JSON::Ext::Generator::GeneratorMethods.maglev_persistable
 Maglev.persistent do
   require "pp"
 end
+
+Gem.maglev_persistable(true)
+Gem::Deprecate.maglev_persistable(true)
 
 require "base64"
 Base64.maglev_persistable
