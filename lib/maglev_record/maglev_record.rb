@@ -22,6 +22,8 @@ ActiveSupport::Concern.maglev_persistable(true)
 MaglevSupport.maglev_persistable(true)
 MaglevSupport::Concern.maglev_persistable(true)
 
+Bundler.maglev_persistable(true)
+
 Gem.maglev_persistable(true)
 Gem::Deprecate.maglev_persistable(true)
 Gem::Platform.maglev_persistable(true)
@@ -33,6 +35,7 @@ I18n::Config.maglev_persistable(true)
 
 Psych.maglev_persistable(true)
 Psych::LibPsych.maglev_persistable(true)
+
 
 require "base64"
 Base64.maglev_persistable
