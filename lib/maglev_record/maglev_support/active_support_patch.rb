@@ -12,7 +12,7 @@ module ActiveSupport
       method_names.each do |method_name|
         next unless method_name.respond_to?(:to_sym)  # next if Fixnum
         next if method_name == :none                  # check from rubygems/deprecate.rb
-        next if method_name.to_s.include?(".")             # . in method names is not allowed
+        next if method_name.to_s.include?(".")        # . in method names is not allowed
         # workaround for :==
         if method_name.to_sym == :==
           method_name = "equal?"
