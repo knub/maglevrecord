@@ -29,6 +29,7 @@
 
 echo $PWD
 git clone https://github.com/MagLev/maglev.git
+cd maglev
 git checkout stefan/maglev_persistable-persists-modules
 cd maglev
 if [ -x bin/maglev-ruby ]; then
