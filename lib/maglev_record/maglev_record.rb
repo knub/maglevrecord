@@ -32,7 +32,7 @@ Gem.maglev_persistable(true)
 Gem.constants.each do |const|
   moduleOrClass = Gem.const_get(const)
   klass = moduleOrClass.class
-  if const != "DependencyList" && klass == Class or klass == Module
+  if klass == Class or klass == Module
     moduleOrClass.maglev_persistable(true)
   end
 end
