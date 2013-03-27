@@ -1,6 +1,5 @@
 puts "Loading maglev_record..."
 
-
 # require "maglev_record/settings"
 # require "maglev_record/settings"
 require "active_model/naming"
