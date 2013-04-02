@@ -1,24 +1,20 @@
-require "maglev_record"
-
 class Book
-  include MaglevRecord::RootedBase
-
+  include MaglevRecord::ReadWrite
   attr_accessor :author, :title, :comments
-
-  validates :author, :presence => true
-  validates :title,  :presence => true,
-                     :length => { :minimum => 5 }
-
-  def self.dummy
-    Book.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
+  def self.example_params
+    { :author => "Author", :title => "Title" }
+  end
+  def self.example
+    self.new(example_params)
   end
 end
 
+class RootedBook < Book
+  include MaglevRecord::RootedBase
+  validates :author, :presence => true,
+                     :length => { :minimum => 4 }
+end
 
-class UnrootedBook
+class UnrootedBook < Book
   include MaglevRecord::Base
-  attr_accessor :author, :title, :comments
-  validates :author, :presence => true
-  validates :title,  :presence => true,
-                     :length => { :minimum => 5 }
 end

@@ -5,43 +5,41 @@ require "example_model"
 class QueryInterfaceTest < Test::Unit::TestCase
 
   def setup
-    Book.new(:title => "Harry Potter and the Philosopher's stone", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Chamber of Secrets", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Prisoner of Azkaban", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Goblet of Fire", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Order of the Phoenix", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Half-blood Prince", :author => "Joanne K. Rowling")
-    Book.new(:title => "Harry Potter and the Deathly Hallows", :author => "Joanne K. Rowling")
-    Book.new(:title => "The Magician's Guild", :author => "Trudi Canavan")
+    RootedBook.clear
+    RootedBook.create(:title => "Harry Potter and the Philosopher's stone", :author => "Joanne K. Rowling")
+    RootedBook.create(:title => "The Hobbit", :author => "J. R. R. Tolkien")
+    RootedBook.create(:title => "The Lord of the Rings", :author => "J. R. R. Tolkien")
+    RootedBook.create(:title => "Charlie and the Chocolate Factory", :author => "Roald Dahl")
+    RootedBook.create(:title => "A Christmas Carol", :author => "Charles Dickens")
   end
 
-  def teardown
-    Book.clear
+  def test_all_returns_all_books
+    all_books = RootedBook.all
+    assert_equal all_books.class, Array
+    assert_equal all_books.size, 5
   end
 
   def test_size_returns_correct_amount_of_books
-    assert_equal Book.size, 8
+    assert_equal RootedBook.size, 5
   end
 
-  def test_clear_clears_the_database
-    assert Book.size > 0
-    Book.clear
-    assert Book.size == 0
+  def test_first_returns_the_first_book
+    assert RootedBook.first.title.include? "Philosopher"
   end
-
-# commented out, because it only works with the the new hash implementation
-#  def test_first_returns_the_first_book
-#    assert Book.first.title.include? "Philosopher"
-#  end
 
   def test_normal_enumerable_methods_work
-    assert_equal 7, Book.count { |b| b.author == "Joanne K. Rowling" }
+    assert_equal 2, RootedBook.count { |b| b.author == "J. R. R. Tolkien" }
   end
 
   def test_work_on_real_objects
-    book = Book.first
+    book = RootedBook.first
     book.author = "William Shakespeare"
-    assert_equal Book.first.author, "William Shakespeare"
+    assert_equal RootedBook.first.author, "William Shakespeare"
+  end
+
+  def test_find_object_by_id
+    book = RootedBook.all[2]
+    assert_equal book, RootedBook.find_by_objectid(book.object_id)
   end
 
 end
