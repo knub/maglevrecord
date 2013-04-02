@@ -81,6 +81,7 @@ Pathname.maglev_persistable(true)
 
 Psych.maglev_persistable(true)
 Psych::Visitors.maglev_persistable(true)
+Psych::Visitors::ToRuby.maglev_persistable(true)
 
 I18n.maglev_persistable(true)
 Forwardable.maglev_persistable(true)
@@ -109,7 +110,12 @@ Bundler::Source::Path.maglev_persistable(true)
 Bundler::Source::Git.maglev_persistable(true)
 Bundler::Resolver::SpecGroup.maglev_persistable(true)
 Rake::PrivateReader::ClassMethods.maglev_persistable(true)
-
+Psych::Nodes.maglev_persistable(true)
+Psych::Nodes::Scalar.maglev_persistable(true)
+Psych::Nodes::Mapping.maglev_persistable(true)
+Psych::Nodes::Stream.maglev_persistable(true)
+Psych::Nodes::Document.maglev_persistable(true)
+Psych::LibPsych::ParserEvent.maglev_persistable(true)
 
 # I18n has anonymous modules so we need this:
 (class << I18n; self end).included_modules.each do |mod| mod.maglev_persistable(true) end
@@ -119,6 +125,5 @@ I18n::Config.maglev_persistable(true)
 
 require "base64"
 Base64.maglev_persistable(true)
-# # PP.maglev_persistable(true)
 
 TSort.maglev_persistable(true)
