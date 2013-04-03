@@ -1,34 +1,32 @@
-require "active_support"
-
 module MaglevRecord
   module RootedPersistence
-    extend ActiveSupport::Concern
-    include MaglevRecord::Enumerable
-
-    def delete
-      self.class.object_pool.delete(self.object_id)
-    end
+    extend MaglevSupport::Concern
 
     module ClassMethods
-      def clear
-        self.object_pool.each { |k, v| v.delete }
+      def object_pool_key
+        self
       end
 
-      def size
-        self.object_pool.size
+      def object_pool
+        Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY] ||= {}
+        Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY][object_pool_key] ||= {}
       end
 
       def new(*args)
         instance = super(*args)
-        self.object_pool[instance.object_id] = instance
+        self.object_pool[instance.id] = instance
         instance
       end
 
-      def object_pool
-        Maglev::PERSISTENT_ROOT[self.name.to_sym] ||= {}
+      def clear
+        self.object_pool.clear
+      end
+
+      def create(*args)
+        instance = new(*args)
+        MaglevRecord.save
+        instance
       end
     end
   end
-
 end
-

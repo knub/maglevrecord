@@ -30,6 +30,8 @@
 echo $PWD
 git clone https://github.com/MagLev/maglev.git
 cd maglev
+git checkout stefan/maglev_persistable-persists-modules
+cd ..
 if [ -x bin/maglev-ruby ]; then
     # echo "using $PWD as MAGLEV_HOME"
     export MAGLEV_HOME=$PWD
@@ -226,6 +228,10 @@ fi
 
 # Make sure we have a compatible version of GemStone
 bash ./update.sh
+
+rake stone:create[test]
+rake test:start
+
 
 cd ..
 # End of script

@@ -1,24 +1,40 @@
-require "active_support"
-
 module MaglevRecord
   module Persistence
-    extend ActiveSupport::Concern
+    extend MaglevSupport::Concern
 
-    def persisted?
-      !new_record?
+    def initialize(*args)
+      if args.size == 1
+        args[0].each do |k, v|
+          self.send("#{k.to_s}=".to_sym, v)
+        end
+      end
+      @created_at_timestamp = Time.now
     end
 
+    def created_at
+      @created_at_timestamp
+    end
+    def created_at=(timestamp)
+      @created_at_timestamp = timestamp
+    end
+
+    alias :persisted? :committed?
     def new_record?
-      !committed?
+      !persisted?
     end
-  end
 
-  def self.save
-    Maglev.commit_transaction
-  end
+    def id
+      object_id
+    end
 
-  def self.reset
-    Maglev.abort_transaction
+    module ClassMethods
+      def clear
+        raise MaglevRecord::InvalidOperationError, "Do not use clear without including MaglevRecord::RootedBase."
+      end
+
+      def create
+        raise MaglevRecord::InvalidOperationError, "Do not use create without including MaglevRecord::RootedBase."
+      end
+    end
   end
 end
-

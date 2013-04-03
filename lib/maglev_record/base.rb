@@ -1,13 +1,6 @@
-require "maglev_record/persistence"
-require "maglev_record/read_write"
-require "maglev_record/transaction_request_wrapper"
-require "rubygems"
-require "active_support"
-require "active_model"
-
 module MaglevRecord
   module Base
-    extend ActiveSupport::Concern
+    extend MaglevSupport::Concern
     extend ActiveModel::Naming
 
     @attributes = {}
@@ -51,6 +44,5 @@ module MaglevRecord
       key = self.__id__
       [key] if key
     end
-
   end
 end

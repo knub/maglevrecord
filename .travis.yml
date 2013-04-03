@@ -11,6 +11,7 @@ script:
   - "export PATH=$MAGLEV_HOME/bin:$PATH"
   - "echo $PWD"
   - "bundle install"
+  - "gem install maglevrecord"
   - "rake test"
 notifications:
     email: false

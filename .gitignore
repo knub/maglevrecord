@@ -23,3 +23,7 @@ gem_*_code.log
 *.swp
 
 /test.rb
+
+*~
+*.lock
+/activesupport/
