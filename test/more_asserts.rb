@@ -10,7 +10,35 @@ class Test::Unit::TestCase
     assert array.include?(element), "#{array}\n should include \n#{element}"
   end
 
+  def self.startup
+  end
+
+  def self.shutdown
+  end
+
+  class << self
+    alias :old_suite :suite
+
+    def suite
+      mysuite = old_suite
+      puts "suite: #{mysuite}"
+      def mysuite.run(*args)
+        @tests.first.class.startup() unless @tests.empty?
+        super
+        @tests.first.class.shutdown() unless @tests.empty?
+      end
+      mysuite
+    end
+  end
+
 end
 
-
+#  class MyTest < Test::Unit::TestCase
+#    def self.startup
+#      puts 'runs only once at start2'
+#    end
+#    def self.shutdown
+#      puts 'runs only once at end2'
+#    end
+#  end
 
