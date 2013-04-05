@@ -5,10 +5,9 @@ $LOAD_PATH << './lib'
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
-  t.pattern = "test/**test*.rb"
   t.pattern = "test/{,**/}test*.rb"
   t.ruby_opts << "-rubygems --stone test"
 end
-
 desc "Run tests"
+
 task :default => :test

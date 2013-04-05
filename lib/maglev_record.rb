@@ -1,4 +1,3 @@
-puts "Loading maglev_record..."
 
 require "active_model/naming"
 require "active_model"
