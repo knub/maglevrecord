@@ -26,7 +26,7 @@ class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
   end
 
   def m1
-    Migration.new(Time.now, "rename instance variable") do
+    MaglevRecord::Migration.new(Time.now, "rename instance variable") do
       def up
         Lecture.rename_instance_variable(:@lecturer , :@lecturers) {
           |lecturer|
@@ -54,7 +54,7 @@ class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
   end
 
   def m2
-    Migration.new(Time.now, "rename instance variable") do
+    MaglevRecord::Migration.new(Time.now, "rename instance variable") do
       def up
         Lecture.rename_instance_variable(:@users , :@attendees)
       end
@@ -95,7 +95,7 @@ class TestMigrationRenameAttributes < Test::Unit::TestCase
   end
 
   def m3
-    Migration.new(Time.now, "rename attribute") do
+    MaglevRecord::Migration.new(Time.now, "rename attribute") do
       def up
         Lecture2.rename_attribute(:lecturer , :lecturers) {
           |lecturer|
@@ -116,7 +116,7 @@ class TestMigrationRenameAttributes < Test::Unit::TestCase
   end
 
   def m4
-    Migration.new(Time.now, "rename attribute") do
+    MaglevRecord::Migration.new(Time.now, "rename attribute") do
       def up
         Lecture2.rename_instance_variable(:users , :attendees)
       end

@@ -24,7 +24,7 @@ class Test::Unit::TestCase
 
     def suite
       mysuite = old_suite
-      puts "suite: #{mysuite}"
+      #puts "suite: #{mysuite}"
       def mysuite.run(*args)
         @tests.first.class.startup() unless @tests.empty?
         super
