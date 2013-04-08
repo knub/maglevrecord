@@ -46,13 +46,6 @@ class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
     assert_not_nil Lecture.first.instance_variable_get(:@lecturer)
   end
 
-  def test_raise_error_if_no_down_given
-    m1.do
-    assert_raise(MaglevRecord::IrreversibleMigration) {
-      m1.undo
-    }
-  end
-
   def m2
     MaglevRecord::Migration.new(Time.now, "rename instance variable") do
       def up
