@@ -38,7 +38,7 @@ class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
 
   def test_rename_inst_var_with_block
     lecturer = Lecture.first.instance_variable_get(:@lecturer)
-    m1.up
+    m1.do
     assert_equal Lecture.first.instance_variable_get(:@lecturers), [lecturer]
   end
 
@@ -47,9 +47,9 @@ class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
   end
 
   def test_raise_error_if_no_down_given
-    m1.up
+    m1.do
     assert_raise(MaglevRecord::IrreversibleMigration) {
-      m1.down
+      m1.undo
     }
   end
 
@@ -63,12 +63,18 @@ class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
 
   def test_rename_inst_var
     users = Lecture.first.instance_variable_get(:@users)
-    m2.up
+    m2.do
     assert_equal Lecture.first.instance_variable_get(:@attendees), users
   end
 
   def test_users_exists
     assert_not_nil Lecture.first.instance_variable_get(:@users)
+  end
+
+  def test_old_instance_variable_is_removed_after_renaming
+    m2.do
+    assert_not Lecture.first.instance_variable_defined?(:@users)
+    assert_nil Lecture.first.instance_variable_get(:@users)
   end
 end
 
@@ -107,7 +113,7 @@ class TestMigrationRenameAttributes < Test::Unit::TestCase
 
   def test_rename_attribute_with_block
     lecturer = Lecture2.first.lecturer
-    m3.up
+    m3.do
     assert_equal Lecture2.first.lecturers, [lecturer]
   end
 
@@ -118,14 +124,14 @@ class TestMigrationRenameAttributes < Test::Unit::TestCase
   def m4
     MaglevRecord::Migration.new(Time.now, "rename attribute") do
       def up
-        Lecture2.rename_instance_variable(:users , :attendees)
+        Lecture2.rename_attribute(:users , :attendees)
       end
     end
   end
 
   def test_rename_attribute
     users = Lecture2.first.users
-    m4.up
+    m4.do
     assert_equal Lecture2.first.attendees, users
   end
 

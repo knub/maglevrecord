@@ -18,10 +18,10 @@ require "maglev_record/persistence"
 require "maglev_record/read_write"
 require "maglev_record/rooted_persistence"
 
+require "maglev_record/migration"
+
 require "maglev_record/base"
 require "maglev_record/rooted_base"
-
-require "maglev_record/migration"
 
 require "maglev_record/tools"
 
