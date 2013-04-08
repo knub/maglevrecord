@@ -5,7 +5,7 @@ require 'time'
 ################## instance variables
 
 class Lecture
-  include MaglevRecord::Base
+  include MaglevRecord::RootedBase
 
   def initialize(lecturer, users)
     @lecturer = lecturer
@@ -75,13 +75,15 @@ end
 ################## attributes
 
 class Lecture2
-  include MaglevRecord::Base
+  include MaglevRecord::RootedBase
 
   attr_accessor :lecturer, :users
 
   def self.fill_with_examples
     self.clear
-    self.new(lecturer: "Hans Ullrich", users: ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
+    lecture = self.new()
+    lecture.lecturer = "Hans Ullrich"
+    lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
   end
 
 end
