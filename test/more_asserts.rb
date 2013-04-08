@@ -10,9 +10,12 @@ class Test::Unit::TestCase
     assert array.include?(element), "#{array}\n should include \n#{element}"
   end
 
+
+  # run once before all tests
   def self.startup
   end
 
+  # run once after all tests
   def self.shutdown
   end
 
