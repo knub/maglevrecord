@@ -1,4 +1,6 @@
 require 'test/unit'
+require 'maglev_record'
+
 
 class Test::Unit::TestCase
 

@@ -1,5 +1,4 @@
-require "maglev_record"
-
+require 'more_asserts'
 
 class BaseLecture1
 
@@ -30,24 +29,32 @@ class BaseLecture2
   end
 end
 
-def self.setup_migration_operations
-  remove_constant :Lecture
-  remove_constant :Lecture2
-  remove_constant :Lecture3
-  remove_constant :Lecture4
-  module_eval "
-    class Lecture < BaseLecture1
-    end
+class Test::Unit::TestCase
 
-    class Lecture2 < BaseLecture2
-    end
+  def self.setup_migration_operations
+    [:Lecture, :Lecture2, :Lecture3, :Lecture4].each{ |const|
+      if Object.const_defined? const
+        Object.const_get(const).clear
+        Object.remove_const const
+      end
+    }
+    Object.module_eval "
+      class Lecture < BaseLecture1
+      end
 
-    class Lecture3 < Lecture
-    end
+      class Lecture2 < BaseLecture2
+      end
 
-    class Lecture4 < Lecture
-    end
-  "
+      class Lecture3 < Lecture
+      end
+
+      class Lecture4 < Lecture
+      end
+    "
+  end
+
+  def setup_migration_operations
+    self.class.setup_migration_operations
+  end
+
 end
-
-

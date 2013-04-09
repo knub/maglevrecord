@@ -1,5 +1,5 @@
 require "maglev_record"
-require "operation_setup"
+require "migration/operation_setup"
 require "more_asserts"
 require 'time'
 

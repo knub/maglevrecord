@@ -10,7 +10,7 @@
 #
 
 require "maglev_record"
-require "operation_setup"
+require "migration/operation_setup"
 require "more_asserts"
 require 'time'
 
@@ -19,6 +19,7 @@ require 'time'
 class TestMigrationRemoveInstanceVariable < Test::Unit::TestCase
 
   def setup
+    setup_migration_operations
     Lecture.fill_with_examples
   end
 
@@ -77,6 +78,7 @@ end
 class TestMigrationRemoveAttribute < Test::Unit::TestCase
 
   def setup
+    setup_migration_operations
     Lecture2.fill_with_examples
   end
 
@@ -130,6 +132,11 @@ end
 ################## remove attribute
 
 class TestMigrationRemoveAttribute < Test::Unit::TestCase
+
+  def setup
+    setup_migration_operations
+
+  end
 
 end
 

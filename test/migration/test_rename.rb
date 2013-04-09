@@ -13,6 +13,7 @@
 
 
 require "maglev_record"
+require "migration/operation_setup"
 require "more_asserts"
 require 'time'
 
@@ -22,6 +23,7 @@ require 'time'
 class TestMigrationRenameInstanceVariable < Test::Unit::TestCase
 
   def setup
+    setup_migration_operations
     Lecture.fill_with_examples
   end
 
@@ -77,6 +79,7 @@ end
 class TestMigrationRenameAttributes < Test::Unit::TestCase
 
   def setup
+    setup_migration_operations
     Lecture2.fill_with_examples
   end
 
@@ -127,6 +130,7 @@ end
 class TestMigrationRenameClass < Test::Unit::TestCase
 
   def setup
+    setup_migration_operations
     Lecture3.fill_with_samples
   end
 
