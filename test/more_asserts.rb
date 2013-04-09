@@ -10,6 +10,10 @@ class Test::Unit::TestCase
     assert array.include?(element), "#{array}\n should include \n#{element}"
   end
 
+  def assert_not_include?(array, element)
+    assert_not array.include?(element), "#{array}\n should include \n#{element}"
+  end
+
 
   # run once before all tests
   def self.startup
