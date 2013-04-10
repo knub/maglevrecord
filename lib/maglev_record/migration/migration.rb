@@ -72,8 +72,12 @@ module MaglevRecord
     end
 
     def undo
-      down if respond_to?(:down) && done?
+      down if done?
       @done = false
+    end
+
+    def down
+      raise IrreversibleMigration, "The migration has no down code specified. Do something about it man. Either give it up or write a down method into the migration definition."
     end
 
     def <=>(other)
@@ -95,7 +99,23 @@ module MaglevRecord
       end
     end
 
-    def rename_model(old_name, new_name)
+    def rename_class(old_class, new_name)
+      old_name = old_class.name
+      Maglev.persistent do
+        cls = Object.remove_const old_name
+      end
+      old_class.instance_eval "
+        def name
+          '#{new_name.to_s}'
+        end
+      "
+      Object.const_set new_name, old_class
+    end
+
+    def delete_class(cls)
+      Maglev.persistent do
+        Object.remove_const(cls.name.to_sym)
+      end
     end
   end
 end

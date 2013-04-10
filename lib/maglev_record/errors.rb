@@ -4,4 +4,7 @@ module MaglevRecord
 
   class InvalidOperationError < Error
   end
+
+  class IrreversibleMigration < Error
+  end
 end

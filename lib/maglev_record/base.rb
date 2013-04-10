@@ -6,6 +6,7 @@ module MaglevRecord
     include MaglevRecord::Persistence
     include MaglevRecord::ReadWrite
     include MaglevRecord::Enumerable
+    include MaglevRecord::MigrationOperations
     include ActiveModel::Conversion
   end
 end
