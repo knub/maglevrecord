@@ -101,5 +101,9 @@ module MaglevRecord
 
     def rename_model(old_name, new_name)
     end
+
+    def delete_class(cls)
+      Object.remove_const(cls.name.to_sym)
+    end
   end
 end

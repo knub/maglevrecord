@@ -62,7 +62,7 @@ class TestMigrationRemoveInstanceVariable < Test::Unit::TestCase
   end
 
   def test_block_is_called_with_deleted_content
-    lecturers = Lectures.collect{ |l| l.instance_variable_get(:@lecturer)}
+    lecturers = Lecture.collect{ |l| l.instance_variable_get(:@lecturer)}
     migration = migration2
     migration.do
     assert_equal lecturers.sort, migration.lecturers.sort
@@ -92,16 +92,16 @@ class TestMigrationRemoveAttribute < Test::Unit::TestCase
     end
   end
 
-  def test_instance_variable_is_removed
+  def test_attribute_is_removed
     migration1.do
-    assert_nil Lecture.first.lecturer
+    assert_nil Lecture2.first.lecturer
   end
 
   def migration2
     MaglevRecord::Migration.new(Time.now, "remove attribute lecturer") do
       def up
         @lecturers = []
-        Lecture.delete_attribute(:lecturer) {
+        Lecture2.delete_attribute(:lecturer) {
           |lecturer|
           # you could do some garbage collection help here
           # inthis case we just save the contents of the variable
@@ -115,27 +115,27 @@ class TestMigrationRemoveAttribute < Test::Unit::TestCase
     end
   end
 
-  def test_instance_variable_is_removed_with_block
+  def test_attribute_is_removed_with_block
     migration2.do
-    assert_nil Lecture.first.lecturer
+    assert_nil Lecture2.first.lecturer
   end
 
   def test_block_is_called_with_deleted_content
-    lecturers = Lectures.collect{ |l| l.lecturer }
+    lecturers = Lecture2.collect{ |l| l.lecturer }
     migration = migration2
     migration.do
     assert_equal lecturers.sort, migration.lecturers.sort
   end
 
   def test_first_lecture_has_lecturer
-    assert_not_nil Lecture.first.lecturer
+    assert_not_nil Lecture2.first.lecturer
   end
 
 end
 
 ################## remove classes
 
-class TestMigrationRemoveAttribute < Test::Unit::TestCase
+class TestMigrationRemoveClass < Test::Unit::TestCase
 
   def setup
     setup_migration_operations

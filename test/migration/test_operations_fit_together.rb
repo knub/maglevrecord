@@ -15,5 +15,9 @@ require 'time'
 # this must work!
 #
 # 2) von rooted base nach base
+#
+# 3) fail silently vs. do not execute
+#    3.1) Migration touches :ModelClass => not executed if not present
+#    3.2) ModelClass contant returns Null Object that can be migrated but does nothing
 
 

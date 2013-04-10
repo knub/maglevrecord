@@ -19,6 +19,19 @@ module MaglevRecord
           model.attributes[new_name] = value
         }
       end
+      def delete_instance_variable(name)
+        each { |model|
+          value = model.instance_variable_get(name)
+          yield value if block_given?
+          model.remove_instance_variable name.to_s
+        }
+      end
+      def delete_attribute(name)
+        each { |model|
+          value = model.attributes.delete(name)
+          yield value if block_given?
+        }
+      end
     end
   end
 end
