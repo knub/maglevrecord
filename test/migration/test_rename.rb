@@ -131,7 +131,7 @@ class TestMigrationRenameClass < Test::Unit::TestCase
 
   def setup
     setup_migration_operations
-    Lecture3.fill_with_samples
+    Lecture3.fill_with_examples
   end
 
   def migration
@@ -152,9 +152,17 @@ class TestMigrationRenameClass < Test::Unit::TestCase
     assert_not_equal Lecture3.all, []
   end
 
-  def test_renamed_class_has_no_objects
+  def test_class_with_same_name_as_renamed_class_has_no_objects
     migration.up
+    redefine_migration_classes
     assert_equal Lecture3.all, []
+  end
+
+  def test_renamed_class_does_not_exist
+    migration.up
+    assert_raise(NameError) {
+      Lecture3
+    }
   end
 
   def test_unrenamed_classes_have_distinct_objects
@@ -172,7 +180,13 @@ class TestMigrationRenameClass < Test::Unit::TestCase
   def test_objects_are_not_of_original_class
     assert_equal Lecture3.first.class, Lecture3
     migration.do
+    redefine_migration_classes
     assert_not_equal Lecture4.first.class, Lecture3
+  end
+
+  def test_migration_changes_class_name
+    migration.do
+    assert_equal Lecture4.first.class.name, "Lecture4"
   end
 
 end

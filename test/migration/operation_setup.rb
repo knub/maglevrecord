@@ -35,9 +35,15 @@ class Test::Unit::TestCase
     [:Lecture, :Lecture2, :Lecture3, :Lecture4].each{ |const|
       if Object.const_defined? const
         Object.const_get(const).clear
-        Object.remove_const const
+        Maglev.persistent do
+          Object.remove_const const
+        end
       end
     }
+    self.redefine_migration_classes
+  end
+
+  def self.redefine_migration_classes
     Object.module_eval "
       class Lecture < BaseLecture1
       end
@@ -50,11 +56,19 @@ class Test::Unit::TestCase
 
       class Lecture4 < Lecture
       end
+
+      [Lecture, Lecture2, Lecture3, Lecture4].each do |const|
+        const.maglev_persistable
+      end
     "
   end
 
   def setup_migration_operations
     self.class.setup_migration_operations
+  end
+
+  def redefine_migration_classes
+    self.class.redefine_migration_classes
   end
 
 end
