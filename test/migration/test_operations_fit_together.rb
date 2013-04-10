@@ -13,5 +13,7 @@ require 'time'
 # rename B to C
 #
 # this must work!
+#
+# 2) von rooted base nach base
 
 

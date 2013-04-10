@@ -163,7 +163,7 @@ class TestMigrationRenameClass < Test::Unit::TestCase
     }
   end
 
-  def test_object_are_of_renamed_class
+  def test_objects_are_of_renamed_class
     assert_equal Lecture3.first.class, Lecture3
     migration.do
     assert_equal Lecture4.first.class, Lecture4

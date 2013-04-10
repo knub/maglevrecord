@@ -43,7 +43,9 @@ class TestMigrationRemoveInstanceVariable < Test::Unit::TestCase
         @lecturers = []
         Lecture.delete_instance_variable(:@lecturer) {
           |lecturer|
-          # do some garbage collection help
+          # you could do some garbage collection help here
+          # inthis case we just save the contents of the variable
+          # to prove the block is called with the right argument
           @lecturers << lecturer
         }
       end
@@ -101,7 +103,9 @@ class TestMigrationRemoveAttribute < Test::Unit::TestCase
         @lecturers = []
         Lecture.delete_attribute(:lecturer) {
           |lecturer|
-          # do some garbage collection help
+          # you could do some garbage collection help here
+          # inthis case we just save the contents of the variable
+          # to prodo some garbage collection help
           @lecturers << lecturer
         }
       end
@@ -129,13 +133,55 @@ class TestMigrationRemoveAttribute < Test::Unit::TestCase
 
 end
 
-################## remove attribute
+################## remove classes
 
 class TestMigrationRemoveAttribute < Test::Unit::TestCase
 
   def setup
     setup_migration_operations
+  end
 
+  def migration1
+    MaglevRecord::Migration.new(Time.now, "remove class Lecture") do
+      def up
+        delete_class(Lecture)
+      end
+    end
+  end
+
+  def test_class_is_not_present_after_deletion
+    migration1.do
+    assert_raise(NameError) {
+      Lecture
+    }
+  end
+
+  def test_objects_are_not_referenced_by_object_pool_after_deletion
+    object_pool = Lecture.object_pool
+    migration1.do
+    assert object_pool.empty?
+  end
+
+  def migration2
+    MaglevRecord::Migration.new(Time.now, "remove class Lecture") do
+      def up
+        @lectures = []
+        delete_class(Lecture) {
+          |lecture|
+          @lectures << lecture
+        }
+      end
+      def lectures
+        @lectures
+      end
+    end
+  end
+
+  def test_block_yields_all_instances_of_lecture
+    migration = migration2
+    instances = Lecture.all
+    migration.do
+    assert_equal instances.sort, migration.lectures.sort
   end
 
 end
