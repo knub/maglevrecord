@@ -121,9 +121,11 @@ Psych::LibPsych::ParserEvent.maglev_persistable(true)
 (class << I18n; self end).included_modules.each do |mod| mod.maglev_persistable(true) end
 I18n::Config.maglev_persistable(true)
 
-
-
 require "base64"
 Base64.maglev_persistable(true)
 
 TSort.maglev_persistable(true)
+
+# Started making things persistent
+ActiveSupport::Notifications.maglev_persistable
+ActiveSupport::Notifications::Fanout.maglev_persistable
