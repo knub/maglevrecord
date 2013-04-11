@@ -117,5 +117,9 @@ module MaglevRecord
         Object.remove_const(cls.name.to_sym)
       end
     end
+
+    def self.const_missing(name)
+      return MigrationOperations::NullClass.new(name)
+    end
   end
 end

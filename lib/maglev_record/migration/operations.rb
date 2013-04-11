@@ -33,6 +33,18 @@ module MaglevRecord
         }
       end
     end
+    class NullClass
+      include ClassMethods
+      def initialize(name)
+        @name = name
+      end
+      def new
+        # TODO: test
+        raise "This class #{@name} has not been created"
+      end
+      def each
+      end
+    end
   end
 end
 
