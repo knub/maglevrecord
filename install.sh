@@ -30,7 +30,7 @@
 echo $PWD
 git clone https://github.com/MagLev/maglev.git
 cd maglev
-git checkout stefan/maglev_persistable-persists-modules
+git checkout master-1.9
 cd ..
 if [ -x bin/maglev-ruby ]; then
     # echo "using $PWD as MAGLEV_HOME"
