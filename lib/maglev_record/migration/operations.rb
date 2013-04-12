@@ -38,7 +38,7 @@ module MaglevRecord
       def initialize(name)
         @name = name
       end
-      def new
+      def new(*args)
         # TODO: test
         raise "This class #{@name} has not been created"
       end
