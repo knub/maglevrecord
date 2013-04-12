@@ -14,6 +14,8 @@ module MaglevRecord
     SortedSet.maglev_persistable
     Set.maglev_persistable
 
+    MIGRATION_KEY = :__migrations__
+
     def initialize(migration_list)
       @migration_list = migration_list
       @non_displaying_logger = Logger.new(STDOUT)
@@ -23,7 +25,7 @@ module MaglevRecord
     ##
     # Returns all migrations currently in the stone in the correct order.
     def migration_store
-      Maglev::PERSISTENT_ROOT[:__migrations__] ||= SortedSet.new
+      Maglev::PERSISTENT_ROOT[MIGRATION_KEY] ||= SortedSet.new
     end
 
     ##
