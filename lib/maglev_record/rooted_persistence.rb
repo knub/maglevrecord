@@ -12,6 +12,10 @@ module MaglevRecord
         Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY][object_pool_key] ||= {}
       end
 
+      def delete_object_pool
+        Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY].delete(object_pool_key)
+      end
+
       def new(*args)
         instance = super(*args)
         self.object_pool[instance.id] = instance

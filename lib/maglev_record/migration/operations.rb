@@ -46,10 +46,10 @@ module MaglevRecord
         Object.const_set new_name, old_class
       end
       def migration_delete
-        cls = self
         Maglev.persistent do
-          Object.remove_const(cls.name.to_sym)
+          Object.remove_const(self.name.to_sym)
         end
+        delete_object_pool
       end
     end
     class NullClass

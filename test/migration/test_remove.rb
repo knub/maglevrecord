@@ -184,5 +184,19 @@ class TestMigrationRemoveClass < Test::Unit::TestCase
     assert_equal instances.sort, migration.lectures.sort
   end
 
+  def test_object_pool_is_existent_before_delete
+    pool_dict = Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY]
+    object_pool = Lecture.object_pool
+    assert pool_dict.values.any?{|v| v.equal? object_pool}
+    # this test belongs to test_object_pool_removed_from_pool_dict
+  end
+
+  def test_object_pool_removed_from_pool_dict
+    pool_dict = Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY]
+    object_pool = Lecture.object_pool
+    migration1.do
+    assert_not pool_dict.values.any?{|v| v.equal? object_pool}
+  end
+
 end
 
