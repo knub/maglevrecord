@@ -23,7 +23,7 @@ module MaglevRecord
   class Migration
     include ::Comparable
 
-    attr_accessor :source
+    attr_accessor :source, :logger
     attr_reader :timestamp
     attr_reader :name
 
@@ -95,7 +95,8 @@ module MaglevRecord
     end
 
     def self.const_missing(name)
-      return MigrationOperations::NullClass.new(name)
+      logger.warn("class #{name} was not created but migration by migration #{self.id}") if logger
+      MigrationOperations::NullClass.new(name)
     end
   end
 end
