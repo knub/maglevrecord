@@ -23,6 +23,44 @@ ActiveSupport::OrderedHash.maglev_persistable(true)
 ActiveSupport::Autoload.maglev_persistable(true)
 ActiveSupport::Inflector.maglev_persistable(true)
 ActiveSupport::Inflector::Inflections.maglev_persistable(true)
+
+
+module ActiveSupport
+  class << Deprecation
+    # Declare that a method has been deprecated.
+    def deprecate_methods(target_module, *method_names)
+      options = method_names.extract_options!
+      method_names += options.keys
+      method_names.each do |method_name|
+        next unless method_name.respond_to?(:to_sym)  # next if Fixnum
+        next if method_name == :none                  # check from rubygems/deprecate.rb
+        next if method_name.to_s.include?(".")             # . in method names is not allowed
+        # workaround for :==
+        if method_name.to_sym == :==
+          method_name = "equal?"
+        end
+        target_module.alias_method_chain(method_name, :deprecation) do |target, punctuation|
+          target_module.module_eval(<<-end_eval, __FILE__, __LINE__ + 1)
+            def #{target}_with_deprecation#{punctuation}(*args, &block)
+              ::ActiveSupport::Deprecation.warn(
+                ::ActiveSupport::Deprecation.deprecated_method_warning(
+                  :#{method_name},
+                  #{options[method_name].inspect}),
+                caller
+              )
+              send(:#{target}_without_deprecation#{punctuation}, *args, &block)
+            end
+          end_eval
+        end
+      end
+    end
+  end
+end
+
+
+
+
+
 ActiveSupport::Deprecation.maglev_persistable(true)
 ActiveSupport::Dependencies.maglev_persistable(true)
 ActiveSupport::Dependencies::Loadable.maglev_persistable(true)
@@ -83,9 +121,11 @@ Psych::LibPsych::ParserEvent.maglev_persistable(true)
 (class << I18n; self end).included_modules.each do |mod| mod.maglev_persistable(true) end
 I18n::Config.maglev_persistable(true)
 
-
-
 require "base64"
 Base64.maglev_persistable(true)
 
 TSort.maglev_persistable(true)
+
+# Started making things persistent
+ActiveSupport::Notifications.maglev_persistable
+ActiveSupport::Notifications::Fanout.maglev_persistable
