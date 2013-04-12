@@ -31,7 +31,7 @@ end
 
 class Test::Unit::TestCase
 
-  def self.setup_migration_operations
+  def self.teardown_migration_operations
     [:Lecture, :Lecture2, :Lecture3, :Lecture4].each{ |const|
       if Object.const_defined? const
         Object.const_get(const).clear
@@ -40,6 +40,10 @@ class Test::Unit::TestCase
         end
       end
     }
+  end
+
+  def self.setup_migration_operations
+    self.teardown_migration_operations
     self.redefine_migration_classes
   end
 
@@ -65,6 +69,10 @@ class Test::Unit::TestCase
 
   def setup_migration_operations
     self.class.setup_migration_operations
+  end
+
+  def teardown_migration_operations
+    self.class.teardown_migration_operations
   end
 
   def redefine_migration_classes

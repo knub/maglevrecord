@@ -95,7 +95,7 @@ module MaglevRecord
     end
 
     def self.const_missing(name)
-      logger.warn("class #{name} was not created but migration by migration #{self.id}") if logger
+      #logger.warn("class #{name} was not created but migration by migration #{self.id}") if logger
       MigrationOperations::NullClass.new(name)
     end
   end
