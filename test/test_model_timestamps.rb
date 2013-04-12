@@ -14,5 +14,9 @@ class ModelTimestampTest < Test::Unit::TestCase
     assert_equal model.created_at, test_time
   end
 
+  def teardown
+    Timecop.return
+  end
+
 
 end
