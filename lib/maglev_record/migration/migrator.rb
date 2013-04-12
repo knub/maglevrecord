@@ -37,6 +37,7 @@ module MaglevRecord
       end
       logger.info("Already applied all migrations.") if to_do.empty?
       to_do.sort.each do |mig|
+        mig.logger = logger
         logger.info("Doing '" + mig.name + "' from " + mig.timestamp.to_s)
         mig.do
         migration_store.add(mig.id)
