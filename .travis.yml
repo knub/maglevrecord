@@ -10,6 +10,8 @@ script:
   - "export MAGLEV_HOME=/home/travis/build/knub/maglevrecord/maglev"
   - "export PATH=$MAGLEV_HOME/bin:$PATH"
   - "echo $PWD"
+  - "ls $MAGLEV_HOME/bin"
+  - "which bundle"
   - "bundle --version"
   - "bundle install"
   - "gem install maglevrecord"
