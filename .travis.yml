@@ -6,18 +6,11 @@ before_install:
 before_script:
   - "./install.sh"
 script:
-  - "which rake"
   - "export MAGLEV_HOME=/home/travis/build/knub/maglevrecord/maglev"
   - "export PATH=$MAGLEV_HOME/bin:$PATH"
-  - "maglev-gem list bundler --remote --all"
-  - "maglev-gem query --local"
   - "gem uninstall -x -i /home/travis/.rvm/gems/ruby-1.9.3-p327@global bundler"
-  - "maglev-gem query --local"
   - "maglev-gem install bundler"
-  - "maglev-gem query --local"
-  - "which bundle"
-  - "$MAGLEV_HOME/bin/bundle --version"
-  - "$MAGLEV_HOME/bin/bundle install"
+  - "bundle install"
   - "gem install maglevrecord"
   - "rake test"
 notifications:
