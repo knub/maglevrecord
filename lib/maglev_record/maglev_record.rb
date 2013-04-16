@@ -12,50 +12,52 @@ end
 
 MaglevRecord.maglev_persistable
 
-ActiveModel.maglev_persistable(true)
-ActiveSupport.maglev_persistable(true)
+with_methods = false
 
-ActiveModel::Validations.maglev_persistable(true)
-ActiveModel::Errors.maglev_persistable(true)
-ActiveModel::Conversion.maglev_persistable(true)
+ActiveModel.maglev_persistable(with_methods)
+ActiveSupport.maglev_persistable(with_methods)
 
-ActiveSupport::OrderedHash.maglev_persistable(true)
-ActiveSupport::Autoload.maglev_persistable(true)
-ActiveSupport::Inflector.maglev_persistable(true)
-ActiveSupport::Inflector::Inflections.maglev_persistable(true)
+ActiveModel::Validations.maglev_persistable(with_methods)
+ActiveModel::Errors.maglev_persistable(with_methods)
+ActiveModel::Conversion.maglev_persistable(with_methods)
 
-
-ActiveSupport::Deprecation.maglev_persistable(true)
-ActiveSupport::Dependencies.maglev_persistable(true)
-ActiveSupport::Dependencies::Loadable.maglev_persistable(true)
-ActiveSupport::Dependencies::Blamable.maglev_persistable(true)
-ActiveSupport::Dependencies::ModuleConstMissing.maglev_persistable(true)
-ActiveSupport::Concern.maglev_persistable(true)
-
-MaglevSupport.maglev_persistable(true)
-MaglevSupport::Concern.maglev_persistable(true)
+ActiveSupport::OrderedHash.maglev_persistable(with_methods)
+ActiveSupport::Autoload.maglev_persistable(with_methods)
+ActiveSupport::Inflector.maglev_persistable(with_methods)
+ActiveSupport::Inflector::Inflections.maglev_persistable(with_methods)
 
 
-Singleton.maglev_persistable(true)
+ActiveSupport::Deprecation.maglev_persistable(with_methods)
+ActiveSupport::Dependencies.maglev_persistable(with_methods)
+ActiveSupport::Dependencies::Loadable.maglev_persistable(with_methods)
+ActiveSupport::Dependencies::Blamable.maglev_persistable(with_methods)
+ActiveSupport::Dependencies::ModuleConstMissing.maglev_persistable(with_methods)
+ActiveSupport::Concern.maglev_persistable(with_methods)
 
-(class << Singleton; self end).maglev_persistable(true)
-(class << Singleton; self end)::SingletonClassMethods.maglev_persistable(true)
+MaglevSupport.maglev_persistable(with_methods)
+MaglevSupport::Concern.maglev_persistable(with_methods)
 
-Pathname.maglev_persistable(true)
 
-Psych.maglev_persistable(true)
-Psych::Visitors.maglev_persistable(true)
-Psych::Visitors::ToRuby.maglev_persistable(true)
+Singleton.maglev_persistable(with_methods)
 
-I18n.maglev_persistable(true)
-Forwardable.maglev_persistable(true)
-Config.maglev_persistable(true)
+(class << Singleton; self end).maglev_persistable(with_methods)
+(class << Singleton; self end)::SingletonClassMethods.maglev_persistable(with_methods)
 
-Set.maglev_persistable(true)
-# Path.maglev_persistable(true)
+Pathname.maglev_persistable(with_methods)
+
+Psych.maglev_persistable(with_methods)
+Psych::Visitors.maglev_persistable(with_methods)
+Psych::Visitors::ToRuby.maglev_persistable(with_methods)
+
+I18n.maglev_persistable(with_methods)
+Forwardable.maglev_persistable(with_methods)
+Config.maglev_persistable(with_methods)
+
+Set.maglev_persistable(with_methods)
+# Path.maglev_persistable(with_methods)
 
 [Bundler, Gem, FileUtils, Rake, Psych, URI].each do |mod|
-  mod.maglev_persistable(true)
+  mod.maglev_persistable(with_methods)
 end.each do |mod|
   mod.constants.each do |const|
     next if const.to_s == "Specification" and mod.name.to_s == "Bundler"
@@ -63,32 +65,32 @@ end.each do |mod|
     klass = moduleOrClass.class
     if klass == Class or klass == Module
       # nil.pause if moduleOrClass.name =~ /Dependency/
-      moduleOrClass.maglev_persistable(true)
+      moduleOrClass.maglev_persistable(with_methods)
     end
   end
 end
 
-Bundler::RubygemsIntegration::Modern.maglev_persistable(true)
-Bundler::Source::Rubygems.maglev_persistable(true)
-Bundler::Source::Path.maglev_persistable(true)
-Bundler::Source::Git.maglev_persistable(true)
-Bundler::Resolver::SpecGroup.maglev_persistable(true)
-Rake::PrivateReader::ClassMethods.maglev_persistable(true)
-Psych::Nodes.maglev_persistable(true)
-Psych::Nodes::Scalar.maglev_persistable(true)
-Psych::Nodes::Mapping.maglev_persistable(true)
-Psych::Nodes::Stream.maglev_persistable(true)
-Psych::Nodes::Document.maglev_persistable(true)
-Psych::LibPsych::ParserEvent.maglev_persistable(true)
+Bundler::RubygemsIntegration::Modern.maglev_persistable(with_methods)
+Bundler::Source::Rubygems.maglev_persistable(with_methods)
+Bundler::Source::Path.maglev_persistable(with_methods)
+Bundler::Source::Git.maglev_persistable(with_methods)
+Bundler::Resolver::SpecGroup.maglev_persistable(with_methods)
+Rake::PrivateReader::ClassMethods.maglev_persistable(with_methods)
+Psych::Nodes.maglev_persistable(with_methods)
+Psych::Nodes::Scalar.maglev_persistable(with_methods)
+Psych::Nodes::Mapping.maglev_persistable(with_methods)
+Psych::Nodes::Stream.maglev_persistable(with_methods)
+Psych::Nodes::Document.maglev_persistable(with_methods)
+Psych::LibPsych::ParserEvent.maglev_persistable(with_methods)
 
 # I18n has anonymous modules so we need this:
-(class << I18n; self end).included_modules.each do |mod| mod.maglev_persistable(true) end
-I18n::Config.maglev_persistable(true)
+(class << I18n; self end).included_modules.each do |mod| mod.maglev_persistable(with_methods) end
+I18n::Config.maglev_persistable(with_methods)
 
 require "base64"
-Base64.maglev_persistable(true)
+Base64.maglev_persistable(with_methods)
 
-TSort.maglev_persistable(true)
+TSort.maglev_persistable(with_methods)
 
 # Started making things persistent
 ActiveSupport::Notifications.maglev_persistable

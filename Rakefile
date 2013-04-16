@@ -8,6 +8,7 @@ Rake::TestTask.new do |t|
   t.pattern = "test/{,**/}test*.rb"
   t.ruby_opts << "-W0 -rubygems --stone test"
 end
+
 desc "Run tests"
 
 task :default => :test
