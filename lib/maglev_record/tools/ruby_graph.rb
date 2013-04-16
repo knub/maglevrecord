@@ -1,8 +1,12 @@
 class ModuleReferenceFinder
-  def find_referenced_modules_for(constant)
-    @referenced_modules = Set.new
-    reference(constant)
-    @referenced_modules
+  def find_referenced_modules_for(*constants)
+    whole_set = Set.new
+    constants.each do |constant|
+      @referenced_modules = Set.new
+      reference(constant)
+      whole_set = whole_set.union(@referenced_modules)
+    end
+    whole_set.to_a.sort_by do |mod| mod.name end
   end
 
   def reference(constant)
