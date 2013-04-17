@@ -9,6 +9,9 @@ gem 'rails', '3.2.8'
 
 gem 'sqlite3'
 
+gem 'maglevrecord', '>= 0.0.4'
+gem 'railties' # TODO: remove this for final tests because it is required by maglevrecord
+
 
 # Gems used only for assets and not required
 # in production environments by default.
