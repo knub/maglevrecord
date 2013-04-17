@@ -1,8 +1,10 @@
 require 'maglev_record/migration'
-#require 'rails'
+require 'rails'
+
+
 #
-
-
+# This is for rails
+#
 module MaglevRecord
   class Railtie < Rails::Railtie
     railtie_name :maglev_record
