@@ -9,9 +9,6 @@ require "maglev_record/maglev_support/active_support_patch"
 require "bundler/setup"
 require "tsort"
 
-unless defined?(Rake)
-
-
 require "maglev_record/maglev_support/concern"
 require "maglev_record/maglev_record"
 
@@ -34,7 +31,3 @@ require "maglev_record/tools"
 # MaglevRecord::Base.load_model_files
 
 #require 'tasks/maglev_record.rb' if defined? Rake
-end
-module MaglevRecord
-  require 'maglev_record/railtie' if defined?(Rake) or defined?(Rails)
-end 

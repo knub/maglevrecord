@@ -1,5 +1,7 @@
 require 'maglev_record'
-require 'rails'
+#require 'rails'
+#
+
 
 module MaglevRecord
   class Railtie < Rails::Railtie
