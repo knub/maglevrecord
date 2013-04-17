@@ -1,19 +1,20 @@
 require "maglev_record/migration"
 require "time"
 require "logger"
+require "fileutils"
 
-puts "!" * 30
-puts "maglev_record/tasks/maglev_record.rb loaded"
-p Module.nesting
-
-MIGRATION_FOLDER = "migrations"
-#Rake::Task['db:migrate'].clea
+MIGRATION_FOLDER = "transformations"
 
 desc "transform the maglev database"
-namespace :maglev do
+namespace :transform do
+
+  desc "set up the project for transformations"
+  task :setup do
+    FileUtils.mkpath(MIGRATION_FOLDER) unless File.directory?(MIGRATION_FOLDER)
+  end
 
   desc "migrate all the migrations in the migration folder"
-  task :up do
+  task :up => :setup do
     loader = MaglevRecord::MigrationLoader.new
     loader.load_directory(MIGRATION_FOLDER)
     migrator = MaglevRecord::Migrator.new(loader.migration_list)
@@ -22,7 +23,7 @@ namespace :maglev do
   end
 
   desc "create a new migration in the migration folder"
-  task :new do
+  task :new => :setup do
     now = Time.now
     filename = now.strftime("migration_%Y-%m-%b-%d_%H.%M.%S.rb")
     content = <<-eos
