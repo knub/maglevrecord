@@ -1,6 +1,11 @@
-source :rubygems
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-gem 'activemodel'
+gem 'rake'
+
 gem 'activesupport'
+gem 'activemodel'
+gem 'actionpack'
 
+group :development, :test do
+  gem 'timecop'
+end

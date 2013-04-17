@@ -1,0 +1,19 @@
+# Java, because those are the 64bit boxes. We'll change it once Ruby
+# boxes are 64bit, too
+language: java
+before_install:
+  - "sudo apt-get install -qq rake"
+before_script:
+  - "./install.sh"
+script:
+  - "which rake"
+  - "export MAGLEV_HOME=/home/travis/build/knub/maglevrecord/maglev"
+  - "export PATH=$MAGLEV_HOME/bin:$PATH"
+  - "maglev-gem install bundler"
+  - "which bundle"
+  - "$MAGLEV_HOME/bin/bundle --version"
+  - "$MAGLEV_HOME/bin/bundle install"
+  - "gem install maglevrecord"
+  - "rake test"
+notifications:
+    email: false

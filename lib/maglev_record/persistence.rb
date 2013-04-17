@@ -1,66 +1,40 @@
-require "active_support"
-
 module MaglevRecord
   module Persistence
-    extend ActiveSupport::Concern
+    extend MaglevSupport::Concern
 
-    def delete
-      self.class.delete(self)
-    end
-
-    def save!(options = {})
-      if options[:validate] == false or self.valid?
-        @previously_changed = changes
-        @changed_attributes.clear
-        self.instance_variable_set(:@errors, nil)
-        self.class.object_pool[self.object_id] = self
-        @dirty = nil
-        true
-      else
-        raise StandardError, "Model validation failed"
+    def initialize(*args)
+      if args.size == 1
+        args[0].each do |k, v|
+          self.send("#{k.to_s}=".to_sym, v)
+        end
       end
+      @created_at_timestamp = Time.now
     end
 
-    def save(options = {})
-      begin
-        self.save!(options)
-      rescue StandardError
-        false
-      end
+    def created_at
+      @created_at_timestamp
+    end
+    def created_at=(timestamp)
+      @created_at_timestamp = timestamp
     end
 
-    def persisted?
-      !new_record?
-    end
-
+    alias :persisted? :committed?
     def new_record?
-      !committed?
+      !persisted?
+    end
+
+    def id
+      object_id
     end
 
     module ClassMethods
-      def object_pool
-        Maglev::PERSISTENT_ROOT[self.name.to_sym] ||= {}
-      end
-
-      def delete(*args)
-        if block_given? and args.size == 0
-          self.all.each do |m|
-            self.object_pool.delete(m.object_id) if yield(m)
-          end
-        elsif !block_given? and args.size > 0
-          args.each do |m|
-            self.object_pool.delete(m.object_id)
-          end
-        else
-          raise ArgumentError, "only block or arguments allowed"
-        end
-      end
-
       def clear
-        self.object_pool.clear
+        raise MaglevRecord::InvalidOperationError, "Do not use clear without including MaglevRecord::RootedBase."
+      end
+
+      def create
+        raise MaglevRecord::InvalidOperationError, "Do not use create without including MaglevRecord::RootedBase."
       end
     end
-
   end
 end
-
