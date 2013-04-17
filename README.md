@@ -1,4 +1,4 @@
-# MagLevRecord - a model interface for Rails
+# MagLevRecord - a model interface for Rails [![Build Status master](https://travis-ci.org/knub/maglevrecord.png?branch=master)](https://travis-ci.org/knub/maglevrecord)[![Build Status develop](https://travis-ci.org/knub/maglevrecord.png?branch=develop)](https://travis-ci.org/knub/maglevrecord)
 
 Develop build on travis:
 <a href="https://travis-ci.org/knub/maglevrecord">
