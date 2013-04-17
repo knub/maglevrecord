@@ -9,8 +9,10 @@ script:
   - "which rake"
   - "export MAGLEV_HOME=/home/travis/build/knub/maglevrecord/maglev"
   - "export PATH=$MAGLEV_HOME/bin:$PATH"
-  - "echo $PWD"
-  - "bundle install"
+  - "maglev-gem install bundler"
+  - "which bundle"
+  - "$MAGLEV_HOME/bin/bundle --version"
+  - "$MAGLEV_HOME/bin/bundle install"
   - "gem install maglevrecord"
   - "rake test"
 notifications:

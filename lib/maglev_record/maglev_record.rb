@@ -26,7 +26,6 @@ ActiveSupport::Autoload.maglev_persistable(with_methods)
 ActiveSupport::Inflector.maglev_persistable(with_methods)
 ActiveSupport::Inflector::Inflections.maglev_persistable(with_methods)
 
-
 ActiveSupport::Deprecation.maglev_persistable(with_methods)
 ActiveSupport::Dependencies.maglev_persistable(with_methods)
 ActiveSupport::Dependencies::Loadable.maglev_persistable(with_methods)
@@ -36,7 +35,6 @@ ActiveSupport::Concern.maglev_persistable(with_methods)
 
 MaglevSupport.maglev_persistable(with_methods)
 MaglevSupport::Concern.maglev_persistable(with_methods)
-
 
 Singleton.maglev_persistable(with_methods)
 
@@ -56,10 +54,13 @@ Config.maglev_persistable(with_methods)
 Set.maglev_persistable(with_methods)
 # Path.maglev_persistable(with_methods)
 
-[Bundler, Gem, FileUtils, Rake, Psych, URI].each do |mod|
+finder = ModuleReferenceFinder.new
+finder.find_referenced_modules_for(URI, Psych).each do |mod| mod.maglev_persistable end
+
+[Bundler, Gem, FileUtils, Rake].each do |mod|
   mod.maglev_persistable(with_methods)
 end.each do |mod|
-  mod.constants.each do |const|
+  mod.constants.sort.each do |const|
     next if const.to_s == "Specification" and mod.name.to_s == "Bundler"
     moduleOrClass = mod.const_get(const)
     klass = moduleOrClass.class
