@@ -1,4 +1,4 @@
-require 'maglev_record'
+require 'maglev_record/migration'
 #require 'rails'
 #
 
