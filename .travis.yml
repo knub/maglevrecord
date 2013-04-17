@@ -12,6 +12,6 @@ script:
   - "maglev-gem install bundler"
   - "bundle install"
   - "gem install maglevrecord"
-  - "rake test"
+  - "bundle exec rake test"
 notifications:
     email: false
