@@ -7,7 +7,7 @@ PROJECT_TMP_DIRECTORY =
 #
 # this test creates a temporary directory for the test
 #
-class TempdirTest < Test::Unit::TestCase
+class ProjectTest < Test::Unit::TestCase
 
   class << self
     def startup
@@ -69,7 +69,16 @@ class TempdirTest < Test::Unit::TestCase
 
 end
 
+class RakeTaskTest < ProjectTest
 
+  def test_transformations_are_listed
+    IO.popen("bundle exec rake -T") { |f| 
+      puts f.gets 
+    }
+  end
+
+
+end
 
 
 
