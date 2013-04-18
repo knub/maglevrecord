@@ -27,3 +27,4 @@ gem_*_code.log
 *~
 *.lock
 /activesupport/
+/maglevrecord
