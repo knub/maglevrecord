@@ -18,7 +18,7 @@ class ProjectTest < Test::Unit::TestCase
 
     def shutdown
       # remove the directory.
-      FileUtils.remove_dir tempdir
+      #FileUtils.remove_dir tempdir
     end
 
     def tempdir
@@ -26,18 +26,20 @@ class ProjectTest < Test::Unit::TestCase
     end
   end
 
+  attr_reader :maglev_record_raketask_wd
+
   def setup
     @project_name = 'project1' if @project_name.nil?
     # copy the project over to the tempdir
     FileUtils.cp_r(project_source_directory, tempdir)
     # change to the project directory to easyly run rake
-    @original_cwd = FileUtils.getwd
+    @maglev_record_raketask_wd = FileUtils.getwd
     FileUtils.chdir(project_directory)
   end
 
   def teardown
-    FileUtils.chdir(@original_cwd)
-    FileUtils.remove_dir(project_directory)
+    FileUtils.chdir(@maglev_record_raketask_wd)
+    #FileUtils.remove_dir(project_directory)
   end
 
   def project_directory
@@ -71,10 +73,22 @@ end
 
 class RakeTaskTest < ProjectTest
 
+  def setup
+    super
+    assert `ln -s #{maglev_record_raketask_wd} maglevrecordgem`
+  end
+
   def test_transformations_are_listed
-    IO.popen("bundle exec rake -T") { |f| 
-      puts f.gets 
+    output = IO.popen("bundle exec rake -T") { |f|
+      s = line = ''
+      while not line.nil?
+        s += line
+        line = f.gets
+      end
+      output = s
     }
+    assert_include? output, 'rake transform:new'
+    assert_include? output, 'rake transform:up'
   end
 
 
