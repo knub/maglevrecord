@@ -7,34 +7,44 @@ PROJECT_TMP_DIRECTORY =
 #
 # this test creates a temporary directory for the test
 #
-class ProjectTest < Test::Unit::TestCase
 
-  class << self
-    def startup
-      # make temporary directory
-      # see http://ruby-doc.org/stdlib-2.0/libdoc/tmpdir/rdoc/Dir.html#method-c-mktmpdir
-      @tempdir = Dir.mktmpdir
-    end
-
-    def shutdown
-      # remove the directory.
-      #FileUtils.remove_dir tempdir
-    end
-
-    def tempdir
-      @tempdir
-    end
+class TempDirTest < Test::Unit::TestCase
+  def setup
+    # make temporary directory
+    # see http://ruby-doc.org/stdlib-2.0/libdoc/tmpdir/rdoc/Dir.html#method-c-mktmpdir
+    @tempdir = Dir.mktmpdir
   end
 
+  def teardown
+    # remove the directory.
+    #FileUtils.remove_dir tempdir
+  end
+
+  def tempdir
+    @tempdir
+  end
+
+  # test the project configuration
+
+  def test_tempdir_exists
+    assert File.directory?(tempdir)
+  end
+
+end
+  
+class ProjectTest < TempDirTest
   attr_reader :maglev_record_raketask_wd
 
   def setup
+    super
     @project_name = 'project1' if @project_name.nil?
     # copy the project over to the tempdir
     FileUtils.cp_r(project_source_directory, tempdir)
     # change to the project directory to easyly run rake
     @maglev_record_raketask_wd = FileUtils.getwd
     FileUtils.chdir(project_directory)
+    # link maglevrecord for require
+    assert `ln -s #{maglev_record_raketask_wd} maglevrecordgem`
   end
 
   def teardown
@@ -50,16 +60,6 @@ class ProjectTest < Test::Unit::TestCase
     File.join(File.dirname(__FILE__), 'projects', @project_name)
   end
 
-  def tempdir
-    self.class.tempdir
-  end
-
-  # test the project configuration
-
-  def test_tempdir_exists
-    assert File.directory?(tempdir)
-  end
-
   def test_there_is_a_rakefile_in_the_project_directory
     assert File.file?(File.join(project_directory, 'Rakefile'))
     assert File.file?(File.join(project_source_directory, 'Rakefile'))
@@ -69,17 +69,8 @@ class ProjectTest < Test::Unit::TestCase
     assert_equal FileUtils.getwd, project_directory
   end
 
-end
-
-class RakeTaskTest < ProjectTest
-
-  def setup
-    super
-    assert `ln -s #{maglev_record_raketask_wd} maglevrecordgem`
-  end
-
-  def test_transformations_are_listed
-    output = IO.popen("bundle exec rake -T") { |f|
+  def rake(args)
+    output = IO.popen("bundle exec rake " + args) { |f|
       s = line = ''
       while not line.nil?
         s += line
@@ -87,10 +78,27 @@ class RakeTaskTest < ProjectTest
       end
       output = s
     }
+    output
+  end
+end
+
+class Project1Test < ProjectTest
+
+  def test_transformations_are_listed
+    output = rake("-T")
     assert_include? output, 'rake transform:new'
     assert_include? output, 'rake transform:up'
   end
 
+  def test_no_transformation_on_start
+    assert_not File.directory?('./transformations')
+  end
+
+  def test_new_transformation
+    rake("transform:new")
+    assert File.directory? './transformations'
+    assert_not_equal [], Dir[File.join(FileUtils.pwd, 'transformations', '*')]
+  end
 
 end
 
