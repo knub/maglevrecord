@@ -17,7 +17,7 @@ class TempDirTest < Test::Unit::TestCase
 
   def teardown
     # remove the directory.
-    #FileUtils.remove_dir tempdir
+    FileUtils.remove_dir tempdir
   end
 
   def tempdir
@@ -48,8 +48,9 @@ class ProjectTest < TempDirTest
   end
 
   def teardown
+    super
     FileUtils.chdir(@maglev_record_raketask_wd)
-    #FileUtils.remove_dir(project_directory)
+    FileUtils.remove_dir(project_directory)
   end
 
   def project_directory
@@ -70,7 +71,8 @@ class ProjectTest < TempDirTest
   end
 
   def rake(args)
-    output = IO.popen("bundle exec rake " + args) { |f|
+    ``
+    output = IO.popen("export MAGLEV_OPTS=\"--stone #{Maglev::System.stone_name}\";bundle exec rake " + args) { |f|
       s = line = ''
       while not line.nil?
         s += line
@@ -82,22 +84,49 @@ class ProjectTest < TempDirTest
   end
 end
 
-class Project1Test < ProjectTest
+class MigrationTestProject1 < ProjectTest
 
-  def test_transformations_are_listed
+  def setup
+    super
+    Maglev.abort_transaction
+    Maglev::PERSISTENT_ROOT['test_apply'] = "it was not set"
+    Maglev.commit_transaction
+  end
+
+  def test_tasks_are_listed
     output = rake("-T")
-    assert_include? output, 'rake transform:new'
-    assert_include? output, 'rake transform:up'
+    assert_include? output, 'rake migrate:new'
+    assert_include? output, 'rake migrate:up'
   end
 
-  def test_no_transformation_on_start
-    assert_not File.directory?('./transformations')
+  def test_no_folder_on_start
+    assert_not File.directory?('./migrations')
   end
 
-  def test_new_transformation
-    rake("transform:new")
-    assert File.directory? './transformations'
-    assert_not_equal [], Dir[File.join(FileUtils.pwd, 'transformations', '*')]
+  def test_new
+    rake("migrate:new")
+    assert File.directory? './migrations'
+    assert_not_equal [], Dir[File.join(FileUtils.pwd, 'migrations', '*')]
+  end
+
+  def test_no_apply
+    Maglev.abort_transaction
+    assert_not_equal 'it was set', Maglev::PERSISTENT_ROOT['test_apply']
+  end
+
+  def test_apply
+    upcode = "Maglev::PERSISTENT_ROOT['test_apply'] = 'it was set'"
+    Dir.mkdir('./migrations')
+    File.open('./migrations/example_migration.rb', 'w') { |file|
+      file.write(MaglevRecord::Migration.file_content(
+                            Time.now, "test_apply_migration",
+                            upcode)
+      )
+    }
+    p '-' * 30
+    p rake('migrate:up')
+    Maglev.abort_transaction
+    assert_equal 'it was set', Maglev::PERSISTENT_ROOT['test_apply']
   end
 
 end

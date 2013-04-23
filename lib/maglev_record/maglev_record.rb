@@ -62,11 +62,16 @@ finder.find_referenced_modules_for(URI, Psych).each do |mod| mod.maglev_persista
 end.each do |mod|
   mod.constants.sort.each do |const|
     next if const.to_s == "Specification" and mod.name.to_s == "Bundler"
-    moduleOrClass = mod.const_get(const)
-    klass = moduleOrClass.class
-    if klass == Class or klass == Module
-      # nil.pause if moduleOrClass.name =~ /Dependency/
-      moduleOrClass.maglev_persistable(with_methods)
+    begin
+      moduleOrClass = mod.const_get(const)
+    rescue NameError
+      
+    else
+      klass = moduleOrClass.class
+      if klass == Class or klass == Module
+        # nil.pause if moduleOrClass.name =~ /Dependency/
+        moduleOrClass.maglev_persistable(with_methods)
+      end
     end
   end
 end

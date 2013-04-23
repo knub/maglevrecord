@@ -3,13 +3,14 @@ require "time"
 require "logger"
 require "fileutils"
 
-MIGRATION_FOLDER = "transformations"
+MIGRATION_FOLDER = "migrations"
 
 desc "transform the maglev database"
-namespace :transform do
+namespace :migrate do
 
-  desc "set up the project for transformations"
+  desc "set up the project for migrations"
   task :setup do
+    # puts "PID: #{Process.pid} stone: #{Maglev::System.stone_name}"
     FileUtils.mkpath(MIGRATION_FOLDER) unless File.directory?(MIGRATION_FOLDER)
   end
 
@@ -26,23 +27,7 @@ namespace :transform do
   task :new => :setup do
     now = Time.now
     filename = now.strftime("migration_%Y-%m-%b-%d_%H.%M.%S.rb")
-    content = <<-eos
-require "maglev_record"
-require "time"
-
-MaglevRecord::Migration.new(Time.parse("#{now.to_s}"), " description ") do
-
-  def up
-    # put your code here
-  end
-
-  def down
-    # replace the next line with your downcode
-    raise IrreversibleMigration, "The migration has no downcode"
-  end
-
-end
-    eos
+    content = MaglevRecord::Migration.file_content(now, 'fill in description here')
     filepath = File.join(MIGRATION_FOLDER, filename)
     File.open(filepath, 'w') { |file| 
       file.write(content)
