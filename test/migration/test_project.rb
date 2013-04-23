@@ -2,6 +2,8 @@ require "more_asserts"
 require "fileutils"
 require "tmpdir"
 
+THIS_DIRECTORY = File.expand_path(File.dirname(__FILE__))
+
 #
 # this test creates a temporary directory for the test
 #
@@ -55,11 +57,10 @@ class ProjectTest < TempDirTest
   end
 
   def project_source_directory
-    File.join(File.dirname(__FILE__), 'projects', @project_name)
+    File.join(THIS_DIRECTORY, 'projects', @project_name)
   end
 
   def test_there_is_a_rakefile_in_the_project_directory
-    p project_source_directory
     assert File.file?(File.join(project_directory, 'Rakefile'))
     assert File.file?(File.join(project_source_directory, 'Rakefile'))
   end
