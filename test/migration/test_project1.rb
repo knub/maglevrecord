@@ -50,7 +50,6 @@ class ProjectTest < TempDirTest
   def teardown
     super
     FileUtils.chdir(@maglev_record_raketask_wd)
-    FileUtils.remove_dir(project_directory)
   end
 
   def project_directory
@@ -123,8 +122,9 @@ class MigrationTestProject1 < ProjectTest
                             upcode)
       )
     }
-    p '-' * 30
-    p rake('migrate:up')
+    s = rake('migrate:up')
+    #p '-' * 30
+    #p s
     Maglev.abort_transaction
     assert_equal 'it was set', Maglev::PERSISTENT_ROOT['test_apply']
   end
