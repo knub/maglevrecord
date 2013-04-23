@@ -5,6 +5,7 @@
 require 'fileutils'
 
 puts "bin in #{FileUtils.pwd}"
+puts "stone: #{Maglev::System.stone_name}"
 
 $LOAD_PATH.unshift './maglevrecordgem'
 $LOAD_PATH.unshift './maglevrecordgem/lib'
