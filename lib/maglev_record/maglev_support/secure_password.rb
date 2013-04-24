@@ -10,8 +10,8 @@ module MaglevSupport
 
     def password=(raw_password)
       require 'digest'
-      @password = unencrypted_password
-      unless unencrypted_password.blank?
+      @password = raw_password
+      unless raw_password.blank?
         self.password_digest = self.class.encrypt_password(raw_password)
       end
     end
@@ -25,7 +25,7 @@ module MaglevSupport
       end
 
       def encrypt_password(raw_password)
-        Digest::SHA256.new.update(unencrypted_password).to_s
+        Digest::SHA256.new.update(raw_password).to_s
       end
     end
   end
