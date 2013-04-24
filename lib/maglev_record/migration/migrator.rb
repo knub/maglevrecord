@@ -11,8 +11,8 @@ module MaglevRecord
 
     # Make these two classes persistable, as we need them for storing
     # which migrations already ran.
-    SortedSet.maglev_persistable
-    Set.maglev_persistable
+    # SortedSet.maglev_persistable
+    # Set.maglev_persistable
 
     MIGRATION_KEY = :__migrations__
 
