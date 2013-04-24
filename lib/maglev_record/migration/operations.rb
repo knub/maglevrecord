@@ -54,7 +54,7 @@ module MaglevRecord
 
       def migration_delete
         Maglev.persistent do
-          Object.remove_const(self.name.to_sym)
+          nesting_list[-2].remove_const(nesting_name_list[-1])
         end
         delete_object_pool
       end

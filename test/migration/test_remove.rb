@@ -198,5 +198,22 @@ class TestMigrationRemoveClass < Test::Unit::TestCase
     assert_not pool_dict.values.any?{|v| v.equal? object_pool}
   end
 
+  def migration_remove_nested_class
+    MaglevRecord::Migration.new(Time.now, "remove class Lecture") do
+      def up
+        delete_class(Models::M1::Lecture)
+      end
+    end
+  end
+
+  def test_remove_nested_class
+    Models::M1::Lecture
+    migration_remove_nested_class.do
+    assert_raise(NameError){
+      Models::M1::Lecture
+    }
+  end
+
+ 
 end
 
