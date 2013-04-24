@@ -8,7 +8,10 @@ module MaglevRecord
     end
 
     def update_attributes(attribute_hash)
-      attributes.update(attribute_hash)
+      attribute_hash.each_pair do |k,v|
+        attributes[k.to_sym] = v
+      end
+      self
     end
 
     module ClassMethods
