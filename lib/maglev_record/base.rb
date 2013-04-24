@@ -7,6 +7,6 @@ module MaglevRecord
     include MaglevRecord::ReadWrite
     include MaglevRecord::Enumerable
     # include MaglevRecord::MigrationOperations
-    #include ActiveModel::Conversion
+    redo_include ActiveModel::Conversion
   end
 end
