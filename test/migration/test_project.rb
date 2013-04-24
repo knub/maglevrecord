@@ -69,6 +69,9 @@ class ProjectTest < TempDirTest
     assert_equal FileUtils.getwd, project_directory
   end
 
+  #
+  # rake returns the output of the process so one can print it
+  #
   def rake(args)
     output = IO.popen("export MAGLEV_OPTS=\"-W0 --stone #{Maglev::System.stone_name}\";bundle exec rake " + args) { |f|
       s = line = ''
