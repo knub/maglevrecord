@@ -4,7 +4,7 @@ require "time"
 MaglevRecord::Migration.new(Time.parse('Tue Apr 23 17:32:07 +0000 2013'), 'fill in description here') do
 
   def up
-    # put your transformation code here
+    rename_class TestModel::C, :D
   end
 
   def down
