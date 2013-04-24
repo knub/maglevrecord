@@ -9,11 +9,6 @@ module MaglevRecord
   # which must be done and leaves the stone in the desired state.
   class Migrator
 
-    # Make these two classes persistable, as we need them for storing
-    # which migrations already ran.
-    # SortedSet.maglev_persistable
-    # Set.maglev_persistable
-
     MIGRATION_KEY = :__migrations__
 
     def initialize(migration_list)

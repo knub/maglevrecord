@@ -18,6 +18,17 @@ class RootedBook < Book
                      # :length => { :minimum => 4 }
 end
 
-# class UnrootedBook < Book
-#   include MaglevRecord::Base
-# end
+class UnrootedBook < Book
+  include MaglevRecord::Base
+end
+
+MaglevRecord.maglev_persistable(true)
+Book.maglev_persistable(true)
+RootedBook.maglev_persistable(true)
+
+ref_finder = ModuleReferenceFinder.new
+referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport)
+#puts referenced_modules.inspect
+referenced_modules.each do |mod|
+  mod.maglev_persistable(true)
+end

@@ -12,7 +12,7 @@ class MigrationScenarioTest < Test::Unit::TestCase
   def setup
     MaglevRecord.reset
     RootedBook.clear
-    Maglev::PERSISTENT_ROOT[Migrator::MIGRATION_KEY] = SortedSet.new
+    Maglev::PERSISTENT_ROOT[Migrator::MIGRATION_KEY] = Array.new
     @loader = MigrationLoader.new
     RootedBook.new(:title => "Harry Potter and the Philosopher's stone")
     RootedBook.new(:title => "Harry Potter and the Chamber of Secrets")
