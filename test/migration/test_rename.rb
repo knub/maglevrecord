@@ -191,4 +191,48 @@ class TestMigrationRenameClass < Test::Unit::TestCase
 
 end
 
+class TestNestingList < Test::Unit::TestCase
+
+  def setup
+    setup_migration_operations
+  end
+
+  def test_Lecture_is_not_nested
+    assert_equal Lecture.nesting_list, [Object, Lecture]
+  end
+
+  def test_Models_M1_Lecture_lists_submodules_in_nesting_list
+    assert_equal Models::M1::Lecture.nesting_list, [
+                 Object, Models, Models::M1, Models::M1::Lecture]
+  end
+
+  def migration_rename_Lecture4
+    MaglevRecord::Migration.new(Time.now, "rename Lecture") do
+      def up
+        rename_class Lecture4, :Lecture5
+      end
+    end
+  end
+
+  def test_renamed_models_have_different_nesting_list
+    migration_rename_Lecture4.do
+    assert_equal Lecture5.nesting_list, [Object, Lecture5]
+  end
+
+  def migration_rename_nested_Lecture
+    MaglevRecord::Migration.new(Time.now, "rename Lecture") do
+      def up
+        rename_class Models::M1::Lecture, :Lecture3
+      end
+    end
+  end
+
+  def test_nested_renamed_class_has_different_nesting_list
+    migration_rename_nested_Lecture.do
+    assert_equal Models::M1::Lecture3.nesting_list, [
+                 Object, Models, Models::M1, Models::M1::Lecture3 ]
+  end
+
+end
+
 
