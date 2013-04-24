@@ -8,5 +8,6 @@ module MaglevRecord
     include MaglevRecord::Enumerable
     include MaglevRecord::MigrationOperations
     include ActiveModel::Conversion
+    include MaglevSupport::SecurePassword
   end
 end
