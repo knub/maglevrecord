@@ -1,0 +1,16 @@
+make sure renamed classes can be migrated even if they are not yet existent
+
+  TODO
+  ====
+
+2) from rooted base to base
+4) copy from one class to another
+
+  DONE
+  ====
+
+
+
+
+
+
