@@ -1,18 +1,13 @@
-require 'active_support/core_ext/module/deprecation'
-require 'active_support/core_ext/module/aliasing'
-require 'active_support/core_ext/array/extract_options'
-
 module ActiveSupport
   class << Deprecation
     # Declare that a method has been deprecated.
     def deprecate_methods(target_module, *method_names)
       options = method_names.extract_options!
       method_names += options.keys
-
       method_names.each do |method_name|
         next unless method_name.respond_to?(:to_sym)  # next if Fixnum
         next if method_name == :none                  # check from rubygems/deprecate.rb
-        next if method_name.to_s.include?(".")        # . in method names is not allowed
+        next if method_name.to_s.include?(".")             # . in method names is not allowed
         # workaround for :==
         if method_name.to_sym == :==
           method_name = "equal?"

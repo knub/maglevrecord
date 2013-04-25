@@ -12,6 +12,7 @@ class MigrationScenarioTest < Test::Unit::TestCase
   def setup
     MaglevRecord.reset
     RootedBook.clear
+    Maglev::PERSISTENT_ROOT[Migrator::MIGRATION_KEY] = SortedSet.new
     @loader = MigrationLoader.new
     RootedBook.new(:title => "Harry Potter and the Philosopher's stone")
     RootedBook.new(:title => "Harry Potter and the Chamber of Secrets")
@@ -32,6 +33,6 @@ class MigrationScenarioTest < Test::Unit::TestCase
     migration_list = loader.migration_list
     migrator = Migrator.new(migration_list)
     migrator.up
-    #assert_equal "The most recent book title", Book.first.title
+    assert_equal "The most recent book title", RootedBook.first.title
   end
 end

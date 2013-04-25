@@ -1,4 +1,7 @@
-# MagLevRecord - a model interface for Rails
+# MagLevRecord - a model interface for Rails 
+
+master [![Build Status master](https://travis-ci.org/knub/maglevrecord.png?branch=master)](https://travis-ci.org/knub/maglevrecord)
+develop [![Build Status develop](https://travis-ci.org/knub/maglevrecord.png?branch=develop)](https://travis-ci.org/knub/maglevrecord)
 
 This is intended to replace ActiveRecord::Base when using MagLev. It is not ready for production use, but feel free to play around with it.
 

@@ -1,10 +1,11 @@
-source :rubygems
 source 'http://rubygems.org'
+
+gem 'rake'
 
 gem 'activesupport'
 gem 'activemodel'
 gem 'actionpack'
-gem 'rake'
+gem "railties"
 
 group :development, :test do
   gem 'timecop'

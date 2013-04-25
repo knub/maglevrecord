@@ -5,13 +5,14 @@ before_install:
   - "sudo apt-get install -qq rake"
 before_script:
   - "./install.sh"
-script:
-  - "which rake"
   - "export MAGLEV_HOME=/home/travis/build/knub/maglevrecord/maglev"
   - "export PATH=$MAGLEV_HOME/bin:$PATH"
-  - "echo $PWD"
+  - "gem uninstall -x -i /home/travis/.rvm/gems/ruby-1.9.3-p327@global bundler"
+  - "maglev-gem install bundler"
   - "bundle install"
   - "gem install maglevrecord"
-  - "rake test"
+script:
+  - "bundle exec rake test"
+  - "bundle exec rake test TESTOPTS='-v' TEST=test/_test_object_reference.rb"
 notifications:
     email: false
