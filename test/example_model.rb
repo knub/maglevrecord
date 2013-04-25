@@ -25,6 +25,7 @@ end
 MaglevRecord.maglev_persistable(true)
 Book.maglev_persistable(true)
 RootedBook.maglev_persistable(true)
+UnrootedBook.maglev_persistable(true)
 ActiveSupport.maglev_nil_references
 ActiveSupport::Concern.maglev_nil_references
 ActiveSupport::Callbacks.maglev_nil_references
