@@ -6,7 +6,6 @@ class MigrationScenarioTest < Test::Unit::TestCase
   MigrationLoader = MaglevRecord::MigrationLoader
   Migrator = MaglevRecord::Migrator
 
-
   attr_reader :loader
 
   def setup

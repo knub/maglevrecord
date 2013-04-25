@@ -35,7 +35,7 @@ module MaglevRecord
         mig.logger = logger
         logger.info("Doing '" + mig.name + "' from " + mig.timestamp.to_s)
         mig.do
-        migration_store.add(mig.id)
+        migration_store << mig.id
       end
       Maglev.commit_transaction
     end

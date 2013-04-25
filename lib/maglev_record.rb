@@ -1,6 +1,7 @@
 
 require "active_model"
 require "active_support"
+require "active_support/core_ext/class/attribute"
 
 require "maglev_record/maglev_support/maglev_support"
 require "bundler/setup"
