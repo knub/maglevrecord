@@ -6,6 +6,7 @@ gem 'activesupport'
 gem 'activemodel'
 gem 'actionpack'
 gem "railties"
+gem 'tzinfo'
 
 group :development, :test do
   gem 'timecop'
