@@ -31,6 +31,7 @@ ActiveSupport::Callbacks.maglev_nil_references
 ActiveSupport::Callbacks::Callback.maglev_nil_references
 ActiveSupport::Callbacks::CallbackChain.maglev_nil_references
 ActiveModel.maglev_nil_references
+ActiveModel::Errors.maglev_nil_references
 ActiveModel::Validations.maglev_nil_references
 ActiveModel::Validations::ClassMethods.maglev_nil_references
 ActiveModel::Validations::HelperMethods.maglev_nil_references
