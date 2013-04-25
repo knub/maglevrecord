@@ -73,7 +73,22 @@ class ProjectTest < TempDirTest
   # rake returns the output of the process so one can print it
   #
   def rake(args)
-    output = IO.popen("export MAGLEV_OPTS=\"-W0 --stone #{Maglev::System.stone_name}\";bundle exec rake " + args) { |f|
+    exec("bundle exec rake " + args)
+  end
+
+  def rails_c(commands)
+    exec('bundle exec rails c', commands + "\nexit\n")
+  end
+
+  def exec(_command, input = '')
+    File.open('input.txt', 'w') {|f| f.write(input) }
+    command = "export MAGLEV_OPTS=\"-W0 --stone #{
+                    Maglev::System.stone_name}\";#{
+                    _command} < input.txt"
+    command = "export MAGLEV_OPTS=\"-W0\";#{
+                    _command} < input.txt"
+    puts command
+    output = IO.popen(command) { |f|
       s = line = ''
       while not line.nil?
         s += line
@@ -81,6 +96,7 @@ class ProjectTest < TempDirTest
       end
       output = s
     }
+    # p output
     output
   end
 end
