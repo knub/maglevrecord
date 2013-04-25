@@ -5,29 +5,22 @@ class MigrationProject2 < ProjectTest
   def setup
     @project_name = 'project2'
     super
+    Object.remove_const :TestModel if defined?(TestModel)
+    Maglev.commit_transaction
   end
 
-  def test_can_migrate_up
-    #o = rake('migrate:up')
-    #Maglev.abort_transaction
-    s = rails_c('')
-    puts "-" * 20
-    puts project_source_directory
-    puts project_directory
-    puts s
-#output = IO.popen('export MAGLEV_OPTS="-W0";bundle exec rails c'){|f| 
-#s = line = ''
-#    while not line.nil?
-#    s += line
-#     line = f.gets
-#  end
-#    output = s
-#  }
-#   p output
+  def test_no_models
+    Maglev.abort_transaction
+    assert_raise(NameError) {
+      TestModel
+    }
   end
 
-  def teardown
-
+  def test_models_appear
+    s = rails_c("puts TestModel\nMaglev.commit_transaction")
+    p s
+    Maglev.abort_transaction
+    assert_equal TestModel.all, []
   end
 
 end
