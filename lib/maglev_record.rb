@@ -33,6 +33,7 @@ require "maglev_record/base"
 require "maglev_record/rooted_base"
 
 require "maglev_record/tools"
+require "maglev_record/snapshot"
 
 # require "maglev_record/object_reference"
 # MaglevRecord.make_modules_persistent
