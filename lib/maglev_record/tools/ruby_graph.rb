@@ -5,7 +5,7 @@ class MaglevSupport::ModuleReferenceFinder
       @referenced_modules = Set.new
       reference(constant)
       whole_set = whole_set.union(@referenced_modules.select do |mod|
-        mod.name.include?(constant)
+        mod.name.to_s.include?(constant.to_s)
       end)
     end
     whole_set.to_a.sort_by do |mod| mod.name end

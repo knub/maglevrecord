@@ -22,8 +22,29 @@ require "maglev_record/migration"
 require "maglev_record/base"
 require "maglev_record/rooted_base"
 
-
 # require "maglev_record/object_reference"
-# MaglevRecord.make_modules_persistent
-# MaglevRecord::Base.load_model_files
 
+MaglevRecord.maglev_persistable(true)
+
+ActiveSupport.maglev_nil_references
+ActiveSupport::Concern.maglev_nil_references
+ActiveSupport::Callbacks.maglev_nil_references
+ActiveSupport::Callbacks::Callback.maglev_nil_references
+ActiveSupport::Callbacks::CallbackChain.maglev_nil_references
+ActiveModel.maglev_nil_references
+ActiveModel::Errors.maglev_nil_references
+ActiveModel::Validations.maglev_nil_references
+ActiveModel::Validations::ClassMethods.maglev_nil_references
+ActiveModel::Validations::HelperMethods.maglev_nil_references
+ActiveModel::Translation.maglev_nil_references
+ActiveModel::Validations::LengthValidator.maglev_nil_references
+ActiveModel::Validations::PresenceValidator.maglev_nil_references
+
+ref_finder = MaglevSupport::ModuleReferenceFinder.new
+referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
+puts referenced_modules
+referenced_modules.each do |mod|
+  mod.maglev_persistable(true)
+end
+
+Maglev.commit_transaction
