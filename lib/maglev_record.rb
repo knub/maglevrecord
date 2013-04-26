@@ -4,10 +4,12 @@ require "active_support"
 require "active_support/core_ext/class/attribute"
 
 require "maglev_record/maglev_support/maglev_support"
+require "maglev_record/tools"
+
 require "bundler/setup"
 
 require "maglev_record/maglev_support/concern"
-require "maglev_record/tools"
+# require "maglev_record/tools"
 require "maglev_record/maglev_record"
 
 require "maglev_record/enumerable"
@@ -21,8 +23,6 @@ require "maglev_record/migration"
 
 require "maglev_record/base"
 require "maglev_record/rooted_base"
-
-# require "maglev_record/object_reference"
 
 MaglevRecord.maglev_persistable(true)
 
@@ -42,7 +42,6 @@ ActiveModel::Validations::PresenceValidator.maglev_nil_references
 
 ref_finder = MaglevSupport::ModuleReferenceFinder.new
 referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
-puts referenced_modules
 referenced_modules.each do |mod|
   mod.maglev_persistable(true)
 end
