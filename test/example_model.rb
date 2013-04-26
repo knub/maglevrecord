@@ -40,8 +40,8 @@ ActiveModel::Translation.maglev_nil_references
 ActiveModel::Validations::LengthValidator.maglev_nil_references
 ActiveModel::Validations::PresenceValidator.maglev_nil_references
 
-ref_finder = ModuleReferenceFinder.new
-referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport)
+ref_finder = MaglevSupport::ModuleReferenceFinder.new
+referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport) - [MaglevSupport::ModuleReferenceFinder]
 referenced_modules.each do |mod|
   mod.maglev_persistable(true)
 end

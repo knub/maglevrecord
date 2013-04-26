@@ -1,4 +1,4 @@
-class ModuleReferenceFinder
+class MaglevSupport::ModuleReferenceFinder
   def find_referenced_modules_for(*constants)
     whole_set = Set.new
     constants.each do |constant|
@@ -51,4 +51,3 @@ if __FILE__ == $0
   referenced_modules = ref_finder.find_referenced_modules_for(Rake)
   puts referenced_modules.to_a.map { |mod| mod.name }.sort.inspect
 end
-
