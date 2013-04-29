@@ -59,12 +59,92 @@ class SnapshotTest < Test::Unit::TestCase
   def teardown
     File.delete(snapshot_file_path)
     File.delete(module_file_path) if File.file?(module_file_path)
+    clean
   end
 
-  def test_snapshot
-    s = snapshot('')
-    fail('need to be implemented here')
+  #
+  # compare two sources and return the MaglevRecord Snapshot
+  #
+  def compare(s1, s2):
+    s1 = snapshot(s1)
+    s2 = snapshot(s2)
+    s2.changes_since(s1)
+  end
+
+########################## TEST
+
+  def clean
+    consts = [:MyTestClass, :MyTestClass2]
+    consts.each { |const|
+      Object.remove_const(const) if Object.const_defined? const
+    }
+  end
+
+  def test
+    changes = compare('', '')
+    assert_not_nil changes
+  end
+end
+
+
+class ClassSnapshotTest < SnapshotTest
+
+  def test_new_class
+    changes = compare('', 'class MyTestClass < MaglevRecord::Base; end')
+    assert_not_equal [], changes.new_classes
+    classdiv = changes.new_classes[0]
+    assert_equal classdiv.class_name, 'MyTestClass'
+    assert_equal classdiv.class, MyTestClass
+  end
+
+  def test_class_removed
+    changes= compare('class MyTestClass2 < MaglevRecord::Base; end', '')
+    assert_not_equal [],  changes.removed_classes
+    classdiv = changes.removed_classes[0]
+    assert_equal classdiv.class_name, 'MyTestClass'
+    assert_nil classdiv.class, 'this class was removed: there should not be a reference to it'
   end
 
 end
 
+class AttrSnapshotTest < SnapshotTest
+
+  attr_accessor :changes
+
+  def setup
+    super
+    changes= compare('
+      class MyTestClass2 < MaglevRecord::Base
+        attr_accessor :no_value, :lala
+      end', '
+      class MyTestClass2 < MaglevRecord::Base
+        attr_accessor :students, :lala
+      end')
+  end
+
+  def test_no_class_removed
+    assert_equal changes.removed_classes, []
+  end
+
+  def test_class_changed
+    assert_equal changes.changed_classes.size, 1
+  end
+
+  def test_no_class_was_added
+    assert_equal changes.new_classes, []
+  end
+
+  def changed_class
+    assert_not_nil changes.changed_classes[0], 'a class must have changed'
+    changes.changed_classes[0]
+  end
+
+  def test_accessor_added
+    assert_equal changed_class.new_attr_accessor, [:students]
+  end
+
+  def test_accessor_removed
+    assert_equal changed_class.new_attr_accessor, [:no_value]
+  end
+
+end
