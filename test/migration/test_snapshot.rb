@@ -65,7 +65,7 @@ class SnapshotTest < Test::Unit::TestCase
   #
   # compare two sources and return the MaglevRecord Snapshot
   #
-  def compare(s1, s2):
+  def compare(s1, s2)
     s1 = snapshot(s1)
     s2 = snapshot(s2)
     s2.changes_since(s1)
@@ -76,11 +76,14 @@ class SnapshotTest < Test::Unit::TestCase
   def clean
     consts = [:MyTestClass, :MyTestClass2]
     consts.each { |const|
-      Object.remove_const(const) if Object.const_defined? const
+      begin
+        Object.remove_const(const)
+      rescue NameError
+      end
     }
   end
 
-  def test
+  def test_has_changes
     changes = compare('', '')
     assert_not_nil changes
   end
@@ -109,11 +112,13 @@ end
 
 class AttrSnapshotTest < SnapshotTest
 
-  attr_accessor :changes
+  def changes
+    @changes
+  end
 
   def setup
     super
-    changes= compare('
+    @changes = compare('
       class MyTestClass2
         include MaglevRecord::Base
         attr_accessor :no_value, :lala
