@@ -10,5 +10,6 @@ module MaglevRecord
     include MaglevRecord::Sensible
     include ActiveModel::Conversion
     include MaglevSupport::SecurePassword
+    include MaglevRecord::Snapshotable
   end
 end

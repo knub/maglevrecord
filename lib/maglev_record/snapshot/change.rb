@@ -12,7 +12,4 @@ module MaglevRecord
       []
     end
   end
-
-  Change.maglev_persistable(true)
-
 end

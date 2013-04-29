@@ -14,6 +14,8 @@ require "rake"
 require "psych"
 require "i18n"
 
+require "maglev_record/snapshot"
+
 require "maglev_record/maglev_support/concern"
 require "maglev_record/maglev_support/secure_password"
 require "maglev_record/tools"

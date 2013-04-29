@@ -11,6 +11,10 @@ end
 class MyNotSnapshotableClass
 end
 
+class MyBaseClass
+  include MaglevRecord::Base
+end
+
 class SnapshotableTest < Test::Unit::TestCase
 
   def self.startup
@@ -40,6 +44,10 @@ class SnapshotableTest < Test::Unit::TestCase
 
   def test_includes_subclass
     assert_include? snapshotable_classes, MySnapshotableSubclass
+  end
+
+  def test_classes_including_base
+    assert_include? snapshotable_classes, MyBaseClass
   end
 
 end
