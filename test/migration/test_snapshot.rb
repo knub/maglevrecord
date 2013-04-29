@@ -90,7 +90,7 @@ end
 class ClassSnapshotTest < SnapshotTest
 
   def test_new_class
-    changes = compare('', 'class MyTestClass < MaglevRecord::Base; end')
+    changes = compare('', 'class MyTestClass; include MaglevRecord::Base; end')
     assert_not_equal [], changes.new_classes
     classdiv = changes.new_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass'
@@ -98,7 +98,7 @@ class ClassSnapshotTest < SnapshotTest
   end
 
   def test_class_removed
-    changes= compare('class MyTestClass2 < MaglevRecord::Base; end', '')
+    changes= compare('class MyTestClass2; include MaglevRecord::Base; end', '')
     assert_not_equal [],  changes.removed_classes
     classdiv = changes.removed_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass'
@@ -114,10 +114,11 @@ class AttrSnapshotTest < SnapshotTest
   def setup
     super
     changes= compare('
-      class MyTestClass2 < MaglevRecord::Base
+      class MyTestClass2
+        include MaglevRecord::Base
         attr_accessor :no_value, :lala
       end', '
-      class MyTestClass2 < MaglevRecord::Base
+      class MyTestClass2; include MaglevRecord::Base
         attr_accessor :students, :lala
       end')
   end
