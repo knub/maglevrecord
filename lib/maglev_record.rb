@@ -13,9 +13,13 @@ require "maglev_record/maglev_support/concern"
 if defined? MaglevRecord
   puts "IT IS DEFINED"
   RootedBook.reinclude_store.each do |mod|
-    RootedBook.include (MaglevSupport.constantize(mod))
+    RootedBook.include MaglevSupport.constantize(mod)
   end
-  puts RootedBook.included_modules
+  UnrootedBook.reinclude_store.each do |mod|
+    UnrootedBook.include MaglevSupport.constantize(mod)
+  end
+  RootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
+  UnrootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
 else
   puts "IT IS NOT DEFINED"
   # require "maglev_record/tools"
