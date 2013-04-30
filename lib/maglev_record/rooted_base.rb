@@ -4,6 +4,6 @@ module MaglevRecord
     include MaglevRecord::Base
     include MaglevRecord::RootedPersistence
 
-    include Enumerable
+    redo_include ::Enumerable
   end
 end

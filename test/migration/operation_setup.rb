@@ -1,7 +1,6 @@
 require 'more_asserts'
 
 class BaseLecture1
-
   include MaglevRecord::RootedBase
 
   def initialize(lecturer, users)
@@ -14,6 +13,7 @@ class BaseLecture1
     self.new("Hans Ullrich", ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
   end
 
+  maglev_persistable(true)
 end
 
 class BaseLecture2
@@ -27,6 +27,7 @@ class BaseLecture2
     lecture.lecturer = "Hans Ullrich"
     lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
   end
+  maglev_persistable(true)
 end
 
 class Test::Unit::TestCase
@@ -62,7 +63,7 @@ class Test::Unit::TestCase
       end
 
       [Lecture, Lecture2, Lecture3, Lecture4].each do |const|
-        const.maglev_persistable
+        const.maglev_persistable(true)
       end
     "
   end

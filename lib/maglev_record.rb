@@ -19,6 +19,7 @@ if defined? MaglevRecord
     UnrootedBook.include MaglevSupport.constantize(mod)
   end
   RootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
+  RootedBook.extend ::Enumerable
   UnrootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
 else
   puts "IT IS NOT DEFINED"
