@@ -21,7 +21,6 @@ class UnrootedBook < Book
 end
 
 Book.maglev_persistable(true)
-puts RootedBook.included_modules
 RootedBook.maglev_persistable(true)
 UnrootedBook.maglev_persistable(true)
 Maglev.commit_transaction

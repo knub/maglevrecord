@@ -12,6 +12,10 @@ require "bundler/setup"
 require "maglev_record/maglev_support/concern"
 if defined? MaglevRecord
   puts "IT IS DEFINED"
+  RootedBook.reinclude_store.each do |mod|
+    RootedBook.include (MaglevSupport.constantize(mod))
+  end
+  puts RootedBook.included_modules
 else
   puts "IT IS NOT DEFINED"
   # require "maglev_record/tools"
