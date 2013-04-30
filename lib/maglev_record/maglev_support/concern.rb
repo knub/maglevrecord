@@ -9,7 +9,7 @@ module MaglevSupport
       end unless self.reinclude_store.nil?
       base.extend(self::ClassMethods) if self.constants.include? 'ClassMethods'
       if base.is_a? Class
-        base.send :redo_include, ActiveModel::Validations
+        # base.send :redo_include, ActiveModel::Validations
         base.send :extend, Enumerable
         base.send :extend, MaglevSupport.constantize("ActiveModel::Naming")
       end

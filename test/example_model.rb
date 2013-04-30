@@ -14,8 +14,6 @@ class RootedBook < Book
   def book
     puts "I am a RootedBook"
   end
-  validates :author, :presence => true,
-                     :length => { :minimum => 4 }
 end
 
 class UnrootedBook < Book
@@ -23,5 +21,14 @@ class UnrootedBook < Book
 end
 
 Book.maglev_persistable(true)
+puts RootedBook.included_modules
 RootedBook.maglev_persistable(true)
 UnrootedBook.maglev_persistable(true)
+Maglev.commit_transaction
+
+class RootedBook
+  include ActiveModel::Validations
+  validates :author, :presence => true,
+                     :length => { :minimum => 4 }
+end
+# base.send :redo_include, ActiveModel::Validations
