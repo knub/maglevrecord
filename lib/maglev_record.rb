@@ -24,6 +24,7 @@ require "maglev_record/errors"
 require "maglev_record/integration"
 require "maglev_record/persistence"
 require "maglev_record/read_write"
+require "maglev_record/rooted_enumerable"
 require "maglev_record/rooted_persistence"
 require "maglev_record/sensible"
 
