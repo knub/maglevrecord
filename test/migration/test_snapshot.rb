@@ -13,6 +13,7 @@ class SnapshotTest < Test::Unit::TestCase
   def snapshot_content
     <<-EOF
       $LOAD_PATH << "lib"
+      require "rubygems"
       require "maglev_record"
       load "#{module_file_path}"
       Maglev::PERSISTENT_ROOT['test_snapshot'] = MaglevRecord::Snapshot.new
@@ -36,7 +37,9 @@ class SnapshotTest < Test::Unit::TestCase
     File.open(module_file_path, 'w') { |file| file.write(module_content) }
     stone = Maglev::System.stone_name
     command =  "export MAGLEV_OPTS=\"-W0 --stone #{stone}\" && "
-    command += "bundle exec maglev-ruby #{snapshot_file_path}"
+    command += "bundle exec "
+    command += "maglev-ruby #{snapshot_file_path}"
+    puts command
     exit_status = IO.popen(command) { |f|
       line = f.gets
       status = 1 # $? does not work here so we work around
@@ -51,14 +54,16 @@ class SnapshotTest < Test::Unit::TestCase
       end
       status
     }
-    assert_equal exit_status, 0, "snapshotting exited with error"
     Maglev.abort_transaction
+    error = Maglev::PERSISTENT_ROOT['test_snapshot_error']
+    raise error unless error.nil?
+    assert_equal exit_status, 0, "snapshotting exited with error"
     Maglev::PERSISTENT_ROOT['test_snapshot']
   end
 
   def teardown
-    File.delete(snapshot_file_path)
-    File.delete(module_file_path) if File.file?(module_file_path)
+    #File.delete(snapshot_file_path)
+    #File.delete(module_file_path) if File.file?(module_file_path)
     clean
   end
 
@@ -155,45 +160,4 @@ class AttrSnapshotTest < SnapshotTest
 
 end
 
-class MySnapshotableClass
-  include MaglevRecord::Snapshotable
-end
 
-class MySnapshotableSubclass < MySnapshotableClass
-end
-
-class MyNotSnapshotableClass
-end
-
-class SnapshotableTest < Test::Unit::TestCase
-
-  def self.startup
-    @snapshotable_classes = MaglevRecord::Snapshotable.snapshotable_classes
-  end
-
-  def self.snapshotable_classes
-    @snapshotable_classes
-  end
-
-  def snapshotable_classes
-    self.class.snapshotable_classes
-  end
-
-  def test_includes_MySnapshotableClass
-    assert_include? snapshotable_classes, MySnapshotableClass
-  end
-
-  def test_deas_not_include_Bases
-    assert_not_include? snapshotable_classes, MaglevRecord::Base
-    assert_not_include? snapshotable_classes, MaglevRecord::RootedBase
-  end
-
-  def test_does_not_include_some_other_class
-    assert_not_include? snapshotable_classes, MyNotSnapshotableClass
-  end
-
-  def test_includes_subclass
-    assert_include? snapshotable_classes, MySnapshotableSubclass
-  end
-
-end

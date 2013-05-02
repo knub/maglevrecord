@@ -14,8 +14,8 @@ MaglevRecord.maglev_persistable
 
 with_methods = false
 
-MaglevRecord::Snapshot.maglev_persistable(with_methods)
-MaglevRecord::Snapshotable.maglev_persistable(with_methods)
+MaglevRecord::Snapshot.maglev_persistable(true)
+MaglevRecord::Snapshotable.maglev_persistable(true)
 
 ActiveModel.maglev_persistable(with_methods)
 ActiveSupport.maglev_persistable(with_methods)

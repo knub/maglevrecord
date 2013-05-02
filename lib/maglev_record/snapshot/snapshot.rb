@@ -15,13 +15,17 @@ module MaglevRecord
     end
 
     def initialize
-      @classes = Snapshot.snapshotable_classes.map{ |cls|
+      @classes = Snapshotable.snapshotable_classes.map{ |cls|
         for_class cls
       }
     end
 
     def changes_since(older)
       Change.new(self, older)
+    end
+
+    def classes
+      @classes.copy
     end
 
   end
