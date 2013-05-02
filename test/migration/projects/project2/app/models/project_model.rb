@@ -1,10 +1,11 @@
 require "maglev_record"
 
-class ProjectModel < MaglevRecord::RootedBase
+class ProjectModel
+  include MaglevRecord::RootedBase
 
 end
 
-
+ProjectModel.maglev_persistable
 
 
 
