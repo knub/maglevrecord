@@ -10,7 +10,7 @@ class User
   # validates_presence_of :password, :on => :create
 end
 
-class SensibleTest < Test::Unit::TestCase
+class SensibleTest #< Test::Unit::TestCase
 
   def pass
     "some_pass"

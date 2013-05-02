@@ -1,4 +1,3 @@
-
 module MaglevRecord
   module RootedBase
     extend MaglevSupport::Concern
