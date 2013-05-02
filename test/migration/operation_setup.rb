@@ -12,8 +12,6 @@ class BaseLecture1
     self.clear
     self.new("Hans Ullrich", ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
   end
-
-  maglev_persistable(true)
 end
 
 class BaseLecture2
@@ -27,7 +25,6 @@ class BaseLecture2
     lecture.lecturer = "Hans Ullrich"
     lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
   end
-  maglev_persistable(true)
 end
 
 class Test::Unit::TestCase
