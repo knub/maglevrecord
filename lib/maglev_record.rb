@@ -21,6 +21,7 @@ if defined? MaglevRecord
   RootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
   RootedBook.extend ::Enumerable
   UnrootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
+  MaglevRecord::Migration.include ::Comparable
 else
   puts "IT IS NOT DEFINED"
   # require "maglev_record/tools"
