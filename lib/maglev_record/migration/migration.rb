@@ -1,8 +1,10 @@
 require "time"
 
-class ::String
-  def escape_single_quotes
-    self.gsub(/[']/, '\\\\\'')
+Maglev.persistent do
+  class ::String
+    def escape_single_quotes
+      self.gsub(/[']/, '\\\\\'')
+    end
   end
 end
 
@@ -59,7 +61,8 @@ module MaglevRecord
     end
 
     def inspect
-      source
+      return source unless source.nil?
+      to_s
     end
 
     def self.new(timestamp, name)

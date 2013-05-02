@@ -6,11 +6,11 @@ class User
   attr_accessor :password_digest
 
   has_secure_password
-  validates_presence_of :password, :on => :create
-
+  # TODO: No validations so far
+  # validates_presence_of :password, :on => :create
 end
 
-class SensibleTest < Test::Unit::TestCase
+class SensibleTest #< Test::Unit::TestCase
 
   def pass
     "some_pass"
@@ -24,7 +24,6 @@ class SensibleTest < Test::Unit::TestCase
     User.new(attr_hash)
   end
 
-
   def test_sensible_deletion
     user = example_user
 
@@ -35,8 +34,5 @@ class SensibleTest < Test::Unit::TestCase
 
     assert_equal user.password, nil
     assert_equal user.password_confirmation, nil
-
-
   end
-
 end

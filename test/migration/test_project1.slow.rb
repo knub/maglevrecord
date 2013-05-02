@@ -71,7 +71,7 @@ class ProjectTest < TempDirTest
 
   def rake(args)
     ``
-    output = IO.popen("export MAGLEV_OPTS=\"--stone #{Maglev::System.stone_name}\";bundle exec rake " + args) { |f|
+    output = IO.popen("export MAGLEV_OPTS=\"-W0 --stone #{Maglev::System.stone_name}\";bundle exec rake " + args) { |f|
       s = line = ''
       while not line.nil?
         s += line

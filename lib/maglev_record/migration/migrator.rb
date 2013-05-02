@@ -1,6 +1,3 @@
-require "set"
-require "logger"
-
 module MaglevRecord
   ##
   # Given a migration list (the desired applied migrations)
@@ -8,11 +5,6 @@ module MaglevRecord
   # Therefore, it decides which migrations must be undone, and
   # which must be done and leaves the stone in the desired state.
   class Migrator
-
-    # Make these two classes persistable, as we need them for storing
-    # which migrations already ran.
-    SortedSet.maglev_persistable
-    Set.maglev_persistable
 
     MIGRATION_KEY = :__migrations__
 
@@ -40,7 +32,7 @@ module MaglevRecord
         mig.logger = logger
         logger.info("Doing '" + mig.name + "' from " + mig.timestamp.to_s)
         mig.do
-        migration_store.add(mig.id)
+        migration_store << mig.id
       end
       Maglev.commit_transaction
     end

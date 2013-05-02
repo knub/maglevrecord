@@ -51,10 +51,6 @@ class TestMigration < Test::Unit::TestCase
   def test_to_s
     assert_equal Migration.name + "<\"2013-01-20 12:01:03\", \"migration\">", @m.to_s
   end
-
-  def test_inspect
-    assert_equal @m.inspect, @m.source
-  end
 end
 
 
