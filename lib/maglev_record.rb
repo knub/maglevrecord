@@ -41,6 +41,7 @@ end
 ActiveModel::Errors.maglev_nil_references
 
 MaglevRecord.maglev_persistable(true)
+MaglevSupport.maglev_persistable(true)
 ref_finder = MaglevSupport::ModuleReferenceFinder.new
 referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
 referenced_modules.each do |mod|
