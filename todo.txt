@@ -1,0 +1,1 @@
+be rake testslow TEST=/home/nicco/Documents/maglevrecord/test/migration/test_snapshot.rb ; buildtest
