@@ -25,7 +25,7 @@ module MaglevRecord
     end
 
     def classes
-      @classes.copy
+      Array.new(@classes)
     end
 
   end
