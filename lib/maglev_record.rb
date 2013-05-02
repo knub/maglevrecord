@@ -28,6 +28,9 @@ else
   puts "IT IS NOT DEFINED"
   # require "maglev_record/tools"
   require "maglev_record/maglev_record"
+
+  MaglevRecord.maglev_persistable(true)
+
   require "maglev_record/snapshot"
   require "maglev_record/maglev_support/secure_password"
   require "maglev_record/sensible"
@@ -47,8 +50,8 @@ end
 
 ActiveModel::Errors.maglev_nil_references
 
-MaglevRecord.maglev_persistable(true)
 MaglevSupport.maglev_persistable(true)
+
 ref_finder = MaglevSupport::ModuleReferenceFinder.new
 referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
 referenced_modules.each do |mod|

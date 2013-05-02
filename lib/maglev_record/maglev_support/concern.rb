@@ -7,6 +7,7 @@ module MaglevSupport
       self.reinclude_store.each do |mod|
         base.__save_for_reinclude(mod)
       end unless self.reinclude_store.nil?
+      base.maglev_persistable
       base.extend(self::ClassMethods) if self.constants.include? 'ClassMethods'
       if base.is_a? Class
         # base.send :redo_include, ActiveModel::Validations
