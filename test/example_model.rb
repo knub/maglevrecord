@@ -30,4 +30,3 @@ class RootedBook
   validates :author, :presence => true,
                      :length => { :minimum => 4 }
 end
-# base.send :redo_include, ActiveModel::Validations
