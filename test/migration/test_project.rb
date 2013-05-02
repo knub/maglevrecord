@@ -77,15 +77,18 @@ class ProjectTest < TempDirTest
   end
 
   def rails_c(commands)
-    exec('bundle exec rails c', commands + "\nexit\n")
+    # add the path where maglev_record can be found
+    commands = "$LOAD_PATH.unshift './maglevrecordgem'\n" +
+               "$LOAD_PATH.unshift './maglevrecordgem/lib'\n" +
+               commands +
+               "\nexit\n"
+    exec('bundle exec rails c', commands)
   end
 
   def exec(_command, input = '')
     File.open('input.txt', 'w') {|f| f.write(input) }
     command = "export MAGLEV_OPTS=\"-W0 --stone #{
                     Maglev::System.stone_name}\";#{
-                    _command} < input.txt"
-    command = "export MAGLEV_OPTS=\"-W0\";#{
                     _command} < input.txt"
     puts command
     output = IO.popen(command) { |f|
