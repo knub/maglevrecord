@@ -105,7 +105,7 @@ class ClassSnapshotTest < SnapshotTest
     assert_equal classdiv.class, MyTestClass
   end
 
-  def test_class_removed
+  def test_class_removed_from_file_but_still_in_stone
     changes= compare('class MyTestClass2; include MaglevRecord::Base; end', '')
     assert_not_equal [],  changes.removed_classes
     classdiv = changes.removed_classes[0]
