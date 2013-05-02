@@ -10,6 +10,9 @@ require "maglev_record/tools"
 require "bundler/setup"
 
 require "maglev_record/maglev_support/concern"
+require "set"
+require "logger"
+
 if defined? MaglevRecord
   puts "IT IS DEFINED"
   RootedBook.reinclude_store.each do |mod|

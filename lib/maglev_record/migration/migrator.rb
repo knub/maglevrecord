@@ -1,6 +1,3 @@
-require "set"
-require "logger"
-
 module MaglevRecord
   ##
   # Given a migration list (the desired applied migrations)
