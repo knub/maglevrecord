@@ -6,7 +6,7 @@ module MaglevRecord
     include MaglevRecord::ReadWrite
     include MaglevRecord::MigrationOperations
     redo_include ActiveModel::Conversion
-    # include MaglevRecord::Sensible
-    # include MaglevSupport::SecurePassword
+    include MaglevRecord::Sensible
+    include MaglevRecord::SecurePassword
   end
 end
