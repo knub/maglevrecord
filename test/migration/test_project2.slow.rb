@@ -24,4 +24,9 @@ class MigrationProject2 < ProjectTest
     assert_equal ProjectModel.all, []
   end
 
+  def test_add_more_migrations_that_will_be_tested
+    # maybe we are also in the need to autoload the model files?
+    fail('todo')
+  end
+
 end
