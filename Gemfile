@@ -9,4 +9,5 @@ gem "railties"
 
 group :development, :test do
   gem 'timecop'
+  gem 'tzinfo'
 end

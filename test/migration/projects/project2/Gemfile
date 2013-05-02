@@ -8,6 +8,7 @@ gem 'rails', '3.2.8'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
+gem 'tzinfo'
 
 gem 'maglevrecord', '>= 0.0.4'
 gem 'railties' # TODO: remove this for final tests because it is required by maglevrecord

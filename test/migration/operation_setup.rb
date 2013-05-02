@@ -59,6 +59,17 @@ class Test::Unit::TestCase
       class Lecture4 < Lecture
       end
 
+      module Models
+        module M1
+          class Lecture < BaseLecture2
+          end
+        end
+        module M2
+        end
+        module M3
+        end
+      end
+
       [Lecture, Lecture2, Lecture3, Lecture4].each do |const|
         const.maglev_persistable(true)
       end
