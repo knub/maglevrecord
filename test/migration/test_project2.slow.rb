@@ -20,9 +20,7 @@ class MigrationProject2 < ProjectTest
 
   def test_models_appear
     s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
-    p s
     Maglev.abort_transaction
-    puts ProjectModel.name
     assert_equal ProjectModel.all, []
   end
 

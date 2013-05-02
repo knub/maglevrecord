@@ -90,7 +90,6 @@ class ProjectTest < TempDirTest
     command = "export MAGLEV_OPTS=\"-W0 --stone #{
                     Maglev::System.stone_name}\";#{
                     _command} < input.txt"
-    puts command
     output = IO.popen(command) { |f|
       s = line = ''
       while not line.nil?
