@@ -5,7 +5,9 @@ class MigrationProject2 < ProjectTest
   def setup
     @project_name = 'project2'
     super
-    Object.remove_const :ProjectModel if defined?(ProjectModel)
+    Maglev.persistent do
+      Object.remove_const :ProjectModel if defined?(ProjectModel)
+    end
     Maglev.commit_transaction
   end
 
@@ -20,6 +22,7 @@ class MigrationProject2 < ProjectTest
     s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
     p s
     Maglev.abort_transaction
+    puts ProjectModel.name
     assert_equal ProjectModel.all, []
   end
 

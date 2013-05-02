@@ -5,7 +5,7 @@ class ProjectModel
 
 end
 
-ProjectModel.maglev_persistable
+ProjectModel.maglev_persistable(true)
 
 
 
