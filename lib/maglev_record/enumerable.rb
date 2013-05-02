@@ -2,15 +2,13 @@ module MaglevRecord
   module Enumerable
     module ClassMethods
       def all
-        object_pool.values
+        raise "method not available for MaglevRecord::Base"
       end
       def each
-        object_pool.each_value do |model|
-          yield model
-        end
+        raise "method not available for MaglevRecord::Base"
       end
       def size
-        object_pool.size
+        raise "method not available for MaglevRecord::Base"
       end
       def find_by_objectid(id)
         if id.respond_to? :to_i
@@ -18,7 +16,7 @@ module MaglevRecord
         else
           raise "#{id} do not respond to :to_i!"
         end
-        object_pool[id]
+        ObjectSpace._id2ref(id)
       end
     end
   end

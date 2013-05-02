@@ -1,5 +1,11 @@
 require "time"
 
+class ::String
+  def escape_single_quotes
+    self.gsub(/[']/, '\\\\\'')
+  end
+end
+
 module MaglevRecord
   ##
   # This class represents a migration which transfers the data set from one
@@ -98,6 +104,37 @@ module MaglevRecord
     def self.const_missing(name)
       #logger.warn("class #{name} was not created but migration by migration #{self.id}") if logger
       MigrationOperations::NullClass.new(name)
+    end
+
+    def self.file_content(time, description, upcode = nil,
+                                    downcode = nil)
+      timestamp = time.to_s
+      Time.parse(timestamp) # make sure there is no error in the string
+      upcode = "    # put your transformation code here" if upcode.nil?
+      if downcode.nil?
+        downcode = "    # put the code that reverses the code in up here \n" +
+                   "    # remove the next line that throws he error \n" +
+                   "    raise IrreversibleMigration, " +
+                                             "'The migration has no downcode'"
+      end
+      <<-eos
+require "maglev_record/migration"
+require "time"
+
+MaglevRecord::Migration.new(Time.parse('#{
+                          timestamp.escape_single_quotes}'), '#{
+                          description.escape_single_quotes}') do
+
+  def up
+#{upcode}
+  end
+
+  def down
+#{downcode}
+  end
+
+end
+      eos
     end
   end
 end

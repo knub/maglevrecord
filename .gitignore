@@ -27,3 +27,6 @@ gem_*_code.log
 *~
 *.lock
 /activesupport/
+/maglevrecord
+/test2.rb
+/test_input.txt
