@@ -53,7 +53,8 @@ module MaglevRecord
     end
 
     def inspect
-      source
+      return source unless source.nil?
+      to_s
     end
 
     def self.new(timestamp, name)
