@@ -1,40 +1,56 @@
 
-require "active_model/naming"
 require "active_model"
-
+require "active_support"
 require "active_support/core_ext/class/attribute"
-require "active_support/dependencies"
-require "maglev_record/maglev_support/active_support_patch"
 
+require "maglev_record/maglev_support/maglev_support"
+
+require "maglev_record/tools"
 require "bundler/setup"
-require "tsort"
-
-require "singleton"
-require "rake"
-require "psych"
-require "i18n"
-
 require "maglev_record/maglev_support/concern"
-require "maglev_record/maglev_support/secure_password"
-require "maglev_record/tools"
-require "maglev_record/maglev_record"
+require "set"
+require "logger"
 
-require "maglev_record/enumerable"
-require "maglev_record/errors"
-require "maglev_record/integration"
-require "maglev_record/persistence"
-require "maglev_record/read_write"
-require "maglev_record/rooted_persistence"
+if defined? MaglevRecord
+  puts "IT IS DEFINED"
+  RootedBook.reinclude_store.each do |mod|
+    RootedBook.include MaglevSupport.constantize(mod)
+  end
+  UnrootedBook.reinclude_store.each do |mod|
+    UnrootedBook.include MaglevSupport.constantize(mod)
+  end
+  RootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
+  RootedBook.extend ::Enumerable
+  UnrootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
+  MaglevRecord::Migration.include ::Comparable
+else
+  puts "IT IS NOT DEFINED"
+  # require "maglev_record/tools"
+  require "maglev_record/maglev_record"
+  require "maglev_record/maglev_support/secure_password"
+  require "maglev_record/sensible"
+  require "maglev_record/rooted_enumerable"
+  require "maglev_record/enumerable"
+  require "maglev_record/errors"
+  require "maglev_record/integration"
+  require "maglev_record/persistence"
+  require "maglev_record/read_write"
+  require "maglev_record/rooted_persistence"
 
-require "maglev_record/migration"
+  require "maglev_record/migration"
 
-require "maglev_record/base"
-require "maglev_record/rooted_base"
+  require "maglev_record/base"
+  require "maglev_record/rooted_base"
+end
 
-require "maglev_record/tools"
+ActiveModel::Errors.maglev_nil_references
 
-# require "maglev_record/object_reference"
-# MaglevRecord.make_modules_persistent
-# MaglevRecord::Base.load_model_files
+MaglevRecord.maglev_persistable(true)
+MaglevSupport.maglev_persistable(true)
+ref_finder = MaglevSupport::ModuleReferenceFinder.new
+referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
+referenced_modules.each do |mod|
+  mod.maglev_persistable(true)
+end
 
-#require 'tasks/maglev_record.rb' if defined? Rake
+Maglev.commit_transaction

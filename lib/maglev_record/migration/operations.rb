@@ -1,4 +1,3 @@
-
 module MaglevRecord
   module MigrationOperations
     module ClassMethods

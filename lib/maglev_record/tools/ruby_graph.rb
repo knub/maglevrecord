@@ -1,10 +1,12 @@
-class ModuleReferenceFinder
+class MaglevSupport::ModuleReferenceFinder
   def find_referenced_modules_for(*constants)
     whole_set = Set.new
     constants.each do |constant|
       @referenced_modules = Set.new
       reference(constant)
-      whole_set = whole_set.union(@referenced_modules)
+      whole_set = whole_set.union(@referenced_modules.select do |mod|
+        mod.name.to_s.include?(constant.to_s)
+      end)
     end
     whole_set.to_a.sort_by do |mod| mod.name end
   end
@@ -18,7 +20,7 @@ class ModuleReferenceFinder
     end
     @referenced_modules.add(constant)
 
-    included_modules = constant.included_modules
+    # included_modules = constant.included_modules
     submodules = constant.constants.map do |const|
         begin
           constant.const_get(const)
@@ -26,9 +28,11 @@ class ModuleReferenceFinder
       end.select do |mod|
         [Module, Class].include?(mod.class)
       end
-    extended_modules = (class << constant; self end).included_modules
+    # puts "This is #{constant}"
+    # puts submodules.inspect
+    # extended_modules = (class << constant; self end).included_modules
 
-    referenced_modules = included_modules + submodules + extended_modules
+    referenced_modules = submodules # included_modules + submodules + extended_modules
     unless referenced_modules.empty?
       referenced_modules.map do |mod|
         reference(mod)
@@ -47,4 +51,3 @@ if __FILE__ == $0
   referenced_modules = ref_finder.find_referenced_modules_for(Rake)
   puts referenced_modules.to_a.map { |mod| mod.name }.sort.inspect
 end
-

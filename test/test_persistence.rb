@@ -4,6 +4,10 @@ require "example_model"
 
 class UnrootedPersistanceTest < Test::Unit::TestCase
 
+  def setup
+    MaglevRecord.reset
+  end
+
   def new_unrooted_example_book
     UnrootedBook.example
   end
@@ -61,6 +65,7 @@ class RootedPersistanceTest < Test::Unit::TestCase
   end
 
   def setup
+    MaglevRecord.reset
     # RootedBook.clear
   end
 

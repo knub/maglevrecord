@@ -4,23 +4,14 @@ module MaglevSupport
       self.included_modules.reverse.each do |mod|
         base.extend(mod::ClassMethods) if mod.constants.include? 'ClassMethods'
       end
+      self.reinclude_store.each do |mod|
+        base.__save_for_reinclude(mod)
+      end unless self.reinclude_store.nil?
       base.extend(self::ClassMethods) if self.constants.include? 'ClassMethods'
-      (base.ancestors + [base]).each do |klass|
-        # klass.included_modules.each do |mod|
-        #   puts "Module: #{mod}"
-        #   mod.maglev_persistable
-        # end
-        begin
-          klass.maglev_persistable
-        rescue Exception => e
-          puts "====>Failed on #{klass}"
-          raise e
-        end
-
-      end
-      if base.is_a? Class #&& (self == MaglevRecord::RootedBase || self == MaglevRecord::Base)
-        base.send :include, ActiveModel::Validations
+      if base.is_a? Class
+        # base.send :redo_include, ActiveModel::Validations
         base.send :extend, Enumerable
+        base.send :extend, MaglevSupport.constantize("ActiveModel::Naming")
       end
       Maglev.commit_transaction
     end

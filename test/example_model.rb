@@ -11,10 +11,22 @@ end
 
 class RootedBook < Book
   include MaglevRecord::RootedBase
-  validates :author, :presence => true,
-                     :length => { :minimum => 4 }
+  def book
+    puts "I am a RootedBook"
+  end
 end
 
 class UnrootedBook < Book
   include MaglevRecord::Base
+end
+
+Book.maglev_persistable(true)
+RootedBook.maglev_persistable(true)
+UnrootedBook.maglev_persistable(true)
+Maglev.commit_transaction
+
+class RootedBook
+  include ActiveModel::Validations
+  validates :author, :presence => true,
+                     :length => { :minimum => 4 }
 end
