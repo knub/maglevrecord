@@ -12,7 +12,7 @@ before_script:
   - "bundle install"
   - "gem install maglevrecord"
 script:
-  - "bundle exec rake test"
-  - "bundle exec rake test TESTOPTS='-v' TEST=test/_test_object_reference.rb"
+  - "bundle exec rake testslow"
+  - "bundle exec rake testfast TESTOPTS='-v' TEST=test/_test_object_reference.rb"
 notifications:
     email: false
