@@ -10,9 +10,15 @@ class AttrSnapshotTest < SnapshotTest
 
   def self.startup
     super
+    clean
     @changes = compare(
       class_string('MyTestClass2', 'attr_accessor :no_value, :lala'),
       class_string('MyTestClass2', 'attr_accessor :students, :lala'))
+  end
+
+  def self.shutdown
+    super
+    clean
   end
 
   def test_snapshot_without_error
@@ -43,6 +49,8 @@ class AttrSnapshotTest < SnapshotTest
   def test_accessor_removed
     assert_equal changed_class.removed_attr_accessors, [:no_value]
   end
+
+  # TODO: add tests for attr_reader and attr_writer ...
 
 end
 

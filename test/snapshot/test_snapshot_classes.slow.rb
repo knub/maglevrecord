@@ -2,6 +2,16 @@ require "snapshot/test_snapshot"
 
 class ClassSnapshotTest < SnapshotTest
 
+  def setup
+    super
+    clean
+  end
+
+  def teardown
+    super
+    clean
+  end
+
   def test_new_class
     changes = compare('', class_string('MyTestClass'))
     assert_equal 1, changes.new_classes.size

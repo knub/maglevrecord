@@ -54,7 +54,6 @@ class SnapshotTest < Test::Unit::TestCase
   def self.shutdown
     File.delete(snapshot_file_path)
     File.delete(module_file_path) if File.file?(module_file_path)
-    clean
   end
 
   #
@@ -76,16 +75,20 @@ class SnapshotTest < Test::Unit::TestCase
     end"
   end
 
-  as_instance_method :class_string, :compare, :snapshot
-
   def self.clean
+    Maglev.abort_transaction
     consts = [:MyTestClass, :MyTestClass2]
     Maglev.persistent do
       consts.each { |const|
         Object.remove_const(const) if Object.const_defined? const
       }
     end
+    Maglev.commit_transaction
   end
+
+  as_instance_method :class_string, :compare, :snapshot, :clean
+
+  ############### Test
 
   def test_class_string_include_class_name
     s = class_string('MyTestClass', 'xxxx')
