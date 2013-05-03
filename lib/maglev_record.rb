@@ -1,4 +1,3 @@
-
 require "active_model"
 require "active_support"
 require "active_support/core_ext/class/attribute"
@@ -33,8 +32,6 @@ else
   # require "maglev_record/tools"
   require "maglev_record/maglev_record"
 
-  MaglevRecord.maglev_persistable(true)
-
   require "maglev_record/snapshot"
   require "maglev_record/maglev_support/secure_password"
   require "maglev_record/sensible"
@@ -52,14 +49,26 @@ else
   require "maglev_record/rooted_base"
 end
 
-ActiveModel::Errors.maglev_nil_references
+module MaglevRecord
+  ref_finder = MaglevSupport::SubmoduleFinder.new
+  referenced_modules = ref_finder.submodules_for(MaglevRecord, MaglevSupport, Set)
+  MAGLEV_RECORD_PROC = Proc.new do |superklass_module|
+    # returns true or false whether submodule shall be persisted or not
+    answer = referenced_modules.include?(superklass_module)
+    answer = superklass_module.to_s.include?("Maglev")
+    answer
+  end
 
-MaglevSupport.maglev_persistable(true)
+  class ::Module
+    def maglev_record_persistable
+      self.maglev_persistable(true, &MAGLEV_RECORD_PROC)
+    end
+  end
 
-ref_finder = MaglevSupport::ModuleReferenceFinder.new
-referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
-referenced_modules.each do |mod|
-  mod.maglev_persistable(true)
+  ActiveModel::Errors.maglev_nil_references
+  referenced_modules.each do |mod|
+    mod.maglev_record_persistable
+  end
+
+  Maglev.commit_transaction
 end
-
-Maglev.commit_transaction
