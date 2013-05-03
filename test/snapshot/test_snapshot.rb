@@ -38,7 +38,6 @@ class SnapshotTest < Test::Unit::TestCase
     command =  "export MAGLEV_OPTS=\"-W0 --stone #{stone}\" && "
     command += "bundle exec "
     command += "maglev-ruby #{snapshot_file_path}"
-    puts command
     IO.popen(command) { |f|
       line = f.gets
       status = 1 # $? does not work here so we work around
@@ -83,10 +82,7 @@ class SnapshotTest < Test::Unit::TestCase
     consts = [:MyTestClass, :MyTestClass2]
     Maglev.persistent do
       consts.each { |const|
-        begin
-          Object.remove_const(const)
-        rescue NameError
-        end
+        Object.remove_const(const) if Object.const_defined? const
       }
     end
   end

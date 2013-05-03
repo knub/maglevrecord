@@ -3,6 +3,12 @@ module MaglevRecord
 
   class Change
 
+    class NewClass
+      def initialize(cls)
+        @cls = cls
+      end
+    end
+
     def initialize(old, new)
       @old = old
       @new = new
@@ -13,11 +19,11 @@ module MaglevRecord
     end
 
     def removed_classes
-      @old.classes - @new.classes
+      []
     end
 
     def new_classes
-      @new.classes - @old.classes
+      @new.class_snapshots - @old.class_snapshots
     end
   end
 end
