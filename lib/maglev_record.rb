@@ -12,7 +12,7 @@ require "set"
 require "logger"
 
 if defined? MaglevRecord
-  puts "IT IS DEFINED"
+  #puts "IT IS DEFINED"
   if defined? RootedBook
     RootedBook.reinclude_store.each do |mod|
       RootedBook.include MaglevSupport.constantize(mod)

@@ -39,7 +39,7 @@ module MaglevRecord
     end
 
     def new_classes
-      puts "new_classes #{@new.class_snapshots} - #{@old.class_snapshots}"
+      #puts "new_classes #{@new.class_snapshots} - #{@old.class_snapshots}"
       @new.class_snapshots.select{ |new|
         @old.class_snapshots.all?{ |old|
           old.snapshot_class != new.snapshot_class
