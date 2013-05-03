@@ -5,7 +5,20 @@ module MaglevRecord
     def initialize(cls)
       @snapshot_class = cls
       @attr_readers = cls.attr_readers
+      @files = cls.file_paths
+      @exists = cls.has_definitions?
     end
+
+    def exists?
+      @exists
+    end
+
+    def ==(other)
+          self.snapshot_class == other.snapshot_class \
+      and self.exists? == other.exists?
+    end
+
+    alias :eql? :==
 
     def snapshot_class
       @snapshot_class

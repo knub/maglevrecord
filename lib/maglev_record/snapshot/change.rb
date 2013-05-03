@@ -13,7 +13,7 @@ module MaglevRecord
       @old.attr_readers - @new.attr_readers
     end
   end
-
+ 
   class Change
 
     def initialize(old, new)
@@ -25,7 +25,7 @@ module MaglevRecord
       changes = []
       @new.class_snapshots.each{ |new|
         @old.class_snapshots.each { |old|
-          if  old.snapshot_class == new.snapshot_class and
+          if  old == new and
               new.changed_since? old
             changes << new.changes_since(old)
           end
@@ -35,14 +35,17 @@ module MaglevRecord
     end
 
     def removed_classes
-      []
+      @new.class_snapshots.select{ |new|
+        not new.exists? and @old.class_snapshots.all?{ |old|
+          old != new
+        }
+      }
     end
 
     def new_classes
-      #puts "new_classes #{@new.class_snapshots} - #{@old.class_snapshots}"
       @new.class_snapshots.select{ |new|
-        @old.class_snapshots.all?{ |old|
-          old.snapshot_class != new.snapshot_class
+        new.exists? and @old.class_snapshots.all?{ |old|
+          old != new
         }
       }
     end

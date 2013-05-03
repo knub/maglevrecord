@@ -13,7 +13,7 @@ class ClassSnapshotTest < SnapshotTest
   end
 
   def test_new_class
-    changes = compare('', class_string('MyTestClass'))
+    changes = compare('', class_string('MyTestClass', 'def x;end'))
     assert_equal 1, changes.new_classes.size
     classdiv = changes.new_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass'
@@ -21,11 +21,11 @@ class ClassSnapshotTest < SnapshotTest
   end
 
   def test_class_removed_from_file_but_still_in_stone
-    changes= compare(class_string('MyTestClass2'), '')
+    changes= compare(class_string('MyTestClass2', 'def x;end'), '')
     assert_equal 1,  changes.removed_classes.size
     classdiv = changes.removed_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass2'
-    assert_nil classdiv.snapshot_class, MyTestClass2
+    assert_equal classdiv.snapshot_class, MyTestClass2
   end
 
 end

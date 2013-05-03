@@ -66,7 +66,7 @@ class SnapshotTest < Test::Unit::TestCase
   end
 
   def self.class_string(name, content = '')
-    "class MyTestClass
+    "class #{name}
       include MaglevRecord::Base
       self.maglev_record_persistable
       # content follows
@@ -91,8 +91,8 @@ class SnapshotTest < Test::Unit::TestCase
   ############### Test
 
   def test_class_string_include_class_name
-    s = class_string('MyTestClass', 'xxxx')
-    assert_include? s, 'class MyTestClass'
+    s = class_string('MyTestClass123123', 'xxxx')
+    assert_include? s, 'class MyTestClass123123'
     assert_include? s, 'xxxx'
   end
 
