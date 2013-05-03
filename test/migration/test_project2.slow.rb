@@ -11,6 +11,10 @@ class MigrationProject2 < ProjectTest
     Maglev.commit_transaction
   end
 
+  def teardown
+    puts @s unless @s.nil?
+  end
+
   def test_no_models
     Maglev.abort_transaction
     assert_raise(NameError) {
@@ -19,10 +23,10 @@ class MigrationProject2 < ProjectTest
   end
 
   def test_models_appear
-    s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
+    @s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
     Maglev.abort_transaction
-
     assert_equal ProjectModel.all, []
+    @s = nil
   end
 
 end
