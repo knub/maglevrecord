@@ -15,6 +15,10 @@ class AttrSnapshotTest < SnapshotTest
       class_string('MyTestClass2', 'attr_accessor :students, :lala'))
   end
 
+  def test_snapshot_without_error
+    assert_not_nil changes
+  end
+
   def test_no_class_removed
     assert_equal changes.removed_classes, []
   end
@@ -24,7 +28,7 @@ class AttrSnapshotTest < SnapshotTest
   end
 
   def test_no_class_was_added
-    assert_equal changes.new_classes, []
+    assert_equal [], changes.new_classes
   end
 
   def changed_class
@@ -33,11 +37,11 @@ class AttrSnapshotTest < SnapshotTest
   end
 
   def test_accessor_added
-    assert_equal changed_class.new_attr_accessor, [:students]
+    assert_equal changed_class.new_attr_accessors, [:students]
   end
 
   def test_accessor_removed
-    assert_equal changed_class.new_attr_accessor, [:no_value]
+    assert_equal changed_class.removed_attr_accessors, [:no_value]
   end
 
 end

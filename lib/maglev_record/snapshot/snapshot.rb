@@ -4,18 +4,28 @@ module MaglevRecord
   class ClassSnapshot
     def initialize(cls)
       @cls = cls
+      @attr_readers = cls.attr_readers
     end
+
     def cls
       @cls
     end
-    def ==(other)
-      other.cls == cls
+
+    def changes_since(older)
+      return nil unless changed_since?(older)
+      ClassChange.new(older, self)
     end
+
+    def changed_since?(older)
+      attr_readers != older.attr_readers
+    end
+
+    def attr_readers
+      @attr_readers
+    end
+
     def class_name
       @cls.name
-    end
-    def class
-      @cls
     end
   end
 

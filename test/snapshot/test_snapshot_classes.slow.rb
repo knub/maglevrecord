@@ -15,7 +15,7 @@ class ClassSnapshotTest < SnapshotTest
     assert_equal 1,  changes.removed_classes.size
     classdiv = changes.removed_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass2'
-    assert_nil classdiv.class, 'this class was removed: there should not be a reference to it'
+    assert_nil classdiv.class, MyTestClass2
   end
 
 end
