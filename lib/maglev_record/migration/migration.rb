@@ -29,7 +29,7 @@ module MaglevRecord
   #   end
   # Furthermore, this class offers methods to actually do data migration.
   class Migration
-    include ::Comparable
+    redo_include ::Comparable
 
     attr_accessor :source, :logger
     attr_reader :timestamp
