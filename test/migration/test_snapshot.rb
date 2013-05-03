@@ -4,13 +4,13 @@ require "more_asserts"
 class SnapshotTest < Test::Unit::TestCase
   
   # the file with the content of what shell be snapshot
-  def module_file_path
+  def self.module_file_path
     # todo: pot this into a temp dir
     'module_content.rb'
   end
 
   # the file content that snapshots
-  def snapshot_content
+  def self.snapshot_content
     <<-EOF
       $LOAD_PATH << "lib"
       require "rubygems"
@@ -23,7 +23,7 @@ class SnapshotTest < Test::Unit::TestCase
   end
 
   # the path of the file that snapshots
-  def snapshot_file_path
+  def self.snapshot_file_path
     filepath = 'caller_content.rb'
     File.open(filepath, 'w') { |file| file.write(snapshot_content) }
     filepath
@@ -33,7 +33,7 @@ class SnapshotTest < Test::Unit::TestCase
   # snapshot the program after the sting was executed
   # returns the snapshot and aborts the transaction
   #
-  def snapshot(module_content)
+  def self.snapshot(module_content)
     File.open(module_file_path, 'w') { |file| file.write(module_content) }
     stone = Maglev::System.stone_name
     command =  "export MAGLEV_OPTS=\"-W0 --stone #{stone}\" && "
@@ -55,30 +55,40 @@ class SnapshotTest < Test::Unit::TestCase
       status
     }
     Maglev.abort_transaction
-    error = Maglev::PERSISTENT_ROOT['test_snapshot_error']
-    raise error unless error.nil?
-    assert_equal exit_status, 0, "snapshotting exited with error"
+    raise AssertionFailedError, "snapshotting exited with error" unless  exit_status == 0
     Maglev::PERSISTENT_ROOT['test_snapshot']
   end
 
-  def teardown
-    #File.delete(snapshot_file_path)
-    #File.delete(module_file_path) if File.file?(module_file_path)
+  def self.shutdown
+    File.delete(snapshot_file_path)
+    File.delete(module_file_path) if File.file?(module_file_path)
     clean
   end
 
   #
   # compare two sources and return the MaglevRecord Snapshot
   #
-  def compare(s1, s2)
+  def self.compare(s1, s2)
     s1 = snapshot(s1)
     s2 = snapshot(s2)
     s2.changes_since(s1)
   end
 
+  def self.class_string(name, content = '')
+    "class MyTestClass
+      include MaglevRecord::Base
+      self.maglev_persistable(true)
+      # content follows
+      #{content}
+      # content ends
+    end"
+  end
+
+  as_instance_method :class_string, :compare, :snapshot
+
 ########################## TEST
 
-  def clean
+  def self.clean
     consts = [:MyTestClass, :MyTestClass2]
     consts.each { |const|
       begin
@@ -92,13 +102,13 @@ class SnapshotTest < Test::Unit::TestCase
     changes = compare('', '')
     assert_not_nil changes
   end
-end
 
+end
 
 class ClassSnapshotTest < SnapshotTest
 
   def test_new_class
-    changes = compare('', 'class MyTestClass; include MaglevRecord::Base; end')
+    changes = compare('', class_string('MyTestClass'))
     assert_not_equal [], changes.new_classes
     classdiv = changes.new_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass'
@@ -106,10 +116,10 @@ class ClassSnapshotTest < SnapshotTest
   end
 
   def test_class_removed_from_file_but_still_in_stone
-    changes= compare('class MyTestClass2; include MaglevRecord::Base; end', '')
+    changes= compare(class_string('MyTestClass2'), '')
     assert_not_equal [],  changes.removed_classes
     classdiv = changes.removed_classes[0]
-    assert_equal classdiv.class_name, 'MyTestClass'
+    assert_equal classdiv.class_name, 'MyTestClass2'
     assert_nil classdiv.class, 'this class was removed: there should not be a reference to it'
   end
 
@@ -117,20 +127,17 @@ end
 
 class AttrSnapshotTest < SnapshotTest
 
-  def changes
+  def self.changes
     @changes
   end
 
-  def setup
+  as_instance_method :changes
+
+  def self.startup
     super
-    @changes = compare('
-      class MyTestClass2
-        include MaglevRecord::Base
-        attr_accessor :no_value, :lala
-      end', '
-      class MyTestClass2; include MaglevRecord::Base
-        attr_accessor :students, :lala
-      end')
+    @changes = compare(
+      class_string('MyTestClass2', 'attr_accessor :no_value, :lala'),
+      class_string('MyTestClass2', 'attr_accessor :students, :lala'))
   end
 
   def test_no_class_removed
