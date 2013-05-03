@@ -81,12 +81,14 @@ class SnapshotTest < Test::Unit::TestCase
 
   def self.clean
     consts = [:MyTestClass, :MyTestClass2]
-    consts.each { |const|
-      begin
-        Object.remove_const(const)
-      rescue NameError
-      end
-    }
+    Maglev.persistent do
+      consts.each { |const|
+        begin
+          Object.remove_const(const)
+        rescue NameError
+        end
+      }
+    end
   end
 
   def test_class_string_include_class_name
