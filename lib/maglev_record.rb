@@ -1,9 +1,7 @@
 require "active_model"
 require "active_support"
 require "active_support/core_ext/class/attribute"
-
 require "maglev_record/maglev_support/maglev_support"
-
 require "maglev_record/tools"
 require "bundler/setup"
 require "maglev_record/maglev_support/concern"
@@ -13,15 +11,12 @@ require "logger"
 if defined? MaglevRecord
   puts "IT IS DEFINED"
   if defined? RootedBook
-    RootedBook.reinclude
-    RootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
-    RootedBook.extend ::Enumerable
+    RootedBook.redo_include_and_extend
   end
   if defined? UnrootedBook
-    UnrootedBook.reinclude
-    UnrootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
+    UnrootedBook.redo_include_and_extend
   end
-  MaglevRecord::Migration.reinclude
+  MaglevRecord::Migration.redo_include_and_extend
 else
   puts "IT IS NOT DEFINED"
   # require "maglev_record/tools"
@@ -35,32 +30,32 @@ else
   require "maglev_record/persistence"
   require "maglev_record/read_write"
   require "maglev_record/rooted_persistence"
-
   require "maglev_record/migration"
-
   require "maglev_record/base"
   require "maglev_record/rooted_base"
-end
+   
+  module MaglevRecord
+    ref_finder = MaglevSupport::SubmoduleFinder.new
+    referenced_modules = ref_finder.submodules_for(MaglevRecord, MaglevSupport, Set)
+    MAGLEV_RECORD_PROC = Proc.new do |superklass_module|
+      answer = referenced_modules.include?(superklass_module)
+      answer = superklass_module.to_s.include?("Maglev")
+      answer
+    end
 
-module MaglevRecord
-  ref_finder = MaglevSupport::SubmoduleFinder.new
-  referenced_modules = ref_finder.submodules_for(MaglevRecord, MaglevSupport, Set)
-  MAGLEV_RECORD_PROC = Proc.new do |superklass_module|
-    answer = referenced_modules.include?(superklass_module)
-    answer = superklass_module.to_s.include?("Maglev")
-    answer
-  end
+    Maglev.persistent do
+      class ::Module
+        def maglev_record_persistable
+          self.maglev_persistable(true, &MAGLEV_RECORD_PROC)
+        end
+      end
+    end
 
-  class ::Module
-    def maglev_record_persistable
-      self.maglev_persistable(true, &MAGLEV_RECORD_PROC)
+    referenced_modules.each do |mod|
+      mod.maglev_record_persistable
     end
   end
-
-  ActiveModel::Errors.maglev_nil_references
-  referenced_modules.each do |mod|
-    mod.maglev_record_persistable
-  end
-
-  Maglev.commit_transaction
 end
+
+ActiveModel::Errors.maglev_nil_references
+Maglev.commit_transaction
