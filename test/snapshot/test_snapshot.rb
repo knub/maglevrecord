@@ -96,9 +96,10 @@ class SnapshotTest < Test::Unit::TestCase
     }
   end
 
-  def test_has_changes
-    changes = compare('', '')
-    assert_not_nil changes
+  def test_class_string_include_class_name
+    s = class_string('MyTestClass', 'xxxx')
+    assert_include? s, 'class MyTestClass'
+    assert_include? s, 'xxxx'
   end
 
 end
