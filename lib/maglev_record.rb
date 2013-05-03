@@ -13,19 +13,15 @@ require "logger"
 if defined? MaglevRecord
   puts "IT IS DEFINED"
   if defined? RootedBook
-    RootedBook.reinclude_store.each do |mod|
-      RootedBook.include MaglevSupport.constantize(mod)
-    end
+    RootedBook.reinclude
     RootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
     RootedBook.extend ::Enumerable
   end
   if defined? UnrootedBook
-    UnrootedBook.reinclude_store.each do |mod|
-      UnrootedBook.include MaglevSupport.constantize(mod)
-    end
+    UnrootedBook.reinclude
     UnrootedBook.extend MaglevSupport.constantize("ActiveModel::Naming")
   end
-  MaglevRecord::Migration.include ::Comparable
+  MaglevRecord::Migration.reinclude
 else
   puts "IT IS NOT DEFINED"
   # require "maglev_record/tools"
