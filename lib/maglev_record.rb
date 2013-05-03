@@ -47,15 +47,11 @@ else
 end
 
 module MaglevRecord
-  ActiveModel::Errors.maglev_nil_references
-
-  ref_finder = MaglevSupport::ModuleReferenceFinder.new
-  referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
-  puts referenced_modules.inspect
+  ref_finder = MaglevSupport::SubmoduleFinder.new
+  referenced_modules = ref_finder.submodules_for(MaglevRecord, MaglevSupport, Set)
   MAGLEV_RECORD_PROC = Proc.new do |superklass_module|
     answer = referenced_modules.include?(superklass_module)
     answer = superklass_module.to_s.include?("Maglev")
-    # puts "#{answer} is #{superklass_module}"
     answer
   end
 
@@ -65,6 +61,7 @@ module MaglevRecord
     end
   end
 
+  ActiveModel::Errors.maglev_nil_references
   referenced_modules.each do |mod|
     mod.maglev_record_persistable
   end
