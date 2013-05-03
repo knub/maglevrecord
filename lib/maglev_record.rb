@@ -1,4 +1,3 @@
-
 require "active_model"
 require "active_support"
 require "active_support/core_ext/class/attribute"
@@ -47,14 +46,28 @@ else
   require "maglev_record/rooted_base"
 end
 
-ActiveModel::Errors.maglev_nil_references
+module MaglevRecord
+  ActiveModel::Errors.maglev_nil_references
 
-MaglevRecord.maglev_persistable(true)
-MaglevSupport.maglev_persistable(true)
-ref_finder = MaglevSupport::ModuleReferenceFinder.new
-referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
-referenced_modules.each do |mod|
-  mod.maglev_persistable(true)
+  ref_finder = MaglevSupport::ModuleReferenceFinder.new
+  referenced_modules = ref_finder.find_referenced_modules_for(MaglevRecord, MaglevSupport, Set)
+  puts referenced_modules.inspect
+  MAGLEV_RECORD_PROC = Proc.new do |superklass_module|
+    answer = referenced_modules.include?(superklass_module)
+    answer = superklass_module.to_s.include?("Maglev")
+    # puts "#{answer} is #{superklass_module}"
+    answer
+  end
+
+  class ::Module
+    def maglev_record_persistable
+      self.maglev_persistable(true, &MAGLEV_RECORD_PROC)
+    end
+  end
+
+  referenced_modules.each do |mod|
+    mod.maglev_record_persistable
+  end
+
+  Maglev.commit_transaction
 end
-
-Maglev.commit_transaction
