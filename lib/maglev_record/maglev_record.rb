@@ -9,3 +9,4 @@ module MaglevRecord
     Maglev.abort_transaction
   end
 end
+

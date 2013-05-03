@@ -7,6 +7,8 @@ module MaglevRecord
     include MaglevRecord::MigrationOperations
     redo_include ActiveModel::Conversion
     include MaglevRecord::Sensible
+    include ActiveModel::Conversion
     include MaglevRecord::SecurePassword
+    include MaglevRecord::Snapshotable
   end
 end

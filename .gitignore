@@ -30,3 +30,6 @@ gem_*_code.log
 /maglevrecord
 /test2.rb
 /test_input.txt
+
+/caller_content.rb
+/module_content.rb

@@ -20,9 +20,9 @@ class UnrootedBook < Book
   include MaglevRecord::Base
 end
 
-Book.maglev_persistable(true)
-RootedBook.maglev_persistable(true)
-UnrootedBook.maglev_persistable(true)
+Book.maglev_record_persistable
+RootedBook.maglev_record_persistable
+UnrootedBook.maglev_record_persistable
 Maglev.commit_transaction
 
 class RootedBook

@@ -1,8 +1,4 @@
 module MaglevSupport
-  def self.to_str
-    to_s
-  end
-
   # Copied from activesupport/lib/active_support/inflector/methods.rb
   def self.constantize(camel_cased_word)
     names = camel_cased_word.split('::')

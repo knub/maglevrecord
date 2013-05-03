@@ -21,6 +21,7 @@ class MigrationProject2 < ProjectTest
   def test_models_appear
     s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
     Maglev.abort_transaction
+
     assert_equal ProjectModel.all, []
   end
 

@@ -5,10 +5,4 @@ class ProjectModel
 
 end
 
-ProjectModel.maglev_persistable(true)
-
-
-
-
-
-
+ProjectModel.maglev_record_persistable

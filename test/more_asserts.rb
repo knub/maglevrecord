@@ -40,6 +40,16 @@ class Test::Unit::TestCase
     end
   end
 
+  #
+  # make the class methods available as instance methods
+  #
+  def self.as_instance_method(*names)
+    names.each{ |name|
+      name = name.to_s
+      self.class_eval "def #{name}(*args); self.class.#{name}(*args);end"
+    }
+  end
+
 end
 
 #  class MyTest < Test::Unit::TestCase

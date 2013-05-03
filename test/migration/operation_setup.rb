@@ -71,7 +71,7 @@ class Test::Unit::TestCase
       end
 
       [Lecture, Lecture2, Lecture3, Lecture4].each do |const|
-        const.maglev_persistable(true)
+        const.maglev_record_persistable
       end
     "
   end
