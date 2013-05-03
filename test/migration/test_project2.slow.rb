@@ -9,6 +9,7 @@ class MigrationProject2 < ProjectTest
       Object.remove_const :ProjectModel if defined?(ProjectModel)
     end
     Maglev.commit_transaction
+    @s = nil
   end
 
   def teardown
