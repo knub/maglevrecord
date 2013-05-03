@@ -25,7 +25,8 @@ module MaglevRecord
       changes = []
       @new.class_snapshots.each{ |new|
         @old.class_snapshots.each { |old|
-          if old.cls == new.cls and new.changed_since? old
+          if  old.snapshot_class == new.snapshot_class and
+              new.changed_since? old
             changes << new.changes_since(old)
           end
         }
@@ -38,9 +39,10 @@ module MaglevRecord
     end
 
     def new_classes
+      puts "new_classes #{@new.class_snapshots} - #{@old.class_snapshots}"
       @new.class_snapshots.select{ |new|
         @old.class_snapshots.all?{ |old|
-          old.cls != new.cls
+          old.snapshot_class != new.snapshot_class
         }
       }
     end

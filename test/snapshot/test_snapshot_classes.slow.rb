@@ -7,7 +7,7 @@ class ClassSnapshotTest < SnapshotTest
     assert_equal 1, changes.new_classes.size
     classdiv = changes.new_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass'
-    assert_equal classdiv.class, MyTestClass
+    assert_equal classdiv.snapshot_class, MyTestClass
   end
 
   def test_class_removed_from_file_but_still_in_stone
@@ -15,7 +15,7 @@ class ClassSnapshotTest < SnapshotTest
     assert_equal 1,  changes.removed_classes.size
     classdiv = changes.removed_classes[0]
     assert_equal classdiv.class_name, 'MyTestClass2'
-    assert_nil classdiv.class, MyTestClass2
+    assert_nil classdiv.snapshot_class, MyTestClass2
   end
 
 end

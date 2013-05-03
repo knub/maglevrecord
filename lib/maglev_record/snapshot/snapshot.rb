@@ -3,12 +3,12 @@ require "maglev_record/snapshot/change"
 module MaglevRecord
   class ClassSnapshot
     def initialize(cls)
-      @cls = cls
+      @snapshot_class = cls
       @attr_readers = cls.attr_readers
     end
 
-    def cls
-      @cls
+    def snapshot_class
+      @snapshot_class
     end
 
     def changes_since(older)
@@ -25,7 +25,7 @@ module MaglevRecord
     end
 
     def class_name
-      @cls.name
+      @snapshot_class.name
     end
   end
 
