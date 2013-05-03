@@ -6,9 +6,3 @@ class ProjectModel
 end
 
 ProjectModel.maglev_persistable(true)
-
-
-
-
-
-
