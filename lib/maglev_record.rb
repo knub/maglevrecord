@@ -40,9 +40,7 @@ else
     ref_finder = MaglevSupport::SubmoduleFinder.new
     referenced_modules = ref_finder.submodules_for(MaglevRecord, MaglevSupport, Set)
     MAGLEV_RECORD_PROC = Proc.new do |superklass_module|
-      answer = referenced_modules.include?(superklass_module)
-      answer = superklass_module.to_s.include?("Maglev")
-      answer
+      referenced_modules.include?(superklass_module)
     end
 
     Maglev.persistent do

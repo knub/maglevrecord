@@ -13,27 +13,19 @@ class MaglevSupport::SubmoduleFinder
 
   def reference(constant)
     return if @referenced_modules.include?(constant)
-    parent = constant.module_parent
-    while parent != nil
-      @referenced_modules.add(parent)
-      parent = parent.module_parent
-    end
     @referenced_modules.add(constant)
 
     submodules = constant.constants.map do |const|
-        begin
-          constant.const_get(const)
-        rescue Exception => e; end
-      end.select do |mod|
-        # We only want constants which are classes or modules, e.g. no Fixnums, Strings, ...
-        [Module, Class].include?(mod.class)
-      end
+      begin
+        constant.const_get(const)
+      rescue Exception => e; end
+    end.select do |mod|
+      # We only want constants which are classes or modules, e.g. no Fixnums, Strings, ...
+      [Module, Class].include?(mod.class)
+    end
 
-    referenced_modules = submodules
-    unless referenced_modules.empty?
-      referenced_modules.map do |mod|
-        reference(mod)
-      end
+    submodules.each do |mod|
+      reference(mod)
     end
   end
   private :reference
