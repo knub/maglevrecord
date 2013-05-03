@@ -8,7 +8,7 @@ class MaglevSupport::ModuleReferenceFinder
         mod.name.to_s.include?(constant.to_s)
       end)
     end
-    whole_set.to_a.sort_by do |mod| mod.name end
+    constants + whole_set.to_a.sort_by do |mod| mod.name end
   end
 
   def reference(constant)
