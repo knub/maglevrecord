@@ -18,7 +18,6 @@ class SnapshotTest < Test::Unit::TestCase
       load "#{module_file_path}"
       Maglev::PERSISTENT_ROOT['test_snapshot'] = MaglevRecord::Snapshot.new
       Maglev.commit_transaction
-      puts "exited successfully!"
     EOF
   end
 
@@ -40,22 +39,16 @@ class SnapshotTest < Test::Unit::TestCase
     command += "bundle exec "
     command += "maglev-ruby #{snapshot_file_path}"
     puts command
-    exit_status = IO.popen(command) { |f|
+    IO.popen(command) { |f|
       line = f.gets
       status = 1 # $? does not work here so we work around
       while not line.nil?
-        if line.chomp == "exited successfully!"
-          status = 0
-        else
-          puts line
-          status = 1
-        end
+        puts line
         line = f.gets
       end
       status
     }
     Maglev.abort_transaction
-    raise AssertionFailedError, "snapshotting exited with error" unless  exit_status == 0
     Maglev::PERSISTENT_ROOT['test_snapshot']
   end
 
@@ -71,13 +64,13 @@ class SnapshotTest < Test::Unit::TestCase
   def self.compare(s1, s2)
     s1 = snapshot(s1)
     s2 = snapshot(s2)
-    s2.changes_since(s1)
+    s2.changes_since(s1) unless s1.nil? or s2.nil?
   end
 
   def self.class_string(name, content = '')
     "class MyTestClass
       include MaglevRecord::Base
-      self.maglev_persistable(true)
+      self.maglev_record_persistable
       # content follows
       #{content}
       # content ends
