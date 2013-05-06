@@ -9,6 +9,12 @@ class MigrationProject2 < ProjectTest
       Object.remove_const :ProjectModel if defined?(ProjectModel)
     end
     Maglev.commit_transaction
+    @s = nil
+  end
+
+  def teardown
+    super
+    puts @s unless @s.nil?
   end
 
   def test_no_models
@@ -19,10 +25,10 @@ class MigrationProject2 < ProjectTest
   end
 
   def test_models_appear
-    s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
+    @s = rails_c("puts ProjectModel\nMaglev.commit_transaction")
     Maglev.abort_transaction
-
     assert_equal ProjectModel.all, []
+    @s = nil
   end
 
   def test_add_more_migrations_that_will_be_tested
