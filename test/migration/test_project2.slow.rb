@@ -13,6 +13,7 @@ class MigrationProject2 < ProjectTest
   end
 
   def teardown
+    super
     puts @s unless @s.nil?
   end
 
