@@ -9,12 +9,8 @@ class MigrationStringTest < FastSnapshotTest
     snapshot!
   end
 
-  def assert_migration_string(string, message = nil)
-    if message.nil?
-      assert_equal string, changes.migration_string
-    else
-      assert_equal string, changes.migration_string, message
-    end
+  def assert_migration_string(string, *args)
+      assert_equal string, changes.migration_string(*args)
   end
 
   def test_no_migration_string_if_nothing_happens
@@ -53,10 +49,11 @@ class MigrationStringTest < FastSnapshotTest
   end
 
   def test_add_class_requires_no_migration_string
-    remove_class Lecture3
+    remove_class Lecture3, Lecture4
     snapshot!
     redefine_migration_classes
-    assert_migration_string "#new class: Lecture3"
+    migration_string = "    #new class: Lecture3\n    #new class: Lecture4"
+    assert_migration_string migration_string, 4
   end
 end
 

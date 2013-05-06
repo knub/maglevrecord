@@ -88,14 +88,14 @@ module MaglevRecord
       new_classes.map(&:class_name).sort
     end
 
-    def migration_string
-      (removed_class_names.map{ |class_name|
+    def migration_string(identation = 0)
+      " " * identation + (removed_class_names.map{ |class_name|
         "delete_class #{class_name}"
       } + changed_classes.map{ |class_change|
         class_change.migration_string
       } + new_class_names.map{ |class_name|
         "#new class: #{class_name}"
-      }).join("\n")
+      }).join("\n" + " " * identation)
     end
 
   end
