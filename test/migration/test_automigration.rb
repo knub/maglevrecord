@@ -1,36 +1,7 @@
-require "more_asserts"
-require "migration/operation_setup"
+require "snapshot/test_snapshot.fast"
 
-class AutoMigrationSourceTest < Test::Unit::TestCase
 
-  def snapshot
-    MaglevRecord::Snapshot.new
-  end
-
-  def changes
-    snapshot.changes_since snapshot0
-  end
-
-  def setup
-    setup_migration_operations
-    snapshot!
-  end
-
-  def snapshot!
-    snapshot0 = snapshot
-  end
-
-  attr_accessor :snapshot0
-
-  def teardown
-    teardown_migration_operations
-  end
-
-  def remove_class(*classes)
-    cls.each { |cls|
-      Object.remove_const cls.name
-    }
-  end
+class MigrationStringTest < FastSnapshotTest
 
   def assert_migration_string(string, message = nil)
     if message.nil?
@@ -40,9 +11,13 @@ class AutoMigrationSourceTest < Test::Unit::TestCase
     end
   end
 
+  def test_no_migration_string_if_nothing_happens
+    assert_migration_string ""
+  end
+
   def test_class_removed
     remove_class Lecture
-    assert_migration_string 'delete_class :Lecture'
+    assert_migration_string 'delete_class Lecture'
   end
 
   def test_two_classes_removed

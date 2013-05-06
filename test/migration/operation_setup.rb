@@ -48,15 +48,19 @@ class Test::Unit::TestCase
   def self.redefine_migration_classes
     Object.module_eval "
       class Lecture < BaseLecture1
+        def self.exists?; true; end
       end
 
       class Lecture2 < BaseLecture2
+        def self.exists?; true; end
       end
 
       class Lecture3 < Lecture
+        def self.exists?; true; end
       end
 
       class Lecture4 < Lecture
+        def self.exists?; true; end
       end
 
       module Models
