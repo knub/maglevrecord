@@ -26,12 +26,14 @@ module MaglevRecord
       if removed_attr_accessors.size == 1 and new_attr_accessors.size == 1
         from_attr = removed_attr_accessors.first
         to_attr = new_attr_accessors.first
-        "#{class_name}.rename_attribute(:#{from_attr}, :#{to_attr})"
+        ["#{class_name}.rename_attribute(:#{from_attr}, :#{to_attr})"]
       else
         removed_attr_accessors.map{ |attr|
           "#{class_name}.delete_attribute(:#{attr.to_s})"
-        }.join("\n")
-      end
+        } + new_attr_accessors.map{ |attr|
+          "#new: :#{attr}"
+        }
+      end.join("\n")
     end
   end
 
@@ -83,16 +85,17 @@ module MaglevRecord
     end
 
     def new_class_names
-      #todo: test
       new_classes.map(&:class_name).sort
     end
 
     def migration_string
-      removed_classes.sort.map{ |class_snapshot|
-        "delete_class #{class_snapshot.class_name}"
-      }.join("\n") + changed_classes.map{ |class_change|
+      (removed_class_names.map{ |class_name|
+        "delete_class #{class_name}"
+      } + changed_classes.map{ |class_change|
         class_change.migration_string
-      }.join("\n")
+      } + new_class_names.map{ |class_name|
+        "#new class: #{class_name}"
+      }).join("\n")
     end
 
   end
