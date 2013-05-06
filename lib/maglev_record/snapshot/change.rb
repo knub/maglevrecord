@@ -9,11 +9,23 @@ module MaglevRecord
       @old = old
       @new = new
     end
+
     def new_attr_accessors
       @new.attr_readers - @old.attr_readers
     end
+
     def removed_attr_accessors
       @old.attr_readers - @new.attr_readers
+    end
+
+    def class_name
+      @old.class_name
+    end
+
+    def migration_string
+      removed_attr_accessors.map{ |attr|
+        "#{class_name}.delete_attribute(#{attr.to_sym.to_s})"
+      }.join("\n")
     end
   end
 
@@ -40,6 +52,10 @@ module MaglevRecord
       changes
     end
 
+    def changed_class_names
+      changed_classes.map(&:class_name).sort
+    end
+
     def removed_classes
       @old.class_snapshots.select{ |old|
         old.exists? and @new.class_snapshots.all?{ |new|
@@ -60,9 +76,16 @@ module MaglevRecord
       }
     end
 
+    def new_class_names
+      #todo: test
+      new_classes.map(&:class_name).sort
+    end
+
     def migration_string
       removed_classes.sort.map{ |class_snapshot|
         "delete_class #{class_snapshot.class_name}"
+      }.join("\n") + changed_classes.map{ |class_change|
+        class_change.migration_string
       }.join("\n")
     end
 

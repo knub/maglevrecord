@@ -34,5 +34,10 @@ namespace :migrate do
     }
     puts "created migration #{filepath}"
   end
+
+  desc "create a migration file for the changes since the last time migrate:auto was called or the stone is renewed"
+  task :auto => :setup do
+
+  end
 end
 

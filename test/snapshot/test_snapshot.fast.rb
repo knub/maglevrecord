@@ -49,7 +49,7 @@ class FastSnapshotTest < Test::Unit::TestCase
 
 end
 
-class LocalSnapshotTest < FastSnapshotTest
+class LocalClassSnapshotTest < FastSnapshotTest
 
   def test_lecture_classes_exist
     ['Lecture', 'Lecture2', 'Lecture3', 'Lecture4'].each { |lecture_name|
@@ -75,6 +75,22 @@ class LocalSnapshotTest < FastSnapshotTest
   def test_removed_class_is_in_changes
     remove_class Lecture4
     assert_equal ["Lecture4"], changes.removed_class_names
+  end
+
+end
+
+class LocalAttributeSnapshotTest < FastSnapshotTest
+
+  def test_new_attribute
+    Lecture.attr_accessor :test_accessor
+    assert_equal ["Lecture"], changes.changed_class_names
+    assert_equal [:test_accessor], changes.changed_classes[0].new_attr_accessors
+  end
+
+  def test_removed_attribute
+    Lecture2.delete_attribute :lecturer
+    assert_equal ["Lecture2"], changes.changed_class_names
+    assert_equal [:lecturer], changes.changed_classes[0].removed_attr_accessors
   end
 
 end
