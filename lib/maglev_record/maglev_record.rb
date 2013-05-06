@@ -1,5 +1,5 @@
 module MaglevRecord
-  VERSION = '0.1.0'
+  VERSION = '0.1.1'
   PERSISTENT_ROOT_KEY = :MaglevRecord
 
   def self.save
