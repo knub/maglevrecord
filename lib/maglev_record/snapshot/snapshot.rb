@@ -48,8 +48,8 @@ module MaglevRecord
       ClassSnapshot.new(cls)
     end
 
-    def initialize
-      @class_snapshots = Snapshotable.snapshotable_classes.map{ |cls|
+    def initialize(classes = Snapshotable.snapshotable_classes)
+      @class_snapshots = classes.map{ |cls|
         for_class cls
       }
     end
