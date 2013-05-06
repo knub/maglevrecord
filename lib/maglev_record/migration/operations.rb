@@ -34,6 +34,7 @@ module MaglevRecord
           value = model.attributes.delete(name)
           yield value if block_given?
         }
+        attr_readers.delete name if respond_to? :attr_readers
       end
 
       def migration_rename_to(new_name)

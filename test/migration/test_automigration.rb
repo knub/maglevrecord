@@ -3,6 +3,12 @@ require "snapshot/test_snapshot.fast"
 
 class MigrationStringTest < FastSnapshotTest
 
+  def setup
+    super
+    Lecture2.attr_accessor :lecturer
+    snapshot!
+  end
+
   def assert_migration_string(string, message = nil)
     if message.nil?
       assert_equal string, changes.migration_string

@@ -24,7 +24,7 @@ module MaglevRecord
 
     def migration_string
       removed_attr_accessors.map{ |attr|
-        "#{class_name}.delete_attribute(#{attr.to_sym.to_s})"
+        "#{class_name}.delete_attribute(:#{attr.to_s})"
       }.join("\n")
     end
   end
