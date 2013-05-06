@@ -23,9 +23,15 @@ module MaglevRecord
     end
 
     def migration_string
-      removed_attr_accessors.map{ |attr|
-        "#{class_name}.delete_attribute(:#{attr.to_s})"
-      }.join("\n")
+      if removed_attr_accessors.size == 1 and new_attr_accessors.size == 1
+        from_attr = removed_attr_accessors.first
+        to_attr = new_attr_accessors.first
+        "#{class_name}.rename_attribute(:#{from_attr}, :#{to_attr})"
+      else
+        removed_attr_accessors.map{ |attr|
+          "#{class_name}.delete_attribute(:#{attr.to_s})"
+        }.join("\n")
+      end
     end
   end
 
