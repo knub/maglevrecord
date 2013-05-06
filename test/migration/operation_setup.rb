@@ -76,16 +76,7 @@ class Test::Unit::TestCase
     "
   end
 
-  def setup_migration_operations
-    self.class.setup_migration_operations
-  end
-
-  def teardown_migration_operations
-    self.class.teardown_migration_operations
-  end
-
-  def redefine_migration_classes
-    self.class.redefine_migration_classes
-  end
+  as_instance_method :setup_migration_operations, :teardown_migration_operations
+  as_instance_method :redefine_migration_classes
 
 end

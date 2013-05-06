@@ -13,7 +13,7 @@ module MaglevRecord
       @old.attr_readers - @new.attr_readers
     end
   end
- 
+
   class Change
 
     def initialize(old, new)
