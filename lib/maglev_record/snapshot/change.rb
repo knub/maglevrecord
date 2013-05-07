@@ -31,7 +31,7 @@ module MaglevRecord
         removed_attr_accessors.map{ |attr|
           "#{class_name}.delete_attribute(:#{attr.to_s})"
         } + new_attr_accessors.map{ |attr|
-          "#new: :#{attr}"
+          "#new accessor :#{attr} of #{class_name}"
         }
       end.join("\n")
     end

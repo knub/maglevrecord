@@ -42,7 +42,7 @@ class MigrationStringTest < FastSnapshotTest
   def test_added_attr_accessor
     assert_not_include? Lecture3.instance_methods, "test_accessor"
     Lecture3.attr_accessor :test_accessor
-    assert_migration_string "#new: :test_accessor"
+    assert_migration_string "#new accessor :test_accessor of Lecture3"
   end
 
   def test_removed_attr_accessor
