@@ -8,8 +8,7 @@ require "maglev_record/maglev_support/concern"
 require "set"
 require "logger"
 
-if defined? MaglevRecord
-  #puts "IT IS DEFINED"
+if defined? MaglevRecord::VERSION
   if defined? RootedBook
     RootedBook.redo_include_and_extend
   end

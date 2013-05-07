@@ -1,7 +1,9 @@
+require File.expand_path "lib/maglev_record/maglev_record"
+
 Gem::Specification.new do |s|
   s.name         = 'maglevrecord'
-  s.version      = '0.0.4'
-  s.date         = '2013-03-10'
+  s.version      = MaglevRecord::VERSION
+  s.date         = '2013-05-06'
   s.summary      = "MagLev persistence with an ActiveRecord-like interface!"
   s.description  = "Library for using to MagLev to persist your data in a Rails app."
   s.authors      = ["Dimitri Korsch", "Kirstin Heidler", "Nicco Kunzmann", "Matthias Springer", "Stefan Bunk"]

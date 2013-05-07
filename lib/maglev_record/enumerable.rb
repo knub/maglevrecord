@@ -11,12 +11,13 @@ module MaglevRecord
         raise "method not available for MaglevRecord::Base"
       end
       def find_by_objectid(id)
-        if id.respond_to? :to_i
-          id = id.to_i 
-        else
-          raise "#{id} do not respond to :to_i!"
-        end
-        ObjectSpace._id2ref(id)
+        raise "method not available for MaglevRecord::Base"
+        # if id.respond_to? :to_i
+        #   id = id.to_i 
+        # else
+        #   raise "#{id} do not respond to :to_i!"
+        # end
+        # ObjectSpace._id2ref(id)
       end
     end
   end
