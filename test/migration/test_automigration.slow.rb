@@ -15,11 +15,11 @@ class AutomigrationProject2 < ProjectTest
   end
 
   def snapshot!
-    MaglevRecord::Snaphotable.snapshot!
+    MaglevRecord::Snapshotable.snapshot!
   end
 
   def changes
-    Maglev_record::Snapshotable.changes
+    MaglevRecord::Snapshotable.changes
   end
 
   def teardown
