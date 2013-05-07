@@ -5,7 +5,8 @@ module MaglevRecord
     def initialize(*args)
       if args.size == 1
         args[0].each do |k, v|
-          self.send("#{k.to_s}=".to_sym, v)
+          meth_name = "#{k.to_s}=".to_sym 
+          self.send(meth_name, v) if self.respond_to? meth_name
         end
       end
       @created_at_timestamp = Time.now
