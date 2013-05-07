@@ -33,3 +33,8 @@ gem_*_code.log
 
 /caller_content.rb
 /module_content.rb
+
+/a.rb
+/b.rb
+/snapshot_test.rb
+
