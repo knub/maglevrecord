@@ -31,7 +31,7 @@ class TempDirTest < Test::Unit::TestCase
   end
 
 end
-  
+
 class ProjectTest < TempDirTest
   attr_reader :maglev_record_raketask_wd
 

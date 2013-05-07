@@ -37,6 +37,7 @@ class MigrationStringTest < FastSnapshotTest
 
   # TODO string when attributes renamed when class renamed
   # TODO string when many things happen
+  # TODO lecture -> lectures map to list block
 
   def test_added_attr_accessor
     assert_not_include? Lecture3.instance_methods, "test_accessor"

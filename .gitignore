@@ -34,6 +34,7 @@ gem_*_code.log
 /caller_content.rb
 /module_content.rb
 
+# ignore files for presentation no 8
 /a.rb
 /b.rb
 /snapshot_test.rb
