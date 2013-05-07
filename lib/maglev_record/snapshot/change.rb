@@ -88,14 +88,26 @@ module MaglevRecord
       new_classes.map(&:class_name).sort
     end
 
+    def classes_migration_strings
+      if removed_classes.size == 1 and new_classes.size == 1
+        ["rename_class #{removed_class_names.first
+                  }, :#{new_class_names.first}"]
+      else
+        removed_class_names.map{ |class_name|
+          "delete_class #{class_name}"
+        } + new_class_names.map{ |class_name|
+          "#new class: #{class_name}"
+        }
+      end
+    end
+
     def migration_string(identation = 0)
-      " " * identation + (removed_class_names.map{ |class_name|
-        "delete_class #{class_name}"
-      } + changed_classes.map{ |class_change|
-        class_change.migration_string
-      } + new_class_names.map{ |class_name|
-        "#new class: #{class_name}"
-      }).join("\n" + " " * identation)
+      " " * identation + (
+        classes_migration_strings +
+        changed_classes.map{ |class_change|
+          class_change.migration_string
+        }
+      ).join("\n" + " " * identation)
     end
 
   end

@@ -10,7 +10,7 @@ class MigrationStringTest < FastSnapshotTest
   end
 
   def assert_migration_string(string, *args)
-      assert_equal string, changes.migration_string(*args)
+    assert_equal string, changes.migration_string(*args)
   end
 
   def test_no_migration_string_if_nothing_happens
@@ -28,8 +28,15 @@ class MigrationStringTest < FastSnapshotTest
   end
 
   def test_rename_class_is_remove_and_add
-    fail('todo')
+    remove_class Lecture4
+    snapshot! # Lecture3 exists
+    redefine_migration_classes
+    remove_class Lecture3 # Lecture4 exists, Lecture3 is removed
+    assert_migration_string "rename_class Lecture3, :Lecture4"
   end
+
+  # TODO string when attributes renamed when class renamed
+  # TODO string when many things happen
 
   def test_added_attr_accessor
     assert_not_include? Lecture3.instance_methods, "test_accessor"
