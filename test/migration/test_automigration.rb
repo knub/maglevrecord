@@ -28,7 +28,7 @@ class MigrationStringTest < FastSnapshotTest
   end
 
   def test_rename_class_is_remove_and_add
-    #fail('todo')
+    fail('todo')
   end
 
   def test_added_attr_accessor
