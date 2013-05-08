@@ -30,23 +30,22 @@ namespace :migrate do
 
   desc "create a new migration in the migration folder"
   task :new => :setup do
-    now = Time.now
-    filename = now.strftime("migration_%Y-%m-%b-%d_%H.%M.%S.rb")
-    content = MaglevRecord::Migration.file_content(now, 'fill in description here')
-    filepath = File.join(MIGRATION_FOLDER, filename)
-    File.open(filepath, 'w') { |file| 
-      file.write(content)
-    }
-    puts "created migration #{filepath}"
+    MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
+                                          'fill in description here')
   end
 
   desc "create a migration file for the changes shown by migrate:auto?"
-  task :auto => :setup do
+  task :auto => [:setup, :load_all_models] do
     last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
     if last_snapshot.nil?
       puts "rake migrate:up has to be done first"
       break
     end
+    changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
+    upcode = changes.migration_string(4)
+    MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
+                                          'fill in description here',
+                                          upcode)
   end
 
   desc "show the changes since the last migrate:auto or migrate:up"

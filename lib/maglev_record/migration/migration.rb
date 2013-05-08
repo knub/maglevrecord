@@ -138,5 +138,18 @@ MaglevRecord::Migration.new(Time.parse('#{
 end
       eos
     end
+
+    def self.write_to_file(folder, description,
+                           upcode = nil, downcode = nil)
+      now = Time.now
+      filename = now.strftime("migration_%Y-%m-%b-%d_%H.%M.%S.rb")
+      # TODO the arguments point at this to need to be refactored to an own 
+      #      class
+      content = file_content(now, description, upcode, downcode)
+      filepath = File.join(folder, filename)
+      File.open(filepath, 'w') { |file|
+        file.write(content)
+      }
+    end
   end
 end
