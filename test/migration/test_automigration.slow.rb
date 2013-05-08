@@ -3,6 +3,7 @@ require "migration/test_project.rb"
 class AutomigrationProject2 < ProjectTest
 
   def setup
+    Maglev.abort_transaction
     @project_name = 'project2'
     super
     project_model_source("")
@@ -15,16 +16,18 @@ class AutomigrationProject2 < ProjectTest
   end
 
   def snapshot!
-    MaglevRecord::Snapshotable.snapshot!
+    # define the interface that rake should use
+    Maglev::PERSISTENT_ROOT[:last_snapshot] = MaglevRecord::Snapshot.new
   end
 
   def changes
-    MaglevRecord::Snapshotable.changes
+    MaglevRecord::Snapshot.new.changes_since Maglev::PERSISTENT_ROOT[:last_snapshot]
   end
 
   def teardown
     super
     puts @error_mesage unless @error_message.nil?
+    Maglev.abort_transaction
   end
 
   def project_model_source(string)
@@ -41,7 +44,7 @@ class AutomigrationProject2 < ProjectTest
 
   def test_automigrate_has_no_output_if_no_changes
     rake_output = rake("migrate:auto?")
-    assert_equal "# no changes", rake_output
+    assert_equal "# no changes\n", rake_output
   end
 
   def test_project_model_is_new
@@ -50,7 +53,7 @@ class AutomigrationProject2 < ProjectTest
                             def x; end
                           end")
     rake_output = rake("migrate:auto?")
-    assert_equal "#new class: ProjectModel", rake_output
+    assert_equal "#new class: ProjectModel\n", rake_output
   end
 
 end

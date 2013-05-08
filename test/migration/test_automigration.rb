@@ -1,6 +1,5 @@
 require "snapshot/test_snapshot.fast"
 
-
 class MigrationStringTest < FastSnapshotTest
 
   def setup
