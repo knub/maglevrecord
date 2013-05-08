@@ -6,11 +6,11 @@ class User
   attr_accessor :password_digest
 
   has_secure_password
-  # TODO: No validations so far
-  # validates_presence_of :password, :on => :create
+  validates_presence_of :password, :on => :create
 end
+User.maglev_record_persistable
 
-class SensibleTest #< Test::Unit::TestCase
+class SensibleTest < Test::Unit::TestCase
 
   def pass
     "some_pass"
