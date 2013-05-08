@@ -12,6 +12,7 @@ class BaseLecture1
     self.clear
     self.new("Hans Ullrich", ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
   end
+
 end
 
 class BaseLecture2
@@ -25,6 +26,7 @@ class BaseLecture2
     lecture.lecturer = "Hans Ullrich"
     lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
   end
+
 end
 
 class Test::Unit::TestCase
