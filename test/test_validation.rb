@@ -28,14 +28,14 @@ class ValidationTest < Test::Unit::TestCase
   end
 
   def test_validation_fails
-    book = RootedBook.new()
+    book = RootedBook.new
     assert !book.valid?
     assert book.invalid?
     MaglevRecord.save
   end
 
   def test_errors_not_empty
-    book = RootedBook.new()
+    book = RootedBook.new
     book.valid?
     assert book.errors.count > 0
   end
