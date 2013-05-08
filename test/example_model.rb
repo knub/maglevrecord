@@ -28,3 +28,5 @@ Book.maglev_record_persistable
 RootedBook.maglev_record_persistable
 UnrootedBook.maglev_record_persistable
 Maglev.commit_transaction
+
+RootedBook.redo_include_and_extend
