@@ -6,7 +6,7 @@ module MaglevRecord
 
     def method_missing(symbol, *args)
       if self.class.maglev_persistable?
-        self.class.include Object.const_get("ActiveModel").const_get("Validations")
+        self.class.include MaglevSupport.constantize("ActiveModel::Validations")
         self.class.create_validations
         if self.respond_to?(symbol)
           send(symbol, *args)

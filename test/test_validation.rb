@@ -10,16 +10,6 @@ class ValidationTest < Test::Unit::TestCase
     MaglevRecord.save
   end
 
-  # TODO
-  # def test_reset
-  #   book = Book.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
-  #   book.author = "J. R. R. Tolkien"
-  #   book.title = "The Lord of the Rings"
-
-  #   MaglevRecord.reset
-  #   assert_not_nil Book.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
-  # end
-
   def test_validation_works
     book = RootedBook.new(:author => "Book")
     assert book.valid?
