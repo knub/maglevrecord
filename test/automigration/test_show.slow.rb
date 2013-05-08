@@ -21,6 +21,7 @@ class ShowAutomigrationProject2 < ProjectTest
   def new_snapshot
     # should only snapshot project model
     classes = MaglevRecord::Snapshotable.snapshotable_classes.select(&:maglev_persistable?)
+    classes -= [BaseLecture1, BaseLecture2] if defined? BaseLecture1
     MaglevRecord::Snapshot.new classes
   end
 
