@@ -16,10 +16,11 @@ class NeedMigrateUpBeforeAutomigration < ProjectTest
   end
 
   def test_no_snapshot_at_start
+    Maglev.abort_transaction
     assert_nil Maglev::PERSISTENT_ROOT[:last_snapshot]
   end
 
-  def migrate_up_creates_a_snapshot
+  def test_migrate_up_creates_a_snapshot
     rake('migrate:up')
     Maglev.abort_transaction
     snap = Maglev::PERSISTENT_ROOT[:last_snapshot]
@@ -29,12 +30,12 @@ class NeedMigrateUpBeforeAutomigration < ProjectTest
 
   def test_migrate_auto_without_initial_snapshot_does_not_work
     rake_output = rake('migrate:auto')
-    assert_equal "rake migrate:up has to be done first", rake_output
+    assert_equal "rake migrate:up has to be done first\n", rake_output
   end
 
   def test_migrate_auto2_without_initial_snapshot_does_not_work
     rake_output = rake('migrate:auto?')
-    assert_equal "rake migrate:up has to be done first", rake_output
+    assert_equal "rake migrate:up has to be done first\n", rake_output
   end
 
 end

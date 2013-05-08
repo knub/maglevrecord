@@ -17,12 +17,15 @@ namespace :migrate do
   end
 
   desc "migrate all the migrations in the migration folder"
-  task :up => :setup do
+  task :up => [:setup, :load_all_models] do
     loader = MaglevRecord::MigrationLoader.new
     loader.load_directory(MIGRATION_FOLDER)
     migrator = MaglevRecord::Migrator.new(loader.migration_list)
     logger = Logger.new(STDOUT)
     migrator.up(logger)
+    Maglev.abort_transaction
+    Maglev::PERSISTENT_ROOT[:last_snapshot] = MaglevRecord::Snapshot.new
+    Maglev.commit_transaction
   end
 
   desc "create a new migration in the migration folder"
@@ -39,12 +42,20 @@ namespace :migrate do
 
   desc "create a migration file for the changes shown by migrate:auto?"
   task :auto => :setup do
-
+    last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
+    if last_snapshot.nil?
+      puts "rake migrate:up has to be done first"
+      break
+    end
   end
 
   desc "show the changes since the last migrate:auto or migrate:up"
   task :auto? => :load_all_models do
     last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
+    if last_snapshot.nil?
+      puts "rake migrate:up has to be done first"
+      break
+    end
     changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
     migration_string = changes.migration_string
     if migration_string == ""
@@ -55,9 +66,11 @@ namespace :migrate do
   end
 
   task :load_all_models do
+    Maglev.abort_transaction
     Dir.glob(MODEL_PATHS).each do |model_file_path|
       load model_file_path
     end
+    Maglev.commit_transaction
   end
 
 end

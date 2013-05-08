@@ -70,6 +70,10 @@ module MaglevRecord
       Array.new(@class_snapshots)
     end
 
+    def snapshot_classes
+      class_snapshots.map(&:snapshot_class)
+    end
+
     def class_names
       class_snapshots.map(&:class_name).sort
     end
