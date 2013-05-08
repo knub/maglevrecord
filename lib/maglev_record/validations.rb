@@ -19,14 +19,21 @@ module MaglevRecord
     end
 
     module ClassMethods
-      def validates(*attributes)
-        @validates_options ||= []
-        @validates_options << attributes
+      def method_missing(symbol, *args)
+        if symbol.to_s.include? "valid"
+          @validates_options ||= Hash.new
+          @validates_options[symbol] ||= []
+          @validates_options[symbol] << args
+        else
+          super
+        end
       end
 
       def create_validations
-        @validates_options.each do |opts|
-          self.validates *opts
+        @validates_options.each do |symbol, args_list|
+          args_list.each do |args|
+            self.send(symbol, *args)
+          end
         end
       end
     end
