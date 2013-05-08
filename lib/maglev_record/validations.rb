@@ -5,14 +5,9 @@ module MaglevRecord
     end
 
     def method_missing(symbol, *args)
-      if self.class.maglev_persistable?
-        self.class.include MaglevSupport.constantize("ActiveModel::Validations")
-        self.class.create_validations
-        if self.respond_to?(symbol)
-          send(symbol, *args)
-        else
-          super
-        end
+      self.class.create_validations
+      if self.respond_to?(symbol)
+        send(symbol, *args)
       else
         super
       end
@@ -20,21 +15,23 @@ module MaglevRecord
 
     module ClassMethods
       def method_missing(symbol, *args)
-        if symbol.to_s.include? "valid"
-          @validates_options ||= Hash.new
-          @validates_options[symbol] ||= []
-          @validates_options[symbol] << args
-        else
-          super
-        end
+        super unless symbol.to_s.include? "valid"
+
+        @validates_options ||= Hash.new
+        @validates_options[symbol] ||= []
+        @validates_options[symbol] << args
       end
 
       def create_validations
+        return if not self.maglev_persistable? or @validates_options.nil?
+
+        self.include MaglevSupport.constantize("ActiveModel::Validations")
         @validates_options.each do |symbol, args_list|
           args_list.each do |args|
             self.send(symbol, *args)
           end
         end
+        @validates_options = nil
       end
     end
   end
