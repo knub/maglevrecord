@@ -1,6 +1,6 @@
 require "migration/test_project.rb"
 
-class AutomigrationProject2 < ProjectTest
+class ShowAutomigrationProject2 < ProjectTest
 
   def setup
     Maglev.abort_transaction
