@@ -1,10 +1,9 @@
 require "maglev_record/migration"
 require "maglev_record/snapshot"
-require "time"
 require "logger"
 require "fileutils"
 
-MIGRATION_FOLDER = "migrations"
+MIGRATION_FOLDER = "./migrations"
 MODEL_PATHS = ["./app/models/*.rb"]
 
 desc "transform the maglev database"
@@ -42,10 +41,15 @@ namespace :migrate do
       break
     end
     changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
+    if changes.nothing_changed?
+      puts "# no changes"
+      break
+    end
     upcode = changes.migration_string(4)
-    MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
+    file_name = MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
                                           'fill in description here',
                                           upcode)
+    puts file_name
   end
 
   desc "show the changes since the last migrate:auto or migrate:up"
@@ -57,7 +61,7 @@ namespace :migrate do
     end
     changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
     migration_string = changes.migration_string
-    if migration_string == ""
+    if changes.nothing_changed?
       puts "# no changes"
     else
       puts migration_string

@@ -75,6 +75,7 @@ class LocalClassSnapshotTest < FastSnapshotTest
   def test_removed_class_is_in_changes
     remove_class Lecture4
     assert_equal ["Lecture4"], changes.removed_class_names
+    assert_not changes.nothing_changed?
   end
 
 end
@@ -84,6 +85,7 @@ class LocalAttibuteAddSnapshotTest < FastSnapshotTest
     Lecture.attr_accessor :test_accessor
     assert_equal ["Lecture"], changes.changed_class_names
     assert_equal [:test_accessor], changes.changed_classes[0].new_attr_accessors
+    assert_not changes.nothing_changes?
   end
 end
 

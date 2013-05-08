@@ -150,6 +150,7 @@ end
       File.open(filepath, 'w') { |file|
         file.write(content)
       }
+      filepath
     end
   end
 end

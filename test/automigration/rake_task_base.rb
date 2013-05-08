@@ -51,6 +51,7 @@ class RakeTaskTestBase < ProjectTest
     assert_equal [], changes.removed_classes
     assert_equal [], changes.changed_classes
     assert_equal [], changes.new_classes
+    assert changes.nothing_changed?
   end
 
 end

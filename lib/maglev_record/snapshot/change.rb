@@ -110,5 +110,9 @@ module MaglevRecord
       ).join("\n" + " " * identation)
     end
 
+    def nothing_changed?
+      removed_classes == [] and changed_classes == [] and new_classes == []
+    end
+
   end
 end
