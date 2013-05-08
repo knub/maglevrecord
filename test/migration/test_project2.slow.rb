@@ -3,6 +3,7 @@ require "migration/test_project"
 class MigrationProject2 < ProjectTest
 
   def setup
+    Maglev.abort_transaction
     @project_name = 'project2'
     super
     Maglev.persistent do
@@ -15,6 +16,7 @@ class MigrationProject2 < ProjectTest
   def teardown
     super
     puts @s unless @s.nil?
+    Maglev.abort_transaction
   end
 
   def test_no_models

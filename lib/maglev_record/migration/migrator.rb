@@ -17,7 +17,7 @@ module MaglevRecord
     ##
     # Returns all migrations currently in the stone in the correct order.
     def migration_store
-      Maglev::PERSISTENT_ROOT[MIGRATION_KEY] ||= SortedSet.new
+      Maglev::PERSISTENT_ROOT[MIGRATION_KEY] ||= []
     end
 
     ##
