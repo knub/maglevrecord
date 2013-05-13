@@ -12,6 +12,7 @@ class MigrationTestProject1 < ProjectTest
   def test_tasks_are_listed
     output = rake("-T")
     assert_include? output, 'rake migrate:new'
+    assert_include? output, 'rake migrate:auto'
     assert_include? output, 'rake migrate:up'
   end
 

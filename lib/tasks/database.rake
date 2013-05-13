@@ -1,9 +1,10 @@
 require "maglev_record/migration"
-require "time"
+require "maglev_record/snapshot"
 require "logger"
 require "fileutils"
 
-MIGRATION_FOLDER = "migrations"
+MIGRATION_FOLDER = "./migrations"
+MODEL_PATHS = ["./app/models/*.rb"]
 
 desc "transform the maglev database"
 namespace :migrate do
@@ -15,24 +16,65 @@ namespace :migrate do
   end
 
   desc "migrate all the migrations in the migration folder"
-  task :up => :setup do
+  task :up => [:setup, :load_all_models] do
     loader = MaglevRecord::MigrationLoader.new
     loader.load_directory(MIGRATION_FOLDER)
     migrator = MaglevRecord::Migrator.new(loader.migration_list)
     logger = Logger.new(STDOUT)
     migrator.up(logger)
+    Maglev.abort_transaction
+    Maglev::PERSISTENT_ROOT[:last_snapshot] = MaglevRecord::Snapshot.new
+    Maglev.commit_transaction
   end
 
   desc "create a new migration in the migration folder"
   task :new => :setup do
-    now = Time.now
-    filename = now.strftime("migration_%Y-%m-%b-%d_%H.%M.%S.rb")
-    content = MaglevRecord::Migration.file_content(now, 'fill in description here')
-    filepath = File.join(MIGRATION_FOLDER, filename)
-    File.open(filepath, 'w') { |file| 
-      file.write(content)
-    }
-    puts "created migration #{filepath}"
+    MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
+                                          'fill in description here')
   end
+
+  desc "create a migration file for the changes shown by migrate:auto?"
+  task :auto => [:setup, :load_all_models] do
+    last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
+    if last_snapshot.nil?
+      puts "rake migrate:up has to be done first"
+      break
+    end
+    changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
+    if changes.nothing_changed?
+      puts "# no changes"
+      break
+    end
+    upcode = changes.migration_string(4)
+    file_name = MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
+                                          'fill in description here',
+                                          upcode)
+    puts file_name
+  end
+
+  desc "show the changes since the last migrate:auto or migrate:up"
+  task :auto? => :load_all_models do
+    last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
+    if last_snapshot.nil?
+      puts "rake migrate:up has to be done first"
+      break
+    end
+    changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
+    migration_string = changes.migration_string
+    if changes.nothing_changed?
+      puts "# no changes"
+    else
+      puts migration_string
+    end
+  end
+
+  task :load_all_models do
+    Maglev.abort_transaction
+    Dir.glob(MODEL_PATHS).each do |model_file_path|
+      load model_file_path
+    end
+    Maglev.commit_transaction
+  end
+
 end
 

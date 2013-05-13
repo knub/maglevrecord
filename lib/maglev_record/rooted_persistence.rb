@@ -17,6 +17,7 @@ module MaglevRecord
       end
 
       def new(*args)
+        create_validations
         instance = super(*args)
         self.object_pool[instance.id] = instance
         instance

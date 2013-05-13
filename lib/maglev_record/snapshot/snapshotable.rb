@@ -1,3 +1,6 @@
+require "maglev_record/maglev_support/concern"
+
+
 Maglev.persistent do
   class ::Class
     def exist!
@@ -17,6 +20,8 @@ end
 
 module MaglevRecord
   module Snapshotable
+    extend MaglevSupport::Concern
+
     def self.snapshotable_classes
       classes = []
       Object.constants.each { |constant|

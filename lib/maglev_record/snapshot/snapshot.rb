@@ -4,7 +4,7 @@ module MaglevRecord
   class ClassSnapshot
     def initialize(cls)
       @snapshot_class = cls
-      @attr_readers = cls.attr_readers
+      @attr_readers = Array.new(cls.attr_readers) if cls.respond_to? :attr_readers
       @files = cls.file_paths
       @exists = cls.has_definitions?
     end
@@ -20,6 +20,10 @@ module MaglevRecord
 
     alias :eql? :==
 
+    def <=>(other)
+      class_name <=> other.class_name
+    end
+
     def snapshot_class
       @snapshot_class
     end
@@ -34,7 +38,11 @@ module MaglevRecord
     end
 
     def attr_readers
-      @attr_readers
+      @attr_readers || []
+    end
+
+    def attr_accessors
+      attr_readers
     end
 
     def class_name
@@ -48,8 +56,8 @@ module MaglevRecord
       ClassSnapshot.new(cls)
     end
 
-    def initialize
-      @class_snapshots = Snapshotable.snapshotable_classes.map{ |cls|
+    def initialize(classes = Snapshotable.snapshotable_classes)
+      @class_snapshots = classes.map{ |cls|
         for_class cls
       }
     end
@@ -62,6 +70,19 @@ module MaglevRecord
       Array.new(@class_snapshots)
     end
 
+    def snapshot_classes
+      class_snapshots.map(&:snapshot_class)
+    end
+
+    def class_names
+      class_snapshots.map(&:class_name).sort
+    end
+
+    def [](cls)
+      class_snapshots.each{ |snap|
+        return snap if snap.snapshot_class == cls
+      }
+    end
   end
 end
 

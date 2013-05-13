@@ -42,4 +42,14 @@ class QueryInterfaceTest < Test::Unit::TestCase
     assert_equal book, RootedBook.find_by_objectid(book.object_id)
   end
 
+  def test_reset
+    book = RootedBook.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
+    book.author = "J. R. R. Tolkien"
+    book.title = "The Lord of the Rings"
+
+    assert_nil RootedBook.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
+    MaglevRecord.reset
+    assert_not_nil RootedBook.find { |b| b.title == "Harry Potter and the Philosopher's stone" }
+  end
+
 end

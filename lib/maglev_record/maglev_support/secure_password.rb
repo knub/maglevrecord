@@ -4,9 +4,8 @@ module MaglevRecord
       def has_secure_password
         attr_reader :password
 
-        # TODO: No validations so far
-        # validates_confirmation_of :password
-        # validates_presence_of     :password_digest
+        validates_confirmation_of :password
+        validates_presence_of     :password_digest
 
         mark_sensible :password, :password_confirmation
     

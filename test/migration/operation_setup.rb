@@ -12,6 +12,7 @@ class BaseLecture1
     self.clear
     self.new("Hans Ullrich", ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
   end
+
 end
 
 class BaseLecture2
@@ -25,6 +26,7 @@ class BaseLecture2
     lecture.lecturer = "Hans Ullrich"
     lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
   end
+
 end
 
 class Test::Unit::TestCase
@@ -48,15 +50,19 @@ class Test::Unit::TestCase
   def self.redefine_migration_classes
     Object.module_eval "
       class Lecture < BaseLecture1
+        def self.exists?; true; end
       end
 
       class Lecture2 < BaseLecture2
+        def self.exists?; true; end
       end
 
       class Lecture3 < Lecture
+        def self.exists?; true; end
       end
 
       class Lecture4 < Lecture
+        def self.exists?; true; end
       end
 
       module Models
@@ -76,16 +82,7 @@ class Test::Unit::TestCase
     "
   end
 
-  def setup_migration_operations
-    self.class.setup_migration_operations
-  end
-
-  def teardown_migration_operations
-    self.class.teardown_migration_operations
-  end
-
-  def redefine_migration_classes
-    self.class.redefine_migration_classes
-  end
+  as_instance_method :setup_migration_operations, :teardown_migration_operations
+  as_instance_method :redefine_migration_classes
 
 end

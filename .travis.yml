@@ -10,7 +10,6 @@ before_script:
   - "gem uninstall -x -i /home/travis/.rvm/gems/ruby-1.9.3-p327@global bundler"
   - "maglev-gem install bundler"
   - "bundle install"
-  - "gem install maglevrecord"
 script:
   - "bundle exec rake testslow"
   - "bundle exec rake testslow"
