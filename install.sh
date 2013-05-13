@@ -121,7 +121,6 @@ case "$PLATFORM" in
     shmall="`sysctl kern.sysv.shmall | cut -f2 -d' '`"
     ;;
     SunOS-i86pc)
-    # TODO: figure memory needs for Solaris-x86
     # Investigate project.max-shm-memory
     totalMemMB="`/usr/sbin/prtconf | grep Memory | cut -f3 -d' '`"
     totalMem=$(($totalMemMB * 1048576))

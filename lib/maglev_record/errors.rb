@@ -7,4 +7,7 @@ module MaglevRecord
 
   class IrreversibleMigration < Error
   end
+
+  class NoMigrationReadError < Error
+  end
 end
