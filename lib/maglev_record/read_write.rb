@@ -35,6 +35,7 @@ module MaglevRecord
         attr_names.each do |attr_name|
           self.module_eval <<-ATTRWRITER, __FILE__, __LINE__ + 1
             def #{attr_name}=(new_value)
+              updated
               attributes[:#{attr_name}] = new_value
             end
           ATTRWRITER
