@@ -37,7 +37,9 @@ module MaglevRecord
     end
 
     def changed_since?(older)
-      attr_readers != older.attr_readers
+      attr_readers != older.attr_readers or
+        instance_methods != older.instance_methods or
+        class_methods != older.class_methods
     end
 
     def attr_readers
@@ -50,6 +52,14 @@ module MaglevRecord
 
     def class_name
       @snapshot_class.name
+    end
+
+    def class_methods
+      Array.new(@class_methods)
+    end
+
+    def instance_methods
+      Array.new(@instance_methods)
     end
   end
 end
