@@ -8,8 +8,8 @@ module MaglevRecord
       @attr_readers = Array.new(cls.attr_readers) if cls.respond_to? :attr_readers
       @files = cls.file_paths
       @exists = cls.has_definitions?
-      @class_methods = cls.methods
-      @instance_methods = cls.instance_methods
+      @class_methods = cls.methods(false)
+      @instance_methods = cls.instance_methods(false)
     end
 
     def exists?
