@@ -71,7 +71,7 @@ module MaglevRecord
         changed_classes.map{ |class_change|
           class_change.migration_string
         }
-      ).join("\n" + " " * identation)
+      ).select{|s| s.strip != ""}.join("\n" + " " * identation)
     end
 
     def nothing_changed?

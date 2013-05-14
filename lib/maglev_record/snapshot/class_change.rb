@@ -32,7 +32,7 @@ module MaglevRecord
         } + new_attr_accessors.map{ |attr|
           "#new accessor :#{attr} of #{class_name}"
         }
-      end.join("\n")
+      end.select{|s| s.strip != "" }.join("\n")
     end
 
     def new_instance_methods
