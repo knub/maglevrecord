@@ -3,8 +3,14 @@ require "migration/operation_setup"
 
 class FastSnapshotTest < Test::Unit::TestCase
 
+  def lectures
+    MaglevRecord::Snapshotable.snapshotable_classes.select{ |cls|
+      cls.name.start_with? "Lecture"
+    }
+  end
+
   def snapshot
-    MaglevRecord::Snapshot.new
+    MaglevRecord::Snapshot.new(lectures)
   end
 
   def changes
