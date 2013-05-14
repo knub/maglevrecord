@@ -1,6 +1,6 @@
 require "snapshot/test_snapshot"
 
-class AttrSnapshotTest < SnapshotTest
+class MethodSnapshotTest < SnapshotTest
 
   def self.changes
     @changes
@@ -43,20 +43,22 @@ class AttrSnapshotTest < SnapshotTest
   end
 
   def test_method_added
-    assert_equal changed_class.new_methods, [:exists2]
+    assert_equal changed_class.new_instance_methods, ["exists2"]
   end
 
   def test_method_removed
-    assert_equal changed_class.removed_methods, [:exist1]
+    assert_equal changed_class.removed_instance_methods, ["exists1"]
   end
 
   def test_class_method_added
-    assert_equal changed_class.new_class_methods, [:cls2]
+    assert_equal changed_class.new_class_methods, ["cls2"]
   end
 
   def test_class_method_removed
-    assert_equal changed_class.removed_class_methods, [:cls1]
+    assert_equal changed_class.removed_class_methods, ["cls1"]
   end
+
+  # TODO: test subclasses to not contain methods of superclasses
 
 end
 

@@ -34,5 +34,21 @@ module MaglevRecord
         }
       end.join("\n")
     end
+
+    def new_instance_methods
+      @new.instance_methods - @old.instance_methods
+    end
+
+    def removed_instance_methods
+      @old.instance_methods - @new.instance_methods
+    end
+
+    def new_class_methods
+      @new.class_methods - @old.class_methods
+    end
+
+    def removed_class_methods
+      @old.class_methods - @new.class_methods
+    end
   end
 end
