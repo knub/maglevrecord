@@ -9,6 +9,10 @@ class FastSnapshotTest < Test::Unit::TestCase
     }
   end
 
+  def assert_migration_string(string, *args)
+    assert_equal string, changes.migration_string(*args)
+  end
+
   def snapshot
     MaglevRecord::Snapshot.new(lectures)
   end
