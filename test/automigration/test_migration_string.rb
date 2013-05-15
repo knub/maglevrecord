@@ -1,10 +1,12 @@
-require "snapshot/test_snapshot.fast"
+require "snapshot/test_snapshot"
 
 class MigrationStringTest < FastSnapshotTest
 
   def setup
     super
     Lecture2.attr_accessor :lecturer
+    def Lecture.class_method1;end
+    Lecture.class_eval{def instance_method1;end}
     snapshot!
   end
 
@@ -61,6 +63,26 @@ class MigrationStringTest < FastSnapshotTest
     redefine_migration_classes
     migration_string = "    #new class: Lecture3\n    #new class: Lecture4"
     assert_migration_string migration_string, 4
+  end
+
+  def test_add_class_method
+    def Lecture.class_method2;end
+    assert_migration_string "#new class method: Lecture.class_method2"
+  end
+
+  def test_add_instance_method
+    Lecture.class_eval{def instance_method2;end}
+    assert_migration_string "#new instance method: Lecture.new.instance_method2"
+  end
+
+  def test_remove_class_method
+    Lecture.singleton_class.remove_method :class_method1
+    assert_migration_string 'Lecture.remove_class_method :class_method1'
+  end
+
+  def test_remove_instance_method
+    Lecture.remove_method :instance_method1
+    assert_migration_string 'Lecture.remove_instance_method :instance_method1'
   end
 end
 
