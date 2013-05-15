@@ -36,6 +36,8 @@ module MaglevRecord
         }
         attr_readers.delete name.to_s if respond_to? :attr_readers
         attr_writers.delete name.to_s if respond_to? :attr_writers
+        remove_instance_method name.to_s
+        remove_instance_method name.to_s + "="
       end
 
       def migration_rename_to(new_name)
