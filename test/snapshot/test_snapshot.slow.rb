@@ -1,4 +1,3 @@
-require "maglev_record"
 require "more_asserts"
 
 class SnapshotTest < Test::Unit::TestCase

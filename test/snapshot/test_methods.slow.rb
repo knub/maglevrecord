@@ -1,4 +1,4 @@
-require "snapshot/test_snapshot"
+require "snapshot/test_snapshot.slow"
 
 class MethodSnapshotTest < SnapshotTest
 
