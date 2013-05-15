@@ -5,6 +5,7 @@ class FastMethodSnapshotTestBase < FastSnapshotTest
     super
     def Lecture.removed_method;end
     Lecture.class_eval{def removed_i_method;end}
+    Lecture.attr_accessor :accessor1
     snapshot!
     def Lecture.new_method;end
     Lecture.class_eval{def new_i_method;end}
@@ -94,4 +95,29 @@ class FastMethodChangeTest < FastMethodSnapshotTestBase
   def test_new_class_method
     assert_equal ["new_method"], lecture_changes.new_class_methods
   end
+
 end
+
+class FastMethodVSAcessorChangeTest < FastMethodChangeTest
+
+  def setup
+    super
+    Lecture.remove_method :accessor1
+    Lecture.remove_method :accessor1=
+    Lecture.attr_accessor :accessor2
+  end
+
+end
+
+class FastMethodVSAcessorSnapshotTest < FastMethodSnapshotTestBase
+
+  def setup
+    super
+    Lecture.remove_method :accessor1
+    Lecture.remove_method :accessor1=
+    Lecture.attr_accessor :accessor2
+  end
+
+end
+
+# TODO add test for attr becomes method and reverse
