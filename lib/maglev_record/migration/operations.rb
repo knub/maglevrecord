@@ -72,6 +72,20 @@ module MaglevRecord
         }
         list
       end
+
+      def remove_instance_method(name)
+        begin
+          remove_method name
+        rescue NameError
+        end
+      end
+
+      def remove_class_method(name)
+        begin
+          singleton_class.remove_method name
+        rescue NameError
+        end
+      end
     end
     class NullClass
       include ClassMethods
@@ -87,6 +101,10 @@ module MaglevRecord
       def migration_rename_to(new_name)
       end
       def migration_delete
+      end
+      def remove_instance_method(name)
+      end
+      def remove_class_method(name)
       end
     end
   end

@@ -8,12 +8,14 @@ class FastMethodSnapshotTestBase < FastSnapshotTest
     Lecture.attr_accessor :accessor1
     snapshot!
     def Lecture.new_method;end
-    Lecture.class_eval{def new_i_method;end}
+    Lecture.class_eval{def new_i_method;5;end}
     Lecture.remove_method :removed_i_method
     Lecture.singleton_class.remove_method :removed_method
   end
 
   def test
+    Lecture.fill_with_examples
+    assert_equal 5, Lecture.first.new_i_method
   end
 end
 
