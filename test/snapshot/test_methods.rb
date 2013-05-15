@@ -1,21 +1,24 @@
 require "snapshot/test_snapshot"
 
-class FastMethodSnapshotTest < FastSnapshotTest
+class FastMethodSnapshotTestBase < FastSnapshotTest
   def setup
     super
     def Lecture.removed_method;end
-    Lecture.class_eval "def removed_i_method;end"
+    Lecture.class_eval{def removed_i_method;end}
     snapshot!
     def Lecture.new_method;end
+    Lecture.class_eval{def new_i_method;end}
     Lecture.remove_method :removed_i_method
-    Lecture.remove_method :removed_method
+    Lecture.singleton_class.remove_method :removed_method
   end
 
   def test
   end
 end
 
-class FastMethodSnapshotEnvironmentTest < MethodSnapshotTest
+class FastMethodSnapshotEnvironmentTest < FastMethodSnapshotTestBase
+
+  # depends on FastMethodSnapshotTestBase
 
   def test_Lecture_has_new_method
     assert_include? Lecture.instance_methods, "new_i_method"
@@ -23,8 +26,8 @@ class FastMethodSnapshotEnvironmentTest < MethodSnapshotTest
   end
 
   def test_Lecture_has_no_removed_method
-    assert_not_inlcude? Lecture.instance_methods "removed_i_method"
-    assert_not_inlcude? Lecture.methods "removed_method"
+    assert_not_include? Lecture.instance_methods, "removed_i_method"
+    assert_not_include? Lecture.methods, "removed_method"
   end
 
   def test_Lecture3_has_methods_of_Lecture
@@ -38,7 +41,9 @@ class FastMethodSnapshotEnvironmentTest < MethodSnapshotTest
   end
 end
 
-class FastMethodSnapshotTest < MethodSnapshotTest
+class FastMethodSnapshotTest < FastMethodSnapshotTestBase
+
+  # depends on FastMethodSnapshotEnvironmentTest
 
   def test_Lecture_has_new_method
     assert_include? snapshot[Lecture].class_methods, "new_method"
@@ -46,8 +51,8 @@ class FastMethodSnapshotTest < MethodSnapshotTest
   end
 
   def test_Lecture_has_no_removed_method
-    assert_not_include? snapshot[Lecture].class_methods, "new_method"
-    assert_not_include? snapshot[Lecture].instance_methods, "new_i_method"
+    assert_not_include? snapshot[Lecture].class_methods, "removed_method"
+    assert_not_include? snapshot[Lecture].instance_methods, "removed_i_method"
   end
 
   def test_Lecture3_has_no_new_method
@@ -60,7 +65,9 @@ class FastMethodSnapshotTest < MethodSnapshotTest
   end
 end
 
-class FastMethodChangeTest < MethodSnapshotTest
+class FastMethodChangeTest < FastMethodSnapshotTestBase
+
+  # depends on FastMethodSnapshotTest
 
   def test_only_Lecture_changed
     assert_equal [], changes.new_classes
@@ -68,7 +75,7 @@ class FastMethodChangeTest < MethodSnapshotTest
     assert_equal 1, changes.changed_classes.size, "#{changes.changed_classes.size}"
   end
 
-  def lecture_change
+  def lecture_changes
     changes.changed_classes.first
   end
 
