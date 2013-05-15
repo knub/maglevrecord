@@ -13,7 +13,7 @@ class Test::Unit::TestCase
   end
 
   def assert_not_include?(array, element)
-    assert_not array.include?(element), "#{array}\n should include \n#{element}"
+    assert_not array.include?(element), "#{array}\n should not include \n#{element}"
   end
 
 

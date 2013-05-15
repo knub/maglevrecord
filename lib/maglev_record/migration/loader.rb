@@ -19,7 +19,7 @@ module MaglevRecord
 
     def load_string(source, file = __FILE__)
       migration = instance_eval source, file
-      # TODO: Check class of migration is really migration!
+      raise MaglevRecord::NoMigrationReadError unless migration.class == MaglevRecord::Migration
       migration.source = source
       @migration_list << migration
     end

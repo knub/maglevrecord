@@ -33,4 +33,9 @@ class MigrationProject2 < ProjectTest
     @s = nil
   end
 
+  #def test_add_more_migrations_that_will_be_tested
+  #  # maybe we are also in the need to autoload the model files?
+  #  #fail('todo') # TODO
+  #end
+
 end

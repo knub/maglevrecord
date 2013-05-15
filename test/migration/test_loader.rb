@@ -64,6 +64,12 @@ MIGRATION2
     assert_equal 2014, @loader.migration_list.last.timestamp.year
   end
 
+  def test_an_error_is_thrown_if_no_migration_is_read
+    assert_raise(MaglevRecord::NoMigrationReadError) {
+      @loader.load_string "1 + 2"
+    }
+  end
+
   def test_load_from_file
     @loader.load_file(migration_folder + 'migration_1.rb')
     assert @loader.migration_list.any? { |m| m.name == "Change book title" }

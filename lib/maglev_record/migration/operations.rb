@@ -34,7 +34,10 @@ module MaglevRecord
           value = model.attributes.delete(name)
           yield value if block_given?
         }
-        attr_readers.delete name if respond_to? :attr_readers
+        attr_readers.delete name.to_s if respond_to? :attr_readers
+        attr_writers.delete name.to_s if respond_to? :attr_writers
+        remove_instance_method name.to_s
+        remove_instance_method name.to_s + "="
       end
 
       def migration_rename_to(new_name)
@@ -71,6 +74,20 @@ module MaglevRecord
         }
         list
       end
+
+      def remove_instance_method(name)
+        begin
+          remove_method name
+        rescue NameError
+        end
+      end
+
+      def remove_class_method(name)
+        begin
+          singleton_class.remove_method name
+        rescue NameError
+        end
+      end
     end
     class NullClass
       include ClassMethods
@@ -86,6 +103,10 @@ module MaglevRecord
       def migration_rename_to(new_name)
       end
       def migration_delete
+      end
+      def remove_instance_method(name)
+      end
+      def remove_class_method(name)
       end
     end
   end

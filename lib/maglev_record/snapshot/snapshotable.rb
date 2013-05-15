@@ -52,10 +52,15 @@ module MaglevRecord
       def has_definitions?
         # TODO: maybe in a nested transaction?
         start_existence_test!
-        file_paths.each{ |file_path|
-          Kernel.load file_path if File.file? file_path
-          return true if exists?
-        }
+        # Maglev.begin_nested_transaction
+        begin
+          file_paths.each{ |file_path|
+            Kernel.load file_path if File.file? file_path
+            return true if exists?
+          }
+        # ensure
+          # Maglev.abort_transaction
+        end
         exists?
       end
     end

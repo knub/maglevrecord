@@ -1,4 +1,4 @@
-require "snapshot/test_snapshot"
+require "snapshot/test_snapshot.slow"
 
 class AttrSnapshotTest < SnapshotTest
 
@@ -43,11 +43,11 @@ class AttrSnapshotTest < SnapshotTest
   end
 
   def test_accessor_added
-    assert_equal changed_class.new_attr_accessors, [:students]
+    assert_equal changed_class.new_attr_accessors, ["students"]
   end
 
   def test_accessor_removed
-    assert_equal changed_class.removed_attr_accessors, [:no_value]
+    assert_equal changed_class.removed_attr_accessors, ["no_value"]
   end
 
   # TODO: add tests for attr_reader and attr_writer ...

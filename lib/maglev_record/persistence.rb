@@ -9,14 +9,21 @@ module MaglevRecord
           self.send(meth_name, v) if self.respond_to? meth_name
         end
       end
-      @created_at_timestamp = Time.now
+      created
     end
 
     def created_at
       @created_at_timestamp
     end
-    def created_at=(timestamp)
-      @created_at_timestamp = timestamp
+    def created
+      @created_at_timestamp = Time.now
+    end
+
+    def updated_at
+      @updated_at_timestamp
+    end
+    def updated
+      @updated_at_timestamp = Time.now
     end
 
     alias :persisted? :committed?
