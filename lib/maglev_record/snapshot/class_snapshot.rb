@@ -6,6 +6,7 @@ module MaglevRecord
     def initialize(cls)
       @snapshot_class = cls
       @attr_readers = Array.new(cls.attr_readers) if cls.respond_to? :attr_readers
+      @attr_writers = Array.new(cls.attr_writers) if cls.respond_to? :attr_writers
       @files = cls.file_paths
       @exists = cls.has_definitions?
       @class_methods = cls.methods(false)
@@ -43,11 +44,19 @@ module MaglevRecord
     end
 
     def attr_readers
-      @attr_readers.to_a || []
+      Array.new(@attr_readers || [])
+    end
+
+    def attr_writers
+      Array.new(@attr_writers || [])
     end
 
     def attr_accessors
       attr_readers
+    end
+
+    def attr_methods
+      attr_readers + attr_writers.map{ |s| s + "=" }
     end
 
     def class_name
@@ -59,7 +68,7 @@ module MaglevRecord
     end
 
     def instance_methods
-      Array.new(@instance_methods)
+      @instance_methods - attr_methods
     end
   end
 end
