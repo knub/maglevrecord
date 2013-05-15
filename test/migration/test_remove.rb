@@ -8,8 +8,11 @@
 #
 #   - classes
 #
+#   - instance methods
+#
+#   - class methods
+#
 
-require "maglev_record"
 require "migration/operation_setup"
 require "more_asserts"
 require 'time'
@@ -213,7 +216,125 @@ class TestMigrationRemoveClass < Test::Unit::TestCase
       Models::M1::Lecture
     }
   end
-
- 
 end
 
+################## remove instance methods
+
+class TestMigrationRemoveInstanceMethod < Test::Unit::TestCase
+
+  def setup
+    setup_migration_operations
+    Lecture.define_method :instance_method_to_remove do 2 end
+    Lecture.fill_with_examples
+    Lecture3.fill_with_examples
+  end
+
+  def test_Lecture_has_instance_method
+    assert_equal 2, Lecture.first.instance_method_to_remove
+    assert_equal 2, Lecture3.first.instance_method_to_remove
+  end
+
+  def teardown
+    super
+    teardown_migration_operations
+  end
+
+  def test_migration_removes_instance_method
+    MaglevRecord::Migration.new(Time.now, "remove instance method") do
+      def up
+        Lecture.remove_instance_method :instance_method_to_remove
+      end
+    end.do
+    assert_raises(NoMethodError){
+      Lecture.first.instance_method_to_remove
+    }
+    assert_raises(NoMethodError){
+      Lecture3.first.instance_method_to_remove
+    }
+  end
+
+  def test_migration_removes_nonexistent_instance_method
+    MaglevRecord::Migration.new(Time.now, "remove instance method") do
+      def up
+        Lecture.remove_instance_method :instance_method_to_remove2
+      end
+    end.do
+    assert_equal 2, Lecture.first.instance_method_to_remove
+  end
+
+  def test_remove_instance_method_of_nonexistent_class
+    MaglevRecord::Migration.new(Time.now, "remove instance method") do
+      def up
+        AbsentLectureClass.remove_instance_method :method_not_here
+      end
+    end.do
+    assert_equal 2, Lecture.first.instance_method_to_remove
+  end
+
+  def test_remove_instance_method_of_subclass_does_not_influence_superclass
+    MaglevRecord::Migration.new(Time.now, "remove instance method") do
+      def up
+        Lecture3.remove_instance_method :instance_method_to_remove
+      end
+    end.do    
+    assert_equal 2, Lecture.first.instance_method_to_remove
+    assert_equal 2, Lecture3.first.instance_method_to_remove
+  end
+end
+
+################## remove class methods
+
+class TestMigrationRemoveClassMethod < Test::Unit::TestCase
+
+  def setup
+    setup_migration_operations
+    def Lecture.class_method_to_remove;1;end
+  end
+
+  def teardown
+    super
+    teardown_migration_operations
+  end
+
+  def test_Lecture_has_class_method
+    assert_equal 1, Lecture.class_method_to_remove
+  end
+
+  def test_migration_removes_class_method
+    MaglevRecord::Migration.new(Time.now, "remove class method") do
+      def up
+        Lecture.remove_class_method :class_method_to_remove
+      end
+    end.do
+    assert_raises(NoMethodError){
+      Lecture.class_method_to_remove
+    }
+  end
+
+  def test_migration_removes_nonexistent_class_method
+    MaglevRecord::Migration.new(Time.now, "remove class method") do
+      def up
+        Lecture.remove_class_method :class_method_to_remove2
+      end
+    end.do
+    assert_equal 1, Lecture.class_method_to_remove
+  end
+
+  def test_remove_instance_method_of_nonexistent_class
+    MaglevRecord::Migration.new(Time.now, "remove class method") do
+      def up
+        AbsentLectureClass.remove_class_method :method_not_here
+      end
+    end.do
+    assert_equal 1, Lecture.class_method_to_remove
+  end
+
+  def test_remove_class_method_of_subclass_does_not_influence_superclass
+    MaglevRecord::Migration.new(Time.now, "remove class method") do
+      def up
+        Lecture3.remove_instance_method :class_method_to_remove
+      end
+    end.do    
+    assert_equal 1, Lecture.class_method_to_remove
+  end
+end
