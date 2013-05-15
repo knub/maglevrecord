@@ -1,4 +1,4 @@
-require "snapshot/test_snapshot.fast.rb"
+require "snapshot/test_snapshot"
 
 class LocalMethodSnapshotTest < FastSnapshotTest
 
