@@ -100,6 +100,7 @@ class AttributeAccessorsMoveTest < FastSnapshotTest
     assert_include? Lecture0.attributes, "lecturer"
     Lecture0.attributes.delete("lecturer") # bad style this is
     # now Lecture2 is like having removed all attributes
+    assert_not_include? Lecture0.attributes, "lecturer"
   end
 end
 
@@ -108,7 +109,6 @@ class AttrAccessorMovesTest < AttributeAccessorsMoveTest
   def create_attribute
     Lecture0.attr_accessor :lecturer
   end
-
 
   def test_to_attr_reader
     Lecture0.attr_reader :lecturer

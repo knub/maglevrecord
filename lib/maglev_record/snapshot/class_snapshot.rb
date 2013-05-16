@@ -4,6 +4,7 @@ module MaglevRecord
 
   class ClassSnapshot
     def initialize(cls)
+      cls.redo_include_and_extend
       @snapshot_class = cls
       @attributes = Array.new(cls.attributes) if cls.respond_to? :attributes
       @files = cls.file_paths

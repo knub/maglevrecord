@@ -10,6 +10,14 @@ class User
 end
 User.maglev_record_persistable
 
+
+# added the following lines because the User class loses methods 
+# in other processes which makes some snapsho tests fail
+User_class = User
+Maglev.persistent do
+  Object.remove_const "User"
+end
+
 class SensibleTest < Test::Unit::TestCase
 
   def pass
@@ -21,7 +29,7 @@ class SensibleTest < Test::Unit::TestCase
       :password => pass,
       :password_confirmation => pass,
     }
-    User.new(attr_hash)
+    User_class.new(attr_hash)
   end
 
   def test_sensible_deletion
