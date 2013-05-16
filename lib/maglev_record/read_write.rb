@@ -4,7 +4,7 @@ module MaglevRecord
     extend MaglevSupport::Concern
 
     def attributes
-      @maglev_attributes ||= Hash.new 
+      @maglev_attributes ||= Hash.new
     end
 
     def update_attributes(attribute_hash)
