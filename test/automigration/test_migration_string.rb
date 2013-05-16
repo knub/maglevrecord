@@ -147,8 +147,23 @@ class AttrReaderMovesTest < AttributeAccessorsMoveTest
   end
 end
 
-class AttrWriterMovesTest #< AttributeAccessorsMoveTest
+class AttrWriterMovesTest < AttributeAccessorsMoveTest
   def create_attribute
     Lecture0.attr_writer :lecturer
+  end
+
+  def test_to_attr_reader
+    Lecture0.attr_reader :lecturer
+    assert_migration_string "#new instance method: Lecture0.new.lecturer"
+  end
+
+  def test_to_attr_writer
+    Lecture0.attr_writer :lecturer
+    assert_migration_string ""
+  end
+
+  def test_to_attr_accessor
+    Lecture0.attr_accessor :lecturer
+    assert_migration_string "#new instance method: Lecture0.new.lecturer"
   end
 end
