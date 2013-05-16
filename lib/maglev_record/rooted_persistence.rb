@@ -2,6 +2,9 @@ module MaglevRecord
   module RootedPersistence
     extend MaglevSupport::Concern
 
+    def destroy
+      self.class.object_pool.delete(self.id)
+    end
     module ClassMethods
       def object_pool_key
         self
