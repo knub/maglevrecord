@@ -32,7 +32,7 @@ end
 class Test::Unit::TestCase
 
   def self.teardown_migration_operations
-    [:Lecture, :Lecture2, :Lecture3, :Lecture4].each{ |const|
+    [:Lecture, :Lecture2, :Lecture3, :Lecture4, :Lecture0].each{ |const|
       if Object.const_defined? const
         Object.const_get(const).clear
         Maglev.persistent do
@@ -49,6 +49,13 @@ class Test::Unit::TestCase
 
   def self.redefine_migration_classes
     Object.module_eval "
+
+      class Lecture0
+        # empty Lecture
+        include MaglevRecord::RootedBase
+        def self.exists?; true; end
+      end
+
       class Lecture < BaseLecture1
         def self.exists?; true; end
       end
@@ -76,7 +83,7 @@ class Test::Unit::TestCase
         end
       end
 
-      [Lecture, Lecture2, Lecture3, Lecture4].each do |const|
+      [Lecture, Lecture2, Lecture3, Lecture4, Lecture0].each do |const|
         const.maglev_record_persistable
       end
     "
