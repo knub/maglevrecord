@@ -39,7 +39,9 @@ class MigrationStringTest < FastSnapshotTest
   def test_added_attr_accessor
     assert_not_include? Lecture3.instance_methods, "test_accessor"
     Lecture3.attr_accessor :test_accessor
-    assert_migration_string "#new accessor :test_accessor of Lecture3"
+    assert_migration_string "#new accessor :test_accessor of Lecture3\n" +
+                    "#new instance method: Lecture3.new.test_accessor\n" +
+                    "#new instance method: Lecture3.new.test_accessor="
   end
 
   def test_removed_attr_accessor
@@ -50,7 +52,10 @@ class MigrationStringTest < FastSnapshotTest
   def test_remove_accessor_is_remove_and_add
     Lecture2.delete_attribute(:lecturer)
     Lecture2.attr_accessor :testitatetue
-    assert_migration_string "Lecture2.rename_attribute(:lecturer, :testitatetue)"
+    string =  "Lecture2.rename_attribute(:lecturer, :testitatetue)\n"
+    string += "#new instance method: Lecture2.new.testitatetue\n"
+    string += "#new instance method: Lecture2.new.testitatetue="
+    assert_migration_string string
   end
 
   def test_add_class_requires_no_migration_string
@@ -79,5 +84,9 @@ class MigrationStringTest < FastSnapshotTest
   def test_remove_instance_method
     Lecture.remove_method :instance_method1
     assert_migration_string 'Lecture.remove_instance_method :instance_method1'
+  end
+
+  def test_attr_reader_to_attr_writer
+
   end
 end

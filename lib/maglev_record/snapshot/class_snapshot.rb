@@ -68,7 +68,7 @@ module MaglevRecord
     end
 
     def instance_methods
-      @instance_methods - attr_methods
+      @instance_methods
     end
   end
 end

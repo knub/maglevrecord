@@ -10,11 +10,11 @@ module MaglevRecord
     end
 
     def new_attr_accessors
-      @new.attr_readers - @old.attr_readers
+      (@new.attr_readers - @old.attr_readers).sort
     end
 
     def removed_attr_accessors
-      @old.attr_readers - @new.attr_readers
+      (@old.attr_readers - @new.attr_readers).sort
     end
 
     def class_name
@@ -44,19 +44,19 @@ module MaglevRecord
     end
 
     def new_instance_methods
-      @new.instance_methods - @old.instance_methods
+      (@new.instance_methods - @old.instance_methods).sort
     end
 
     def removed_instance_methods
-      @old.instance_methods - @new.instance_methods
+      (@old.instance_methods - @new.instance_methods).sort
     end
 
     def new_class_methods
-      @new.class_methods - @old.class_methods
+      (@new.class_methods - @old.class_methods).sort
     end
 
     def removed_class_methods
-      @old.class_methods - @new.class_methods
+      (@old.class_methods - @new.class_methods).sort
     end
   end
 end
