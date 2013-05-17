@@ -1,33 +1,50 @@
 require 'more_asserts'
+require 'tempfile'
+require 'migration/base_lectures'
 
-class BaseLecture1
+
+LECTURE_TEMPFILE = Tempfile.new(['lectures', '.rb'])
+LECTURES_STRING = <<LectureString
+
+class Lecture0
+  # empty Lecture
   include MaglevRecord::RootedBase
-
-  def initialize(lecturer, users)
-    @lecturer = lecturer
-    @users = users
-  end
-
-  def self.fill_with_examples
-    self.clear
-    self.new("Hans Ullrich", ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
-  end
-
+  def _;end
 end
 
-class BaseLecture2
-  include MaglevRecord::RootedBase
-
-  attr_accessor :lecturer, :users
-
-  def self.fill_with_examples
-    self.clear
-    lecture = self.new()
-    lecture.lecturer = "Hans Ullrich"
-    lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
-  end
-
+class Lecture < BaseLecture1
+  def _;end
 end
+
+class Lecture2 < BaseLecture2
+  def _;end
+end
+
+class Lecture3 < Lecture
+  def _;end
+end
+
+class Lecture4 < Lecture
+  def _;end
+end
+
+module Models
+  module M1
+    class Lecture < BaseLecture2
+      def _;end
+    end
+  end
+  module M2
+  end
+  module M3
+  end
+end
+
+[Lecture, Lecture2, Lecture3, Lecture4, Lecture0].each do |const|
+  const.maglev_record_persistable
+end
+
+LectureString
 
 class Test::Unit::TestCase
 
@@ -40,6 +57,8 @@ class Test::Unit::TestCase
         end
       end
     }
+    LECTURE_TEMPFILE.rewind
+    LECTURE_TEMPFILE.write " " * LECTURE_TEMPFILE.size
   end
 
   def self.setup_migration_operations
@@ -48,45 +67,9 @@ class Test::Unit::TestCase
   end
 
   def self.redefine_migration_classes
-    Object.module_eval "
-
-      class Lecture0
-        # empty Lecture
-        include MaglevRecord::RootedBase
-        def self.exists?; true; end
-      end
-
-      class Lecture < BaseLecture1
-        def self.exists?; true; end
-      end
-
-      class Lecture2 < BaseLecture2
-        def self.exists?; true; end
-      end
-
-      class Lecture3 < Lecture
-        def self.exists?; true; end
-      end
-
-      class Lecture4 < Lecture
-        def self.exists?; true; end
-      end
-
-      module Models
-        module M1
-          class Lecture < BaseLecture2
-          end
-        end
-        module M2
-        end
-        module M3
-        end
-      end
-
-      [Lecture, Lecture2, Lecture3, Lecture4, Lecture0].each do |const|
-        const.maglev_record_persistable
-      end
-    "
+    LECTURE_TEMPFILE.rewind
+    LECTURE_TEMPFILE.write LECTURES_STRING
+    Kernel.load LECTURE_TEMPFILE.path
   end
 
   as_instance_method :setup_migration_operations, :teardown_migration_operations
