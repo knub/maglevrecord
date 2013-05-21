@@ -26,16 +26,16 @@ class FastSnapshotTest < Test::Unit::TestCase
     snapshot!
   end
 
+  def teardown
+    teardown_migration_operations
+  end
+
   def snapshot!
     @snapshot0 = snapshot
   end
 
   def snapshot0
     @snapshot0
-  end
-
-  def teardown
-    teardown_migration_operations
   end
 
   def remove_class(*classes)

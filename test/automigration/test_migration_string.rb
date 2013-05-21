@@ -10,6 +10,10 @@ class MigrationStringTest < FastSnapshotTest
     snapshot!
   end
 
+  def teardown
+    super
+  end
+
   def test_no_migration_string_if_nothing_happens
     assert_migration_string ""
   end

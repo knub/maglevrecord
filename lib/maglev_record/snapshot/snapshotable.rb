@@ -32,17 +32,14 @@ module MaglevRecord
       end
 
       def has_definitions?
-        Maglev.begin_nested_transaction
-        begin
-          fp = file_paths
-          without_methods do
-            fp.each{ |file_path|
-              Kernel.load file_path if File.file? file_path
-            }
-            return !file_paths.empty?
-          end
-        ensure
-          Maglev.abort_transaction
+        # In nested transaction this error occurs:
+        # Error 2101, objId i52279553 does not exist, during transaction boundary
+        fp = file_paths
+        without_methods do
+          fp.each{ |file_path|
+            Kernel.load file_path if File.file? file_path
+          }
+          return !file_paths.empty?
         end
       end
 

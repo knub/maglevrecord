@@ -3,7 +3,7 @@
   ====
 
 2) from rooted base to base
-4) copy from one class to another
+4) copy from one class to another # useful when superclass mismatch
 5) rename class from submodule
 5) remove class from submodule
 

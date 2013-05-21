@@ -62,6 +62,7 @@ LECTURES_NOT_TO_LOAD = []  # a list of lectures that are removed from the file
 class Test::Unit::TestCase
 
   def self.teardown_migration_operations
+    Maglev.abort_transaction
     [:Lecture, :Lecture2, :Lecture3, :Lecture4, :Lecture0].each{ |const|
       if Object.const_defined? const
         Object.const_get(const).clear
@@ -70,6 +71,7 @@ class Test::Unit::TestCase
         end
       end
     }
+    Maglev.commit_transaction
     LECTURE_TEMPFILE.rewind
     LECTURE_TEMPFILE.write " " * LECTURE_TEMPFILE.size
   end
@@ -83,7 +85,9 @@ class Test::Unit::TestCase
     LECTURE_TEMPFILE.rewind
     LECTURE_TEMPFILE.write LECTURES_STRING
     LECTURES_NOT_TO_LOAD.delete_if{|i| true}
+    Maglev.abort_transaction
     Kernel.load LECTURE_TEMPFILE.path
+    Maglev.commit_transaction
   end
 
   as_instance_method :setup_migration_operations, :teardown_migration_operations
