@@ -53,23 +53,41 @@ module MaglevRecord
         Maglev.begin_nested_transaction
         begin
           fp = file_paths
-          remove_all_methods
-          fp.each{ |file_path|
-            Kernel.load file_path if File.file? file_path
-          }
-          return !file_paths.empty?
+          without_methods do
+            fp.each{ |file_path|
+              Kernel.load file_path if File.file? file_path
+            }
+            return !file_paths.empty?
+          end
         ensure
           Maglev.abort_transaction
         end
       end
 
-      def remove_all_methods
-        self.instance_methods(false).map { |m|
+      def without_methods
+        return unless block_given?
+        instance_methods = instance_methods(false).map { |m|
+          meth = instance_method m
           remove_method m
+          meth
         }
-        self.methods(false).map { |m|
+        class_methods = methods(false).map { |m|
+          meth = method m
           singleton_class.remove_method m
+          meth
         }
+        begin
+          yield
+        ensure
+          instance_methods(false).each { |m| remove_method m }
+          methods(false).each{ |m| singleton_class.remove_method m }
+          instance_methods.each{|m|
+            define_method m.name, m
+          }
+          class_methods.each{|m|
+            singleton_class.define_method m.name, m
+          }
+        end
       end
     end
   end
