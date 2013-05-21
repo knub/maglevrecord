@@ -1,23 +1,5 @@
 require "maglev_record/maglev_support/concern"
 
-
-Maglev.persistent do
-  class ::Class
-    def exist!
-      @exists = true
-    end
-
-    def start_existence_test!
-      @exists = false
-    end
-
-    def exists?
-      return true if @exists
-      false
-    end
-  end
-end
-
 module MaglevRecord
   module Snapshotable
     extend MaglevSupport::Concern
