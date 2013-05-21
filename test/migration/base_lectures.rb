@@ -1,6 +1,7 @@
 require "maglev_record"
 
 class BaseLecture1
+  maglev_record_persistable
   include MaglevRecord::RootedBase
 
   def initialize(lecturer, users)
@@ -12,10 +13,10 @@ class BaseLecture1
     self.clear
     self.new("Hans Ullrich", ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"])
   end
-
 end
 
 class BaseLecture2
+  maglev_record_persistable
   include MaglevRecord::RootedBase
 
   attr_accessor :lecturer, :users
@@ -26,6 +27,4 @@ class BaseLecture2
     lecture.lecturer = "Hans Ullrich"
     lecture.users = ["Peter Garstig", "Elfride Bricht", "Sergey Faehrlich"]
   end
-
 end
-

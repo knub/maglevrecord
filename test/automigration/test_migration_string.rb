@@ -15,8 +15,8 @@ class MigrationStringTest < FastSnapshotTest
   end
 
   def test_class_removed
-    remove_class Lecture
-    assert_migration_string 'delete_class Lecture'
+    remove_class Lecture3
+    assert_migration_string 'delete_class Lecture3'
   end
 
   def test_two_classes_removed

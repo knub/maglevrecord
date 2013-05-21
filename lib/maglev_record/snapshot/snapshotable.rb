@@ -50,18 +50,26 @@ module MaglevRecord
       end
 
       def has_definitions?
-        # TODO: maybe in a nested transaction?
-        start_existence_test!
-        # Maglev.begin_nested_transaction
+        Maglev.begin_nested_transaction
         begin
-          file_paths.each{ |file_path|
+          fp = file_paths
+          remove_all_methods
+          fp.each{ |file_path|
             Kernel.load file_path if File.file? file_path
-            return true if exists?
           }
-        # ensure
-          # Maglev.abort_transaction
+          return !file_paths.empty?
+        ensure
+          Maglev.abort_transaction
         end
-        exists?
+      end
+
+      def remove_all_methods
+        self.instance_methods(false).map { |m|
+          remove_method m
+        }
+        self.methods(false).map { |m|
+          singleton_class.remove_method m
+        }
       end
     end
   end
