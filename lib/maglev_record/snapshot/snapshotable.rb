@@ -68,6 +68,7 @@ module MaglevRecord
           singleton_class.remove_method m
           meth
         }
+        _attributes = attributes.map{ |attribute| attributes.delete attribute}
         return Proc.new{
           puts "restoring #{_instance_methods} #{_class_methods}"
           instance_methods(false).each { |m| remove_method m }
@@ -78,6 +79,7 @@ module MaglevRecord
           _class_methods.each{|m|
             singleton_class.define_method m.name, m
           }
+          _attributes.each{ |attribute| atributes << attribute}
         }
       end
     end
