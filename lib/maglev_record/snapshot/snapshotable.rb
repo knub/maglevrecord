@@ -4,13 +4,6 @@ module MaglevRecord
   module Snapshotable
     extend MaglevSupport::Concern
 
-    #
-    # returns the file paths of all the classes
-    #
-    def self.snapshotable_class_files
-      snapshotable_classes.map(&:file_paths).flatten.uniq
-    end
-
     def self.snapshotable_classes
       classes = []
       Object.constants.each { |constant|
@@ -52,6 +45,19 @@ module MaglevRecord
 
       def without_methods
         return unless block_given?
+        memento = reset
+        begin
+          yield
+        ensure
+          memento.call
+        end
+      end
+
+      #
+      # resets the class to no methods, no attributes 
+      # returns a memento proc that can be called to restore the old state
+      #
+      def reset
         instance_methods = instance_methods(false).map { |m|
           meth = instance_method m
           remove_method m
@@ -62,9 +68,7 @@ module MaglevRecord
           singleton_class.remove_method m
           meth
         }
-        begin
-          yield
-        ensure
+        return Proc.new{
           instance_methods(false).each { |m| remove_method m }
           methods(false).each{ |m| singleton_class.remove_method m }
           instance_methods.each{|m|
@@ -73,7 +77,7 @@ module MaglevRecord
           class_methods.each{|m|
             singleton_class.define_method m.name, m
           }
-        end
+        }
       end
     end
   end

@@ -21,6 +21,10 @@ module MaglevRecord
       @old.class_name
     end
 
+    def changed_class
+      @old.snapshot_class
+    end
+
     def migration_string_list
       if removed_attributes.size == 1 and new_attributes.size == 1
         from_attr = removed_attributes.first

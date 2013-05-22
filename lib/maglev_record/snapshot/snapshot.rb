@@ -38,9 +38,11 @@ module MaglevRecord
       }
     end
 
-    def self.with_files(file_paths, classes = Snapshotable.snapshotable_class_files)
-      file_paths.each{ |file_path|
-        Kernel.load file_path
+    def self.with_files(file_paths = [], classes = Snapshotable.snapshotable_classes)
+      class_files = classes.map(&:file_paths).flatten.uniq
+      classes.each(&:reset)
+      (file_paths + class_files).uniq.each{ |file_path|
+        Kernel.load file_path if File.exist? file_path
       }
       new
     end
