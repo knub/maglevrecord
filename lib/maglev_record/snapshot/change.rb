@@ -73,5 +73,12 @@ module MaglevRecord
       removed_classes == [] and changed_classes == [] and new_classes == []
     end
 
+    def [](class_or_class_name)
+      changed_classes.each{ |change|
+        return change if change.changed_class == class_or_class_name or
+                         changed.class_name == class_or_class_name
+      }
+    end
+
   end
 end
