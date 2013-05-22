@@ -37,6 +37,21 @@ module MaglevRecord
         return snap if snap.snapshot_class == cls
       }
     end
+
+    def self.with_files(file_paths, classes = Snapshotable.snapshotable_class_files)
+      file_paths.each{ |file_path|
+        Kernel.load file_path
+      }
+      new
+    end
+
+    def new_with_files(file_paths = [])
+      self.class.with_files(file_paths)
+    end
+
+    def changes_in_files(file_paths = [])
+      new_with_files(file_paths).changes_since(self)
+    end
   end
 end
 

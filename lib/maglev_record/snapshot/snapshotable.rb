@@ -4,6 +4,13 @@ module MaglevRecord
   module Snapshotable
     extend MaglevSupport::Concern
 
+    #
+    # returns the file paths of all the classes
+    #
+    def self.snapshotable_class_files
+      snapshotable_classes.map(&:file_paths).flatten.uniq
+    end
+
     def self.snapshotable_classes
       classes = []
       Object.constants.each { |constant|
