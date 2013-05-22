@@ -7,17 +7,11 @@ class FileSystemSnapshotTest < TempDirTest
   def setup
     super
     Maglev.begin_nested_transaction
-    @file_count = 0
   end
 
   def teardown
     super
     Maglev.abort_transaction
-  end
-
-  def write_to_file(content, file_path = File.join(tempdir, "x#{@file_count += 1}.rb"))
-    File.open(file_path, 'w'){ |f| f.write content}
-    file_path
   end
 
   def write_to_files(*file_contents)
