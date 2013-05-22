@@ -79,7 +79,7 @@ module MaglevRecord
           _class_methods.each{|m|
             singleton_class.define_method m.name, m
           }
-          _attributes.each{ |attribute| atributes << attribute}
+          _attributes.each{ |attribute| attributes << attribute}
         }
       end
     end

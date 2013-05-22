@@ -33,6 +33,7 @@ class SuperclassMismatchMigrationStringTest < TempDirTest
 
   def test_the_state_of_all_classes_is_restored
     assert_equal ['a'], Y.attributes
+    assert_equal X.instance_methods(false), ["h"]
     assert_equal 5, X.new.h
   end
 
