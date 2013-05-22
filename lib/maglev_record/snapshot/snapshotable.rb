@@ -58,23 +58,24 @@ module MaglevRecord
       # returns a memento proc that can be called to restore the old state
       #
       def reset
-        instance_methods = instance_methods(false).map { |m|
+        _instance_methods = instance_methods(false).map { |m|
           meth = instance_method m
           remove_method m
           meth
         }
-        class_methods = methods(false).map { |m|
+        _class_methods = methods(false).map { |m|
           meth = method m
           singleton_class.remove_method m
           meth
         }
         return Proc.new{
+          puts "restoring #{_instance_methods} #{_class_methods}"
           instance_methods(false).each { |m| remove_method m }
           methods(false).each{ |m| singleton_class.remove_method m }
-          instance_methods.each{|m|
+          _instance_methods.each{|m|
             define_method m.name, m
           }
-          class_methods.each{|m|
+          _class_methods.each{|m|
             singleton_class.define_method m.name, m
           }
         }

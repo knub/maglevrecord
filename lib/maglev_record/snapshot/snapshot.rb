@@ -40,19 +40,27 @@ module MaglevRecord
 
     def self.with_files(file_paths = [], classes = Snapshotable.snapshotable_classes)
       class_files = classes.map(&:file_paths).flatten.uniq
-      classes.each(&:reset)
+      restore_state = classes.map(&:reset)
       (file_paths + class_files).uniq.each{ |file_path|
-        Kernel.load file_path if File.exist? file_path
+        begin
+          Kernel.load file_path if File.exist? file_path
+        rescue Exception => e
+          restore_state.map(&:call)
+          return yield e, file_path if block_given?
+          raise e
+        end
       }
       new
     end
 
-    def new_with_files(file_paths = [])
-      self.class.with_files(file_paths)
+    def new_with_files(file_paths = [], &block)
+      self.class.with_files(file_paths, &block)
     end
 
     def changes_in_files(file_paths = [])
-      new_with_files(file_paths).changes_since(self)
+      return new_with_files(file_paths){ |error, path|
+        SuperclassMismatchChange.new(error, path)
+      }.changes_since(self)
     end
   end
 end

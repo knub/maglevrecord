@@ -10,6 +10,7 @@ class TempDirTest < Test::Unit::TestCase
     # make temporary directory
     # see http://ruby-doc.org/stdlib-2.0/libdoc/tmpdir/rdoc/Dir.html#method-c-mktmpdir
     @tempdir = Dir.mktmpdir
+        @file_count = 0
   end
 
   def teardown
@@ -19,6 +20,11 @@ class TempDirTest < Test::Unit::TestCase
 
   def tempdir
     @tempdir
+  end
+
+  def write_to_file(content, file_path = File.join(tempdir, "x#{@file_count += 1}.rb"))
+    File.open(file_path, 'w'){ |f| f.write content}
+    file_path
   end
 
   # test the project configuration

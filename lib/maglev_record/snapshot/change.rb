@@ -80,5 +80,54 @@ module MaglevRecord
       }
     end
 
+    def superclass_mismatch_classes
+      []
+    end
+
+  end
+
+  class SuperclassMismatchChange
+    "new_class_names new_classes 
+    removed_class_names removed_classes changed_classes changed_class_names
+    ".split.each do |name|
+      define_method(name){ [] }
+    end
+
+    def initialize(error, file_path)
+      @error = error
+      @file_path = file_path
+    end
+
+    def nothing_changed?
+      false
+    end
+
+    def migration_string
+      ["# #{@error.class.name}: #{@error.message}",
+       "# in #{@file_path}",
+       "X.remove_superclass"].join("\n")
+    end
+
+    def superclass_mismatch_classes
+      [self]
+    end
+
+    def superclass_mismatch_class_names
+      superclass_mismatch_classes.map(&:class_name)
+    end
+
+    # methods for the single change
+
+    def class_name
+      mismatching_class.name
+    end
+
+    def mismatching_class
+      X
+    end
+
+    def changes_since(snapshot)
+      self
+    end
   end
 end
