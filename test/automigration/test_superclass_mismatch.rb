@@ -54,9 +54,13 @@ class SuperclassMismatchMigrationStringTest < TempDirTest
                  "# in #{@fp}\n" +
                  "X.remove_superclass", changes.migration_string
   end
+
+  def test_changes_changed!
+    assert_not changes.nothing_changed?
+  end
 end
 
-
+# TODO: identation argument for migration string
 
 class NoSuperclassMismatchTest < Test::Unit::TestCase
   def test_no_superclass_mismatch

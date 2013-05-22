@@ -67,7 +67,8 @@ class FileSystemSnapshotTest < TempDirTest
                "class Class2; include MaglevRecord::Base; attr_accessor :tral2;end",
                "class NewCls; include MaglevRecord::Base; def c;end ;end"
     # the following line may change some day but it can help debugging
-    assert_equal "#new class: NewCls\n#new instance method: A.new.h\nA.remove_instance_method :g\n#new accessor :tral2 of Class2\n#new instance method: Class2.new.tral2\n#new instance method: Class2.new.tral2=\nClass2.remove_instance_method :tral\nClass2.remove_instance_method :tral=", c.migration_string
+    assert_equal "#new class: NewCls\n#new instance method: A.new.h\nA.remove_instance_method :g\nClass2.rename_attribute(:tral, :tral2)\n#new instance method: Class2.new.tral2\n#new instance method: Class2.new.tral2=\nClass2.remove_instance_method :tral\nClass2.remove_instance_method :tral=",
+                 c.migration_string
   end
 
   def test_changes_in_files_loads_all_files_required
