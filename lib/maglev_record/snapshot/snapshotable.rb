@@ -19,10 +19,6 @@ module MaglevRecord
 
     module ClassMethods
 
-      def self.extended(base)
-        base.exist! if base.respond_to? :exist!
-      end
-
       def file_paths
         (self.instance_methods(false).map { |m|
           self.instance_method(m).source_location.first
@@ -53,32 +49,57 @@ module MaglevRecord
         end
       end
 
+      def class_methods_not_to_reset
+        @class_methods_not_to_reset ||= []
+        # hackady hack!
+        # welcome to the big ball of mud and the 
+        # "I do not know what goes on after hours trying"-architecture
+        @class_methods_not_to_reset << "_validators"
+        @class_methods_not_to_reset << "_validators="
+        @class_methods_not_to_reset << "_validators?"
+        #@class_methods_not_to_reset << "method_missing"
+        @class_methods_not_to_reset << methods(false).select{|m| m.include? "callback" }
+        @class_methods_not_to_reset.flatten!
+        @class_methods_not_to_reset.map!(&:to_s)
+        @class_methods_not_to_reset.uniq!
+        @class_methods_not_to_reset
+      end
+
+      def instance_methods_to_reset
+        instance_methods(false).reject{|m| m.include? 'callback'}
+      end
+
+      def class_methods_to_reset
+        methods(false) - class_methods_not_to_reset
+      end
+
       #
-      # resets the class to no methods, no attributes 
+      # resets the class to no methods
       # returns a memento proc that can be called to restore the old state
       #
       def reset
-        _instance_methods = instance_methods(false).map { |m|
+        _instance_methods = instance_methods_to_reset.map { |m|
           meth = instance_method m
           remove_method m
           meth
         }
-        _class_methods = methods(false).map { |m|
+        _class_methods = class_methods_to_reset.map { |m|
           meth = method m
           singleton_class.remove_method m
           meth
         }
-        _attributes = attributes.map{ |attribute| attributes.delete attribute}
-        return Proc.new{
-          instance_methods(false).each { |m| remove_method m }
-          methods(false).each{ |m| singleton_class.remove_method m }
+#        puts "reset      #{self}"
+        return Proc.new {
+#          puts "reset_undo #{self}"
+          instance_methods_to_reset.each { |m| remove_method m }
+          class_methods_to_reset.each{ |m| singleton_class.remove_method m }
           _instance_methods.each{|m|
             define_method m.name, m
           }
           _class_methods.each{|m|
             singleton_class.define_method m.name, m
           }
-          _attributes.each{ |attribute| attributes << attribute}
+          self
         }
       end
     end

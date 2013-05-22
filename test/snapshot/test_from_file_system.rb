@@ -1,17 +1,15 @@
 require 'maglev_record'
 require "temp_dir_test"
 require 'more_asserts'
+require 'migration/operation_setup'
 
 class FileSystemSnapshotTest < TempDirTest
 
-  def setup
-    super
-    Maglev.begin_nested_transaction
-  end
-
   def teardown
-    super
-    Maglev.abort_transaction
+    "SomeClass AnotherClass Someclass2 NewClass A Class2 NewCls TheNew 
+    TheClass ClassWithNoFuture".split.each{|name|
+      Object.remove_const name if Object.const_defined? name
+    }
   end
 
   def write_to_files(*file_contents)
@@ -52,6 +50,7 @@ class FileSystemSnapshotTest < TempDirTest
     s = snapshot_with_files "class SomeClass2;include MaglevRecord::Base;def v;end;end"
     assert_include? s.snapshot_classes, AnotherClass
     assert_include? s.snapshot_classes, SomeClass2
+    p s.changes_since(s0).migration_string
     assert_include? s.changes_since(s0).changed_class_names, "AnotherClass"
   end
 
@@ -72,20 +71,20 @@ class FileSystemSnapshotTest < TempDirTest
   end
 
   def test_changes_in_files_loads_all_files_required
-    file_path = write_to_file "class TheClass; include MaglevRecord::Base;def x;end;end"
+    file_path = write_to_file "class TheClass; include MaglevRecord::Base;def x;3;end;end"
     Kernel.load file_path
     s = MaglevRecord::Snapshot.new
-    write_to_file "class TheClass; include MaglevRecord::Base;def y;3;end;end", file_path
+    write_to_file "class TheClass; include MaglevRecord::Base;def yy;end;end", file_path
     file_paths = [write_to_file "class TheNew;include MaglevRecord::Base; def g;end;end"]
     changes = s.changes_in_files(file_paths)
     assert_include? changes.new_class_names, 'TheNew'
     assert_include? changes.changed_class_names, 'TheClass'
-    assert_raises(NoMethodError){
-      TheClass.new.x
-    }
-    assert_equal 3, TheClass.new.y
-    assert_equal changes[TheClass].new_instance_methods, ["y"]
+    assert_equal 3, TheClass.new.x
+    assert_equal changes[TheClass].new_instance_methods, ["yy"]
     assert_equal changes[TheClass].removed_instance_methods, ["x"]
+    assert_raises(NoMethodError){
+      p TheClass.new.yy
+    }
   end
 
   def test_file_was_removed
@@ -96,10 +95,20 @@ class FileSystemSnapshotTest < TempDirTest
     assert_include? changes.removed_class_names, 'ClassWithNoFuture'
   end
 
+  def test_if_error_occurs_everything_is_reset_to_normal
+    setup_migration_operations
+    begin
+      file_path = write_to_file "raise 'bam!'"
+      meth = Lecture3.methods
+      assert_raises(RuntimeError){
+        MaglevRecord::Snapshot.with_files [file_path]
+      }
+      assert_equal meth, Lecture3.methods
+    ensure
+      teardown_migration_operations
+    end
+  end
+
 end
-
-
-# TODO: test that attributes are affected by automigrations
-
 
 

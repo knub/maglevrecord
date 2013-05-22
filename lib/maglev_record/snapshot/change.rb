@@ -76,7 +76,7 @@ module MaglevRecord
     def [](class_or_class_name)
       changed_classes.each{ |change|
         return change if change.changed_class == class_or_class_name or
-                         changed.class_name == class_or_class_name
+                         change.class_name == class_or_class_name
       }
     end
 
@@ -93,8 +93,8 @@ module MaglevRecord
       define_method(name){ [] }
     end
 
-    def initialize(error, file_path)
-      @error = error
+    def initialize(cls, file_path)
+      @cls = cls
       @file_path = file_path
     end
 
@@ -123,7 +123,7 @@ module MaglevRecord
     end
 
     def mismatching_class
-      X
+      @cls
     end
 
     def changes_since(snapshot)

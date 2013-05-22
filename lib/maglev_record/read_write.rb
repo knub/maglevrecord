@@ -44,11 +44,29 @@ module MaglevRecord
         attr_writer *attr_names
       end
 
+      #
+      # resets the class to no methods
+      # returns a memento proc that can be called to restore the old state
+      #
       def attributes
         @attributes ||= []
+        raise TypeError, "attributes contain bad elements #{@attributes}" unless @attributes.all?{ |attribute| attribute.is_a? String }
         @attributes.sort!
         @attributes.uniq!
         @attributes
+      end
+
+      def reset
+        _attributes = Array.new(attributes).map{ |attribute|
+          attributes.delete attribute
+        }
+        reset_proc = super if defined?(super)
+        return Proc.new {
+          reset_proc.call unless reset_proc.nil?
+          _attributes.each{ |attribute| attributes << attribute}
+          attributes
+          self
+        }
       end
     end
   end
