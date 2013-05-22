@@ -8,13 +8,23 @@ end
 
 class SuperclassMismatchMigrationStringTest < TempDirTest
 
+  def remove_classes
+    Object.remove_const "XX" if defined? XX
+    Object.remove_const "XY" if defined? XY
+  end
+
+  def teardown
+    remove_classes
+  end
+
   def setup
     super
-    @fp = write_to_file("class X < SuperclassOfX;include MaglevRecord::Base;def h;5;end;end;
-                        class Y;include MaglevRecord::Base;attr_accessor :a;end")
+    remove_classes
+    @fp = write_to_file("class XX < SuperclassOfX;include MaglevRecord::Base;def h;5;end;end;
+                        class XY;include MaglevRecord::Base;attr_accessor :a;end")
     snapshot = MaglevRecord::Snapshot.with_files([@fp])
-    write_to_file("class X < NotSuperclassOfX;\ninclude MaglevRecord::Base;def h;end;end
-                   class Y;include MaglevRecord::Base;attr_accessor :b;end", @fp)
+    write_to_file("class XX < NotSuperclassOfX;\ninclude MaglevRecord::Base;def h;end;end
+                   class XY;include MaglevRecord::Base;attr_accessor :b;end", @fp)
     @changes = snapshot.changes_in_files
   end
 
@@ -25,16 +35,16 @@ class SuperclassMismatchMigrationStringTest < TempDirTest
   def test_no_class_changes_or_was_removed
     assert_equal [], changes.new_class_names
     assert_equal [], changes.removed_class_names
-    assert_equal [], changes.changed_class_names, "class Y changed but can not be listed here"
+    assert_equal [], changes.changed_class_names, "class XY changed but can not be listed here"
     assert_equal [], changes.new_classes
     assert_equal [], changes.removed_classes
-    assert_equal [], changes.changed_classes, "class Y changed but can not be listed here"
+    assert_equal [], changes.changed_classes, "class XY changed but can not be listed here"
   end
 
   def test_the_state_of_all_classes_is_restored
-    assert_equal ['a'], Y.attributes
-    assert_equal X.instance_methods(false), ["h"]
-    assert_equal 5, X.new.h
+    assert_equal ['a'], XY.attributes
+    assert_equal XX.instance_methods(false), ["h"]
+    assert_equal 5, XX.new.h
   end
 
   def superclass_mismatch_change
@@ -43,16 +53,16 @@ class SuperclassMismatchMigrationStringTest < TempDirTest
   end
 
   def test_class_X_has_the_superclass_mismatch
-    assert_equal X, superclass_mismatch_change.mismatching_class
-    assert_equal "X", superclass_mismatch_change.class_name
+    assert_equal XX, superclass_mismatch_change.mismatching_class
+    assert_equal "XX", superclass_mismatch_change.class_name
   end
 
   def test_superclass_mismatch_migration_string
-    assert_equal "# TypeError: superclass mismatch for X\n" +
-                 #"# class X < NotSuperclassOfX;\n" +
+    assert_equal "# TypeError: superclass mismatch for XX\n" +
+                 #"# class XX < NotSuperclassOfX;\n" +
                  #"# in line 1 of #{@fp}\n" + 
                  "# in #{@fp}\n" +
-                 "X.remove_superclass", changes.migration_string
+                 "XX.remove_superclass", changes.migration_string
   end
 
   def test_changes_changed!

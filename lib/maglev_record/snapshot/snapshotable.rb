@@ -66,7 +66,7 @@ module MaglevRecord
       end
 
       def instance_methods_to_reset
-        instance_methods(false).reject{|m| m.include? 'callback'}
+        instance_methods(false).reject{|m| m.include? 'callback' or m.include? 'valid'}
       end
 
       def class_methods_to_reset

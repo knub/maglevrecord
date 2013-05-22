@@ -46,13 +46,17 @@ module MaglevRecord
         begin
           Kernel.load file_path if File.exist? file_path
         rescue TypeError => e
-          class_name = e.message[/for( class)? (?<name>\S*)$/, 1]
-          raise if class_name.nil?
+          puts "DAMN ERROR! #{e.message}"
+          class_name = e.message[/superclass mismatch for( class)? (\S*)$/, 2]
+          puts "class_name: #{class_name.inspect}"
+          raise e if class_name.nil?
+          raise e unless Object.const_defined? class_name
           cls = Object.const_get class_name # TODO: rescue exceptions
           return SuperclassMismatchChange.new(cls, file_path)
         end
       }
-      return new
+      else
+        return new
       ensure
         restore_state.map(&:call)
       end
@@ -63,8 +67,7 @@ module MaglevRecord
     end
 
     def changes_in_files(file_paths = [])
-      return new_with_files(file_paths){ |error, path|
-              }.changes_since(self)
+      return new_with_files(file_paths).changes_since(self)
     end
   end
 end
