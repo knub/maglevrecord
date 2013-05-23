@@ -4,7 +4,7 @@ require "logger"
 require "fileutils"
 
 MIGRATION_FOLDER = "./migrations"
-MODEL_PATHS = ["./app/models/*.rb"]
+MODEL_FILES = Array.new(Dir.glob("./app/models/*.rb"))
 
 desc "transform the maglev database"
 namespace :migrate do
@@ -17,14 +17,17 @@ namespace :migrate do
 
   desc "migrate all the migrations in the migration folder"
   task :up => [:setup, :load_all_models] do
-    loader = MaglevRecord::MigrationLoader.new
-    loader.load_directory(MIGRATION_FOLDER)
-    migrator = MaglevRecord::Migrator.new(loader.migration_list)
-    logger = Logger.new(STDOUT)
-    migrator.up(logger)
-    Maglev.abort_transaction
+    migrator = MaglevRecord::Migrator.for_directory(MIGRATION_FOLDER)
+    migrator.up(Logger.new(STDOUT))
     Maglev::PERSISTENT_ROOT[:last_snapshot] = MaglevRecord::Snapshot.new
     Maglev.commit_transaction
+  end
+
+  desc "show which migrations would be done by up"
+  task :up? => :setup do
+    # TODO: test
+    migrator = MaglevRecord::Migrator.for_directory(MIGRATION_FOLDER)
+    migrator.up?(Logger.new(STDOUT))
   end
 
   desc "create a new migration in the migration folder"
@@ -34,13 +37,13 @@ namespace :migrate do
   end
 
   desc "create a migration file for the changes shown by migrate:auto?"
-  task :auto => [:setup, :load_all_models] do
+  task :auto => [:setup] do
     last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
     if last_snapshot.nil?
       puts "rake migrate:up has to be done first"
       break
     end
-    changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
+    changes = last_snapshot.changes_in_files(MODEL_FILES)
     if changes.nothing_changed?
       puts "# no changes"
       break
@@ -59,18 +62,17 @@ namespace :migrate do
       puts "rake migrate:up has to be done first"
       break
     end
-    changes = MaglevRecord::Snapshot.new.changes_since(last_snapshot)
-    migration_string = changes.migration_string
+    changes = last_snapshot.changes_in_files(MODEL_FILES)
     if changes.nothing_changed?
       puts "# no changes"
     else
-      puts migration_string
+      puts changes.migration_string
     end
   end
 
   task :load_all_models do
     Maglev.abort_transaction
-    Dir.glob(MODEL_PATHS).each do |model_file_path|
+    MODEL_FILES.each do |model_file_path|
       load model_file_path
     end
     Maglev.commit_transaction

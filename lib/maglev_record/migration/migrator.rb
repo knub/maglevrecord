@@ -20,13 +20,24 @@ module MaglevRecord
       Maglev::PERSISTENT_ROOT[MIGRATION_KEY] ||= []
     end
 
+    def migrations_todo
+      @migration_list.reject do |mig|
+        migration_store.include?(mig.id)
+      end
+    end
+
+    def up?(logger = @non_displaying_logger)
+      # todo: test
+      migrations_todo.sort.each do |mig|
+        logger.info("to do: '" + mig.name + "' from " + mig.timestamp.to_s)
+      end
+    end
+
     ##
     # Applies the desired state of migrations.
     def up(logger = @non_displaying_logger)
       Maglev.abort_transaction
-      to_do = @migration_list.reject do |mig|
-       migration_store.include?(mig.id)
-      end
+      to_do = migrations_todo
       logger.info("Already applied all migrations.") if to_do.empty?
       to_do.sort.each do |mig|
         mig.logger = logger
@@ -35,6 +46,12 @@ module MaglevRecord
         migration_store << mig.id
       end
       Maglev.commit_transaction
+    end
+
+    def self.for_directory(directory)
+      loader = MigrationLoader.new
+      loader.load_directory(directory)
+      new(loader.migration_list)
     end
   end
 end
