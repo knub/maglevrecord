@@ -6,11 +6,11 @@ module MaglevRecord
     def initialize(cls)
       cls.redo_include_and_extend
       @snapshot_class = cls
-      @attributes = Array.new(cls.attributes) if cls.respond_to? :attributes
+      @attributes = cls.snapshot_attributes if cls.respond_to? :snapshot_attributes
       @files = cls.file_paths
       @exists = cls.has_definitions?
-      @class_methods = cls.methods(false)
-      @instance_methods = cls.instance_methods(false)
+      @class_methods = cls.snapshot_class_methods
+      @instance_methods = cls.snapshot_instance_methods
     end
 
     def exists?

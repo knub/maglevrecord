@@ -49,7 +49,7 @@ module MaglevRecord
         end
       end
 
-      def class_methods_not_to_reset
+      def class_methods_not_to_snapshot
         @class_methods_not_to_reset ||= []
         # hackady hack!
         # welcome to the big ball of mud and the 
@@ -65,12 +65,20 @@ module MaglevRecord
         @class_methods_not_to_reset
       end
 
-      def instance_methods_to_reset
+      def snapshot_class_methods
+        methods(false) - class_methods_not_to_snapshot
+      end
+
+      def snapshot_instance_methods
         instance_methods(false).reject{|m| m.include? 'callback' or m.include? 'valid'}
       end
 
       def class_methods_to_reset
-        methods(false) - class_methods_not_to_reset
+        snapshot_class_methods
+      end
+
+      def instance_methods_to_reset
+        snapshot_instance_methods
       end
 
       #
@@ -88,9 +96,7 @@ module MaglevRecord
           singleton_class.remove_method m
           meth
         }
-#        puts "reset      #{self}"
         return Proc.new {
-#          puts "reset_undo #{self}"
           instance_methods_to_reset.each { |m| remove_method m }
           class_methods_to_reset.each{ |m| singleton_class.remove_method m }
           _instance_methods.each{|m|

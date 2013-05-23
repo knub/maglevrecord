@@ -57,7 +57,7 @@ module MaglevRecord
       end
 
       def reset
-        _attributes = Array.new(attributes).map{ |attribute|
+        _attributes = attributes_to_reset.map{ |attribute|
           attributes.delete attribute
         }
         reset_proc = super if defined?(super)
@@ -67,6 +67,14 @@ module MaglevRecord
           attributes
           self
         }
+      end
+
+      def snapshot_attributes
+        attributes.reject{|attribute| attribute.include? 'valid' }
+      end
+
+      def attributes_to_reset
+        snapshot_attributes
       end
     end
   end
