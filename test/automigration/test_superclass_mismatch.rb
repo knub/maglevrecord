@@ -59,18 +59,17 @@ class SuperclassMismatchMigrationStringTest < TempDirTest
 
   def test_superclass_mismatch_migration_string
     assert_equal "# TypeError: superclass mismatch for XX\n" +
-                 #"# class XX < NotSuperclassOfX;\n" +
-                 #"# in line 1 of #{@fp}\n" + 
                  "# in #{@fp}\n" +
                  "XX.remove_superclass", changes.migration_string
+    assert_equal "    # TypeError: superclass mismatch for XX\n" +
+                 "    # in #{@fp}\n" +
+                 "    XX.remove_superclass", changes.migration_string(4)
   end
 
   def test_changes_changed!
     assert_not changes.nothing_changed?
   end
 end
-
-# TODO: identation argument for migration string
 
 class NoSuperclassMismatchTest < Test::Unit::TestCase
   def test_no_superclass_mismatch

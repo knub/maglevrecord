@@ -102,10 +102,10 @@ module MaglevRecord
       false
     end
 
-    def migration_string
-      ["# TypeError: superclass mismatch for #{class_name}",
+    def migration_string(identation = 0)
+      " " * identation + ["# TypeError: superclass mismatch for #{class_name}",
        "# in #{@file_path}",
-       "#{class_name}.remove_superclass"].join("\n")
+       "#{class_name}.remove_superclass"].join("\n" + " " * identation)
     end
 
     def superclass_mismatch_classes
