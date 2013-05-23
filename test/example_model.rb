@@ -15,13 +15,8 @@ end
 class RootedBook < Book
   include MaglevRecord::RootedBase
   # TODO: why does rooted book change the ancestors of book?
-  begin
   validates :author, :presence => true,
                      :length => { :minimum => 4 }
-  validates :author, :presence => true,
-                     :length => { :minimum => 4 }
-  rescue
-  end
   def book
     puts "I am a RootedBook"
   end

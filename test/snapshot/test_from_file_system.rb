@@ -50,7 +50,6 @@ class FileSystemSnapshotTest < TempDirTest
     s = snapshot_with_files "class SomeClass2;include MaglevRecord::Base;def v;end;end"
     assert_include? s.snapshot_classes, AnotherClass
     assert_include? s.snapshot_classes, SomeClass2
-    p s.changes_since(s0).migration_string
     assert_include? s.changes_since(s0).changed_class_names, "AnotherClass"
   end
 
@@ -83,7 +82,7 @@ class FileSystemSnapshotTest < TempDirTest
     assert_equal changes[TheClass].new_instance_methods, ["yy"]
     assert_equal changes[TheClass].removed_instance_methods, ["x"]
     assert_raises(NoMethodError){
-      p TheClass.new.yy
+      TheClass.new.yy
     }
   end
 
