@@ -127,8 +127,10 @@ module MaglevRecord
   end
 end
 
-class Class
-  def is_able_to_become_superclass_of(base_class)
-    true
+Maglev.persistent do
+  class Class
+    def is_able_to_become_superclass_of(base_class)
+      true
+    end
   end
 end
