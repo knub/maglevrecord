@@ -87,6 +87,16 @@ module MaglevRecord
         rescue NameError
         end
       end
+
+      def remove_superclass
+        # remove the superclass to enable to change the superclass
+        _name = name
+        Maglev.persistent do
+          maglev_redefine {
+            Object.module_eval "class #{_name};end;"
+          }
+        end
+      end
     end
     class NullClass
       include ClassMethods
