@@ -90,6 +90,7 @@ module MaglevRecord
 
       def change_superclass_to(new_superclass)
         # remove the superclass to enable to change the superclass
+        return unless new_superclass.is_able_to_become_superclass_of(self)
         _name = name
         Maglev.persistent do
           maglev_redefine {
@@ -117,7 +118,17 @@ module MaglevRecord
       end
       def remove_class_method(name)
       end
+      def is_able_to_become_superclass_of(base_class)
+        false
+      end
+      def change_superclass_to(new_superclass)
+      end
     end
   end
 end
 
+class Class
+  def is_able_to_become_superclass_of(base_class)
+    true
+  end
+end
