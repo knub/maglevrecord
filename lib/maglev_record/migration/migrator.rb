@@ -31,6 +31,7 @@ module MaglevRecord
       migrations_todo.sort.each do |mig|
         logger.info("to do: '" + mig.name + "' from " + mig.timestamp.to_s)
       end
+      logger.info("Already applied all migrations.") if migrations_todo.empty?
     end
 
     ##

@@ -1,5 +1,4 @@
-require "maglev_record/migration"
-require "maglev_record/snapshot"
+require "maglev_record"
 require "logger"
 require "fileutils"
 
@@ -37,7 +36,7 @@ namespace :migrate do
   end
 
   desc "create a migration file for the changes shown by migrate:auto?"
-  task :auto => [:setup] do
+  task :auto => :setup do
     last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
     if last_snapshot.nil?
       puts "rake migrate:up has to be done first"
@@ -56,7 +55,7 @@ namespace :migrate do
   end
 
   desc "show the changes since the last migrate:auto or migrate:up"
-  task :auto? => :load_all_models do
+  task :auto? do
     last_snapshot = Maglev::PERSISTENT_ROOT[:last_snapshot]
     if last_snapshot.nil?
       puts "rake migrate:up has to be done first"

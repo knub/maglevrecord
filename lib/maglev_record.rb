@@ -55,7 +55,7 @@ else
       mod.maglev_record_persistable
     end
   end
+  Maglev.commit_transaction
 end
 
 ActiveModel::Errors.maglev_nil_references
-Maglev.commit_transaction
