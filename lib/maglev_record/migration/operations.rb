@@ -88,12 +88,12 @@ module MaglevRecord
         end
       end
 
-      def remove_superclass
+      def change_superclass_to(new_superclass)
         # remove the superclass to enable to change the superclass
         _name = name
         Maglev.persistent do
           maglev_redefine {
-            Object.module_eval "class #{_name};end;"
+            Object.module_eval "class #{_name} < #{new_superclass.name};end;"
           }
         end
       end

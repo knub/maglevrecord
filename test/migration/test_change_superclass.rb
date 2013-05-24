@@ -5,7 +5,10 @@ class RemoveSuperclassTest < Test::Unit::TestCase
   def setup
     setup_migration_operations
     cls.fill_with_examples
-    cls.remove_superclass
+    @example = cls.first
+    assert_not_equal Lecture2, cls.superclass
+    assert_equal Lecture, cls.superclass
+    cls.change_superclass_to Lecture2
   end
 
   def cls
@@ -16,14 +19,12 @@ class RemoveSuperclassTest < Test::Unit::TestCase
     teardown_migration_operations
   end
 
-  def test_superclass_is_object
-    assert_equal Object, cls.superclass
+  def test_superclass_has_changed
+    assert_equal Lecture2, cls.superclass
   end
 
-  def test_object_can_inherit_again
-    assert_equal cls, Object.module_eval(cls.name)
-    Object.module_eval "class #{cls.name} < Lecture2; end"
-    assert_equal cls.superclass, Lecture2
+  def test_objects_are_still_of_that_class
+    assert_equal @example.class, cls
   end
 
 end
