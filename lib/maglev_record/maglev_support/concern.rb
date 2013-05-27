@@ -12,7 +12,7 @@ module MaglevSupport
         base.send :redo_extend, Enumerable
         base.send :redo_extend, MaglevSupport.constantize("ActiveModel::Naming")
       end
-      Maglev.commit_transaction
+      #Maglev.commit_transaction
     end
   end
 end
