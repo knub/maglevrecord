@@ -1,5 +1,8 @@
+
 class Book
   include MaglevRecord::ReadWrite
+  include MaglevRecord::Snapshotable
+
   attr_accessor :author, :title, :comments
   def self.example_params
     { :author => "Author", :title => "Title" }
@@ -11,10 +14,9 @@ end
 
 class RootedBook < Book
   include MaglevRecord::RootedBase
-
+  # TODO: why does rooted book change the ancestors of book?
   validates :author, :presence => true,
                      :length => { :minimum => 4 }
-
   def book
     puts "I am a RootedBook"
   end

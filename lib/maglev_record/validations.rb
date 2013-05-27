@@ -14,6 +14,7 @@ module MaglevRecord
     end
 
     module ClassMethods
+
       def method_missing(symbol, *args)
         super unless symbol.to_s.include? "valid"
 
@@ -32,6 +33,16 @@ module MaglevRecord
           end
         end
         @validates_options = nil
+      end
+
+      def reset
+        _validates_options = @validates_options
+        @validates_options = nil
+        reset_proc = super
+        return Proc.new {
+          reset_proc.call
+          @validates_options = _validates_options
+        }
       end
     end
   end

@@ -4,13 +4,13 @@ module MaglevRecord
 
   class ClassSnapshot
     def initialize(cls)
+      cls.redo_include_and_extend
       @snapshot_class = cls
-      @attr_readers = Array.new(cls.attr_readers) if cls.respond_to? :attr_readers
-      @attr_writers = Array.new(cls.attr_writers) if cls.respond_to? :attr_writers
+      @attributes = cls.snapshot_attributes if cls.respond_to? :snapshot_attributes
       @files = cls.file_paths
       @exists = cls.has_definitions?
-      @class_methods = cls.methods(false)
-      @instance_methods = cls.instance_methods(false)
+      @class_methods = cls.snapshot_class_methods
+      @instance_methods = cls.snapshot_instance_methods
     end
 
     def exists?
@@ -38,25 +38,13 @@ module MaglevRecord
     end
 
     def changed_since?(older)
-      attr_readers != older.attr_readers or
+      attributes != older.attributes or
         instance_methods != older.instance_methods or
         class_methods != older.class_methods
     end
 
-    def attr_readers
-      Array.new(@attr_readers || [])
-    end
-
-    def attr_writers
-      Array.new(@attr_writers || [])
-    end
-
-    def attr_accessors
-      attr_readers
-    end
-
-    def attr_methods
-      attr_readers + attr_writers.map{ |s| s + "=" }
+    def attributes
+      Array.new(@attributes || []).sort.uniq
     end
 
     def class_name
@@ -68,7 +56,7 @@ module MaglevRecord
     end
 
     def instance_methods
-      @instance_methods - attr_methods
+      @instance_methods
     end
   end
 end

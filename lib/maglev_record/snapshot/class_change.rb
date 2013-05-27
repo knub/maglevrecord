@@ -9,27 +9,31 @@ module MaglevRecord
       @new = new
     end
 
-    def new_attr_accessors
-      @new.attr_readers - @old.attr_readers
+    def new_attributes
+      (@new.attributes - @old.attributes).sort
     end
 
-    def removed_attr_accessors
-      @old.attr_readers - @new.attr_readers
+    def removed_attributes
+      (@old.attributes - @new.attributes).sort
     end
 
     def class_name
       @old.class_name
     end
 
+    def changed_class
+      @old.snapshot_class
+    end
+
     def migration_string_list
-      if removed_attr_accessors.size == 1 and new_attr_accessors.size == 1
-        from_attr = removed_attr_accessors.first
-        to_attr = new_attr_accessors.first
+      if removed_attributes.size == 1 and new_attributes.size == 1
+        from_attr = removed_attributes.first
+        to_attr = new_attributes.first
         ["#{class_name}.rename_attribute(:#{from_attr}, :#{to_attr})"]
       else
-        removed_attr_accessors.map{ |attr|
+        removed_attributes.map{ |attr|
           "#{class_name}.delete_attribute(:#{attr})"
-        } + new_attr_accessors.map{ |attr|
+        } + new_attributes.map{ |attr|
           "#new accessor :#{attr} of #{class_name}"
         }
       end + new_class_methods.map{ |cm|
@@ -44,19 +48,19 @@ module MaglevRecord
     end
 
     def new_instance_methods
-      @new.instance_methods - @old.instance_methods
+      (@new.instance_methods - @old.instance_methods).sort
     end
 
     def removed_instance_methods
-      @old.instance_methods - @new.instance_methods
+      (@old.instance_methods - @new.instance_methods).sort
     end
 
     def new_class_methods
-      @new.class_methods - @old.class_methods
+      (@new.class_methods - @old.class_methods).sort
     end
 
     def removed_class_methods
-      @old.class_methods - @new.class_methods
+      (@old.class_methods - @new.class_methods).sort
     end
   end
 end

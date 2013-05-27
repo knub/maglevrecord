@@ -12,6 +12,7 @@ module MaglevRecord
       end
 
       def rename_attribute(old_name, new_name)
+        # TODO: test wether attribute is removed from attributes of class
         attr_accessor new_name
         each { |model|
           value = model.attributes[old_name]
@@ -30,14 +31,12 @@ module MaglevRecord
       end
 
       def delete_attribute(name)
+        # TODO: test attribute names for string and for symbol
         each { |model|
           value = model.attributes.delete(name)
           yield value if block_given?
         }
-        attr_readers.delete name.to_s if respond_to? :attr_readers
-        attr_writers.delete name.to_s if respond_to? :attr_writers
-        remove_instance_method name.to_s
-        remove_instance_method name.to_s + "="
+        attributes.delete name.to_s if respond_to? :attributes
       end
 
       def migration_rename_to(new_name)
@@ -88,6 +87,17 @@ module MaglevRecord
         rescue NameError
         end
       end
+
+      def change_superclass_to(new_superclass)
+        # remove the superclass to enable to change the superclass
+        return unless new_superclass.is_able_to_become_superclass_of(self)
+        _name = name
+        Maglev.persistent do
+          maglev_redefine {
+            Object.module_eval "class #{_name} < #{new_superclass.name};end;"
+          }
+        end
+      end
     end
     class NullClass
       include ClassMethods
@@ -108,7 +118,19 @@ module MaglevRecord
       end
       def remove_class_method(name)
       end
+      def is_able_to_become_superclass_of(base_class)
+        false
+      end
+      def change_superclass_to(new_superclass)
+      end
     end
   end
 end
 
+Maglev.persistent do
+  class Class
+    def is_able_to_become_superclass_of(base_class)
+      true
+    end
+  end
+end

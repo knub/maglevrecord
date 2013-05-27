@@ -9,18 +9,18 @@ class LocalClassSnapshotTest < FastSnapshotTest
   end
 
   def test_class_removed
-    remove_class Lecture
+    remove_class Lecture2
     assert_equal 1, changes.removed_classes.size
   end
 
   def test_class_is_not_in_snashot_when_removed
-    remove_class Lecture
-    assert_not_include? snapshot.class_names, "Lecture"
+    remove_class Lecture2
+    assert_not_include? snapshot.class_names, "Lecture2"
   end
 
   def test_class_is_in_snapshot0_when_removed
-    remove_class Lecture
-    assert_include? snapshot0.class_names, "Lecture"
+    remove_class Lecture2
+    assert_include? snapshot0.class_names, "Lecture2"
   end
 
   def test_removed_class_is_in_changes

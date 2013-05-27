@@ -1,6 +1,7 @@
 require "maglev_record/snapshot/snapshotable"
 require "maglev_record/snapshot/class_snapshot"
 require "maglev_record/snapshot/change"
+require "maglev_record/snapshot/superclass_mismatch_change"
 
 module MaglevRecord
 
@@ -36,6 +37,36 @@ module MaglevRecord
       class_snapshots.each{ |snap|
         return snap if snap.snapshot_class == cls
       }
+    end
+
+    def self.with_files(file_paths = [], classes = Snapshotable.snapshotable_classes)
+      class_files = classes.map(&:file_paths).flatten.uniq
+      restore_state = classes.map(&:reset)
+      begin
+      (file_paths + class_files).uniq.each{ |file_path|
+        begin
+          Kernel.load file_path if File.exist? file_path
+        rescue TypeError => e
+          class_name = e.message[/superclass mismatch for( class)? (\S*)$/, 2]
+          raise e if class_name.nil? # TODO: test
+          raise e unless Object.const_defined? class_name # TODO: test
+          cls = Object.const_get class_name # TODO: rescue exceptions
+          return SuperclassMismatchChange.new(cls, file_path)
+        end
+      }
+      else
+        return new
+      ensure
+        restore_state.map(&:call)
+      end
+    end
+
+    def new_with_files(file_paths = [])
+      self.class.with_files(file_paths)
+    end
+
+    def changes_in_files(file_paths = [])
+      return new_with_files(file_paths).changes_since(self)
     end
   end
 end

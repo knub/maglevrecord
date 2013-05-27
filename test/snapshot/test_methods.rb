@@ -109,6 +109,18 @@ class FastMethodVSAcessorChangeTest < FastMethodChangeTest
     Lecture.attr_accessor :accessor2
   end
 
+  def test_new_instance_method
+    assert_equal ["new_i_method"], lecture_changes.new_instance_methods
+  end
+
+  def test_new_instance_method
+    assert_equal ["accessor2", "accessor2=", "new_i_method"], lecture_changes.new_instance_methods
+  end
+
+  def test_removed_instance_method
+    assert_equal ["accessor1", "accessor1=", "removed_i_method"], lecture_changes.removed_instance_methods
+  end
+
 end
 
 class FastMethodVSAcessorSnapshotTest < FastMethodSnapshotTestBase
@@ -119,7 +131,6 @@ class FastMethodVSAcessorSnapshotTest < FastMethodSnapshotTestBase
     Lecture.remove_method :accessor1=
     Lecture.attr_accessor :accessor2
   end
-
 end
 
 # TODO add test for attr becomes method and reverse

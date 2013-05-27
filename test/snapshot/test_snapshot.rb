@@ -26,6 +26,10 @@ class FastSnapshotTest < Test::Unit::TestCase
     snapshot!
   end
 
+  def teardown
+    teardown_migration_operations
+  end
+
   def snapshot!
     @snapshot0 = snapshot
   end
@@ -34,27 +38,26 @@ class FastSnapshotTest < Test::Unit::TestCase
     @snapshot0
   end
 
-  def teardown
-    teardown_migration_operations
-  end
-
   def remove_class(*classes)
     Maglev.persistent do
       classes.each { |cls|
         Object.remove_const cls.name
-        def cls.exists?
-          false
-        end
+        LECTURES_NOT_TO_LOAD << cls.name
       }
     end
   end
 
   def test_removed_class
-    remove_class Lecture
+    remove_class Lecture3
     assert_raise(NameError) {
-      Lecture
+      Lecture3
     }
-    assert_not_include? Object.constants, "Lecture"
+    assert_not_include? Object.constants, "Lecture3"
+    assert_equal ["Lecture3"], LECTURES_NOT_TO_LOAD
+    Kernel.load LECTURE_TEMPFILE.path
+    assert_raise(NameError) {
+      Lecture3
+    }
   end
 
 end

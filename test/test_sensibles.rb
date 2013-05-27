@@ -1,16 +1,24 @@
 require "more_asserts"
 require "maglev_record"
 
-class User
-  include MaglevRecord::RootedBase
-  attr_accessor :password_digest
-
-  has_secure_password
-  validates_presence_of :password, :on => :create
-end
-User.maglev_record_persistable
-
 class SensibleTest < Test::Unit::TestCase
+
+  def setup
+    Object.class_eval "
+    class User
+       include MaglevRecord::RootedBase
+       attr_accessor :password_digest
+       has_secure_password
+       validates_presence_of :password, :on => :create
+     end
+     User.maglev_record_persistable"
+  end
+
+  def teardown
+    Maglev.persistent do
+      Object.remove_const "User"
+    end
+  end
 
   def pass
     "some_pass"

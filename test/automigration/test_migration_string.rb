@@ -10,13 +10,17 @@ class MigrationStringTest < FastSnapshotTest
     snapshot!
   end
 
+  def teardown
+    super
+  end
+
   def test_no_migration_string_if_nothing_happens
     assert_migration_string ""
   end
 
   def test_class_removed
-    remove_class Lecture
-    assert_migration_string 'delete_class Lecture'
+    remove_class Lecture3
+    assert_migration_string 'delete_class Lecture3'
   end
 
   def test_two_classes_removed
@@ -39,7 +43,9 @@ class MigrationStringTest < FastSnapshotTest
   def test_added_attr_accessor
     assert_not_include? Lecture3.instance_methods, "test_accessor"
     Lecture3.attr_accessor :test_accessor
-    assert_migration_string "#new accessor :test_accessor of Lecture3"
+    assert_migration_string "#new accessor :test_accessor of Lecture3\n" +
+                    "#new instance method: Lecture3.new.test_accessor\n" +
+                    "#new instance method: Lecture3.new.test_accessor="
   end
 
   def test_removed_attr_accessor
@@ -50,7 +56,10 @@ class MigrationStringTest < FastSnapshotTest
   def test_remove_accessor_is_remove_and_add
     Lecture2.delete_attribute(:lecturer)
     Lecture2.attr_accessor :testitatetue
-    assert_migration_string "Lecture2.rename_attribute(:lecturer, :testitatetue)"
+    string =  "Lecture2.rename_attribute(:lecturer, :testitatetue)\n"
+    string += "#new instance method: Lecture2.new.testitatetue\n"
+    string += "#new instance method: Lecture2.new.testitatetue="
+    assert_migration_string string
   end
 
   def test_add_class_requires_no_migration_string
@@ -79,5 +88,86 @@ class MigrationStringTest < FastSnapshotTest
   def test_remove_instance_method
     Lecture.remove_method :instance_method1
     assert_migration_string 'Lecture.remove_instance_method :instance_method1'
+  end
+end
+
+class AttributeAccessorsMoveTest < FastSnapshotTest
+
+  def create_attribute
+    Lecture0.attr_writer :lecturer
+  end
+
+  def setup
+    super
+    create_attribute # template method
+    snapshot!
+    assert_include? Lecture0.attributes, "lecturer"
+    Lecture0.attributes.delete("lecturer") # bad style this is
+    # now Lecture2 is like having removed all attributes
+    assert_not_include? Lecture0.attributes, "lecturer"
+  end
+end
+
+class AttrAccessorMovesTest < AttributeAccessorsMoveTest
+
+  def create_attribute
+    Lecture0.attr_accessor :lecturer
+  end
+
+  def test_to_attr_reader
+    Lecture0.attr_reader :lecturer
+    assert_migration_string ""
+  end
+
+  def test_to_attr_writer
+    Lecture0.attr_writer :lecturer
+    assert_migration_string ""
+  end
+
+  def test_to_attr_accessor
+    Lecture0.attr_accessor :lecturer
+    assert_migration_string ""
+  end
+end
+
+class AttrReaderMovesTest < AttributeAccessorsMoveTest
+  def create_attribute
+    Lecture0.attr_reader :lecturer
+  end
+
+  def test_to_attr_reader
+    Lecture0.attr_reader :lecturer
+    assert_migration_string ""
+  end
+
+  def test_to_attr_writer
+    Lecture0.attr_writer :lecturer
+    assert_migration_string "#new instance method: Lecture0.new.lecturer="
+  end
+
+  def test_to_attr_accessor
+    Lecture0.attr_accessor :lecturer
+    assert_migration_string "#new instance method: Lecture0.new.lecturer="
+  end
+end
+
+class AttrWriterMovesTest < AttributeAccessorsMoveTest
+  def create_attribute
+    Lecture0.attr_writer :lecturer
+  end
+
+  def test_to_attr_reader
+    Lecture0.attr_reader :lecturer
+    assert_migration_string "#new instance method: Lecture0.new.lecturer"
+  end
+
+  def test_to_attr_writer
+    Lecture0.attr_writer :lecturer
+    assert_migration_string ""
+  end
+
+  def test_to_attr_accessor
+    Lecture0.attr_accessor :lecturer
+    assert_migration_string "#new instance method: Lecture0.new.lecturer"
   end
 end
