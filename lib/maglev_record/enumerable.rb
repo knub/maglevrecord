@@ -1,6 +1,11 @@
 module MaglevRecord
   module Enumerable
     module ClassMethods
+      def first
+        each{ |model|
+          return model
+        }
+      end
       def all
         raise "method not available for MaglevRecord::Base"
       end

@@ -1,6 +1,11 @@
 module MaglevRecord
   module RootedEnumerable
     module ClassMethods
+      def first
+        each{ |model|
+          return model
+        }
+      end
       def all
         object_pool.values
       end
