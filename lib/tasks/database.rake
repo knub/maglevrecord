@@ -15,9 +15,10 @@ namespace :migrate do
   end
 
   desc "migrate all the migrations in the migration folder"
-  task :up => [:setup, :load_all_models] do
+  task :up => [:setup] do
     migrator = MaglevRecord::Migrator.for_directory(MIGRATION_FOLDER)
     migrator.up(Logger.new(STDOUT))
+    Rake::Task['migrate:load_all_models'].execute
     Maglev::PERSISTENT_ROOT[:last_snapshot] = MaglevRecord::Snapshot.new
     Maglev.commit_transaction
   end
@@ -70,11 +71,9 @@ namespace :migrate do
   end
 
   task :load_all_models do
-    Maglev.abort_transaction
     MODEL_FILES.each do |model_file_path|
       load model_file_path
     end
-    Maglev.commit_transaction
   end
 
 end
