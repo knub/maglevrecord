@@ -6,13 +6,32 @@ class ClassWithMismatchNotFound
 end
 
 module MaglevRecord
-  class SuperclassMismatchChange
+  class SuperclassMismatchChangeBase
     "new_class_names new_classes
     removed_class_names removed_classes changed_classes changed_class_names
     ".split.each do |name|
       define_method(name){ [] }
     end
 
+    def nothing_changed?
+      false
+    end
+
+    def superclass_mismatch_classes
+      [self]
+    end
+
+    def superclass_mismatch_class_names
+      superclass_mismatch_classes.map(&:class_name)
+    end
+
+    def changes_since(snapshot)
+      self
+    end
+
+  end
+
+  class SuperclassMismatchChange < SuperclassMismatchChangeBase
     def initialize(cls, file_path)
       @cls = cls
       @file_path = file_path
@@ -20,10 +39,6 @@ module MaglevRecord
 
     def file_path
       @file_path
-    end
-
-    def nothing_changed?
-      false
     end
 
     def migration_string(identation = 0)
@@ -69,14 +84,6 @@ module MaglevRecord
       @new_super_class
     end
 
-    def superclass_mismatch_classes
-      [self]
-    end
-
-    def superclass_mismatch_class_names
-      superclass_mismatch_classes.map(&:class_name)
-    end
-
     # methods for the single change
 
     def class_name
@@ -87,8 +94,50 @@ module MaglevRecord
       @cls
     end
 
-    def changes_since(snapshot)
-      self
+    # reverse
+
+    def reversed
+      ReversedSuperclassMismatchChange.new(self)
     end
+  end
+
+  class ReversedSuperclassMismatchChange < SuperclassMismatchChangeBase
+    # TODO: test
+    def initialize(superclass_mismatch_change)
+      @superclass_mismatch_change = superclass_mismatch_change
+    end
+
+    def superclass_mismatch_change
+      @superclass_mismatch_change
+    end
+
+    def reversed
+      superclass_mismatch_change
+    end
+
+    def mismatching_class
+      superclass_mismatch_change.mismatching_class
+    end
+
+    def class_name
+      superclass_mismatch_change.mismatching_class
+    end
+
+    def file_path
+      superclass_mismatch_change.file_path
+    end
+
+    def old_superclass
+      mismatching_class.superclass
+    end
+
+    def migration_string(identation = 0)
+      " " * identation + [
+        "# TypeError: superclass mismatch for #{class_name}",
+        "# in #{file_path}",
+        "#{class_name}.change_superclass_to #{old_superclass.name}"
+      ].join("\n" + " " * identation)
+    end
+
   end
 end

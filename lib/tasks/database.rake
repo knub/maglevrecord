@@ -49,9 +49,11 @@ namespace :migrate do
       break
     end
     upcode = changes.migration_string(4)
+    downcode = changes.reversed.migration_string(4)
     file_name = MaglevRecord::Migration.write_to_file(MIGRATION_FOLDER,
                                           'fill in description here',
-                                          upcode)
+                                          upcode,
+                                          downcode)
     puts file_name
   end
 

@@ -94,7 +94,9 @@ module MaglevRecord
         _name = name
         Maglev.persistent do
           maglev_redefine {
-            Object.module_eval "class #{_name} < #{new_superclass.name};end;"
+            Object.module_eval "
+              class #{_name} < #{new_superclass.name}
+              end"
           }
         end
       end

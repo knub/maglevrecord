@@ -27,6 +27,17 @@ class ChangeSuperclassTest < Test::Unit::TestCase
     assert_equal @example.class, cls
   end
 
+  def test_example_is_of_own_class
+    Object.module_eval "
+      class Lecture3
+        def lecture3
+          true
+        end
+      end"
+    assert @example.lecture2
+    assert @example.lecture3
+  end
+
 end
 
 class MigrationChangesSuperclassTest < Test::Unit::TestCase

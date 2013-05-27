@@ -84,5 +84,9 @@ module MaglevRecord
       []
     end
 
+    def reversed
+      self.class.new(@new, @old)
+    end
+
   end
 end
