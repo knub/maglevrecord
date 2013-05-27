@@ -101,10 +101,8 @@ module MaglevRecord
             if respond_to? :object_pool_key
               # where should I put it else?
               raise "self should be object_pool_key" unless self == object_pool_key
-              puts "new_class: #{new_class}, #{self}"
               pool_pool = Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY]
               old_pool = pool_pool[self]
-              puts "#pool: #{old_pool}"
               pool_pool[new_class] = old_pool
             end
           }
