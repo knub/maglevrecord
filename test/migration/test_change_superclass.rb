@@ -38,6 +38,10 @@ class ChangeSuperclassTest < Test::Unit::TestCase
     assert @example.lecture3
   end
 
+  def test_example_is_still_in_all
+    assert_include? Lecture3.all, @example
+  end
+
 end
 
 class MigrationChangesSuperclassTest < Test::Unit::TestCase
