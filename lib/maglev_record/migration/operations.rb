@@ -102,8 +102,11 @@ module MaglevRecord
               # where should I put it else?
               raise "self should be object_pool_key" unless self == object_pool_key
               pool_pool = Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY]
-              old_pool = pool_pool.delete(self) # TODO: test
-              pool_pool[new_class] = old_pool
+              unless pool_pool.nil?
+                #TODO: test no instances while superclass change
+                old_pool = pool_pool.delete(self) # TODO: test removed
+                pool_pool[new_class] = old_pool unless old_pool.nil?
+              end
             end
           }
         end
