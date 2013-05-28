@@ -93,6 +93,11 @@ Using ```book.valid?``` you can determine if a model is valid. Models are *not* 
 
 Use ```MaglevRecord.reset``` the reset all changed made since the last save or reset.
 
+
+### Migrating objects
+
+Have a look at the [demo application for migrations](https://github.com/niccokunzmann/maglevrecord-demo/blob/master/README.md).
+
 ## Further questions, improvements?
 
 Feel free to fork, pull-request or ask via email at bp2012h1 [at] hpi.uni-potsdam.de.
