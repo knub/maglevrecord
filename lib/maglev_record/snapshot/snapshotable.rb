@@ -55,6 +55,7 @@ module MaglevRecord
         # welcome to the big ball of mud and the 
         # "I do not know what goes on after hours trying"-architecture
         @class_methods_not_to_reset << "_validators"
+        @class_methods_not_to_reset << "name"
         @class_methods_not_to_reset << "_validators="
         @class_methods_not_to_reset << "_validators?"
         #@class_methods_not_to_reset << "method_missing"

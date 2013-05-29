@@ -17,6 +17,10 @@ module MaglevRecord
       @migration_list.sort.uniq
     end
 
+    def self.const_missing(name)
+      MigrationOperations::NullClass.new(name)
+    end
+
     def load_string(source, file = __FILE__)
       migration = instance_eval source, file
       raise MaglevRecord::NoMigrationReadError unless migration.class == MaglevRecord::Migration
