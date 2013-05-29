@@ -94,11 +94,25 @@ module MaglevRecord
         _name = name
         Maglev.persistent do
           maglev_redefine {
-            Object.module_eval "class #{_name} < #{new_superclass.name};end;"
+            new_class = Object.module_eval "
+              class #{_name} < #{new_superclass.name}
+                self
+              end"
+            if respond_to? :object_pool_key
+              # where should I put it else?
+              raise "self should be object_pool_key" unless self == object_pool_key
+              pool_pool = Maglev::PERSISTENT_ROOT[MaglevRecord::PERSISTENT_ROOT_KEY]
+              unless pool_pool.nil?
+                #TODO: test no instances while superclass change
+                old_pool = pool_pool.delete(self) # TODO: test removed
+                pool_pool[new_class] = old_pool unless old_pool.nil?
+              end
+            end
           }
         end
       end
     end
+
     class NullClass
       include ClassMethods
       def initialize(name)

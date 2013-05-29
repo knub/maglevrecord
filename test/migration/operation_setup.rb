@@ -19,12 +19,14 @@ unless LECTURES_NOT_TO_LOAD.include? 'Lecture'
   class Lecture < BaseLecture1
     def x;end
     def self.x;end
+    def lecture2;false;end
   end
 end
 
 unless LECTURES_NOT_TO_LOAD.include? 'Lecture2'
   class Lecture2 < BaseLecture2
     def x;end
+    def lecture2;true;end
   end
 end
 
@@ -32,6 +34,7 @@ unless LECTURES_NOT_TO_LOAD.include? 'Lecture3'
   class Lecture3 < Lecture
     def x;end
     def self.x;end
+    def lecture3;true;end
   end
 end
 
