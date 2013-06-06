@@ -11,8 +11,8 @@ before_script:
   - "maglev-gem install bundler"
   - "bundle install"
 script:
-  - "bundle exec rake testfast TESTOPTS='-v'"
-  - "bundle exec rake testfast TESTOPTS='-v'"
+  - "bundle exec rake testslow TESTOPTS='-v'"
+  - "bundle exec rake testslow TESTOPTS='-v'"
   - "bundle exec rake testfast TESTOPTS='-v' TEST=test/_test_object_reference.rb"
 notifications:
     email: false
