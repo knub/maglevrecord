@@ -15,7 +15,7 @@ module MaglevRecord
           classes << cls if cls.is_a? Class and cls.ancestors.include? self
         end
       }
-      puts 'snapshotable classes'
+      puts 'snapshotable classes end'
       classes
     end
 
