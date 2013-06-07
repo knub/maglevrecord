@@ -5,6 +5,7 @@ module MaglevRecord
     extend MaglevSupport::Concern
 
     def self.snapshotable_classes
+      puts 'snapshotable classes'
       classes = []
       Object.constants.each { |constant|
         begin
@@ -14,6 +15,7 @@ module MaglevRecord
           classes << cls if cls.is_a? Class and cls.ancestors.include? self
         end
       }
+      puts 'snapshotable classes'
       classes
     end
 
@@ -33,7 +35,9 @@ module MaglevRecord
         fp = file_paths
         without_methods do
           fp.each{ |file_path|
+            puts "has_definitions loading #{file_path}"
             Kernel.load file_path if File.file? file_path
+            puts "has_definitions loading #{file_path} end"
           }
           return !file_paths.empty?
         end

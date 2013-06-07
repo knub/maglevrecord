@@ -4,9 +4,12 @@ require "migration/operation_setup"
 class FastSnapshotTest < Test::Unit::TestCase
 
   def lectures
-    MaglevRecord::Snapshotable.snapshotable_classes.select{ |cls|
+    puts 'lectures'
+    return_value = MaglevRecord::Snapshotable.snapshotable_classes.select{ |cls|
       cls.name.start_with? "Lecture"
     }
+    puts 'lectures end'
+    return return_value
   end
 
   def assert_migration_string(string, *args)
@@ -14,7 +17,10 @@ class FastSnapshotTest < Test::Unit::TestCase
   end
 
   def snapshot
-    MaglevRecord::Snapshot.new(lectures)
+    puts 'snapshot'
+    return_value = MaglevRecord::Snapshot.new(lectures)
+    puts 'snapshot end'
+    return return_value
   end
 
   def changes
