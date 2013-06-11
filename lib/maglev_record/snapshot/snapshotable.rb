@@ -35,8 +35,11 @@ module MaglevRecord
         fp = file_paths
         without_methods do
           fp.each{ |file_path|
-            puts "has_definitions loading #{file_path} #{Time.now}"
-            Kernel.load file_path if File.file? file_path
+            puts "has_definitions loading #{file_path} 1 #{Time.now}"
+            if File.file? file_path
+              puts "has_definitions loading #{file_path} 2 #{Time.now}"
+              Kernel.load file_path
+            end
             puts "has_definitions loading #{file_path} #{Time.now} end"
           }
           return !file_paths.empty?
