@@ -4,19 +4,19 @@ module MaglevRecord
 
   class ClassSnapshot
     def initialize(cls)
-      puts 'ClassSnapshot initialize'
+      puts "ClassSnapshot initialize #{Time.now} "
       cls.redo_include_and_extend
-      puts 'ClassSnapshot initialize 1'
+      puts "ClassSnapshot initialize 1 #{Time.now} "
       @snapshot_class = cls
       @attributes = cls.snapshot_attributes if cls.respond_to? :snapshot_attributes
-      puts 'ClassSnapshot initialize 2'
+      puts "ClassSnapshot initialize 2 #{Time.now} "
       @files = cls.file_paths
-      puts 'ClassSnapshot initialize 3'
+      puts "ClassSnapshot initialize 3 #{Time.now} "
       @exists = cls.has_definitions?
-      puts 'ClassSnapshot initialize 4'
+      puts "ClassSnapshot initialize 4 #{Time.now} "
       @class_methods = cls.snapshot_class_methods
       @instance_methods = cls.snapshot_instance_methods
-      puts 'ClassSnapshot initialize end'
+      puts "ClassSnapshot initialize #{Time.now} end"
     end
 
     def exists?

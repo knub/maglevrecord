@@ -4,11 +4,11 @@ require "migration/operation_setup"
 class FastSnapshotTest < Test::Unit::TestCase
 
   def lectures
-    puts 'lectures'
+    puts "lectures #{Time.now}"
     return_value = MaglevRecord::Snapshotable.snapshotable_classes.select{ |cls|
       cls.name.start_with? "Lecture"
     }
-    puts 'lectures end'
+    puts "lectures #{Time.now} end"
     return return_value
   end
 
@@ -17,9 +17,9 @@ class FastSnapshotTest < Test::Unit::TestCase
   end
 
   def snapshot
-    puts 'snapshot'
+    puts "snapshot #{Time.now}"
     return_value = MaglevRecord::Snapshot.new(lectures)
-    puts 'snapshot end'
+    puts "snapshot #{Time.now} end"
     return return_value
   end
 
