@@ -38,6 +38,7 @@ module MaglevRecord
             puts "has_definitions loading #{file_path} 1 #{Time.now}"
             if File.file? file_path
               puts "has_definitions loading #{file_path} 2 #{Time.now}"
+              puts "has_definitions loading #{file_path} 3 #{File.size(file_path)}"
               Kernel.load file_path
             end
             puts "has_definitions loading #{file_path} #{Time.now} end"
